@@ -403,8 +403,8 @@
         <div class="period-bar" id="periodBar">
             <button class="period-btn" data-period="1M">近1月</button>
             <button class="period-btn" data-period="3M">近3月</button>
-            <button class="period-btn active" data-period="6M">近6月</button>
-            <button class="period-btn" data-period="1Y">近1年</button>
+            <button class="period-btn" data-period="6M">近6月</button>
+            <button class="period-btn active" data-period="1Y">近1年</button>
             <button class="period-btn" data-period="ALL">全部</button>
         </div>
 
@@ -437,9 +437,9 @@
             code: '008591',
             rawData: [],
             filteredData: [],
-            currentPeriod: '6M',
+            currentPeriod: '1Y',          // 默认近一年
             fundName: '',
-            fundType: 'off-exchange', // 'off-exchange' | 'on-exchange'
+            fundType: 'off-exchange',
             isLoading: false,
         };
 
@@ -475,7 +475,6 @@
         //  工具函数 —— 基金类型检测
         // ================================================================
         function detectFundType(code) {
-            // 场内基金代码前缀
             const onExchangePrefixes = ['50', '51', '56', '58', '159', '16'];
             for (const p of onExchangePrefixes) {
                 if (code.startsWith(p)) return 'on-exchange';
@@ -485,17 +484,15 @@
 
         function getSecId(code, type) {
             if (type === 'on-exchange') {
-                // 沪市: 5开头, 深市: 1开头(159,16)
                 if (code.startsWith('5')) return `1.${code}`;
                 if (code.startsWith('1')) return `0.${code}`;
-                // 兜底
                 return `0.${code}`;
             }
             return null;
         }
 
         // ================================================================
-        //  数据获取 —— 场外基金 (pingzhongdata)
+        //  数据获取 —— 场外基金
         // ================================================================
         function fetchOffExchangeData(code) {
             return new Promise((resolve, reject) => {
@@ -547,7 +544,7 @@
         }
 
         // ================================================================
-        //  数据获取 —— 场内基金 (K线接口)
+        //  数据获取 —— 场内基金
         // ================================================================
         async function fetchOnExchangeData(code) {
             const secid = getSecId(code, 'on-exchange');
@@ -569,10 +566,9 @@
 
             const data = klines.map(line => {
                 const parts = line.split(',');
-                // 格式: 日期,开盘,收盘,最高,最低,成交量,成交额
                 return {
                     NAVDATE: parts[0],
-                    NETVALUE: parseFloat(parts[2]) // 收盘价作为净值
+                    NETVALUE: parseFloat(parts[2])
                 };
             }).filter(d => d.NAVDATE && !isNaN(d.NETVALUE) && d.NETVALUE > 0);
 
@@ -594,7 +590,7 @@
         }
 
         // ================================================================
-        //  数据处理（与之前相同）
+        //  数据处理
         // ================================================================
         function processRawData(raw) {
             return raw
@@ -891,7 +887,6 @@
                 state.fundName = name || code;
                 state.fundType = type || 'off-exchange';
 
-                // 更新头部显示
                 fundCodeDisplay.textContent = code;
                 const typeLabel = type === 'on-exchange' ? '场内' : '场外';
                 const typeCls = type === 'on-exchange' ? 'on-exchange' : 'off-exchange';
@@ -926,7 +921,6 @@
                     `<tr><td colspan="5" style="text-align:center;color:#445566;padding:20px;">加载失败</td></tr>`;
                 tableCount.textContent = '';
                 if (echartsInstance) echartsInstance.clear();
-                // 重置类型标签
                 fundTypeBadge.textContent = '--';
                 fundTypeBadge.className = 'fund-type-badge';
             } finally {
@@ -975,16 +969,16 @@
         });
 
         // ================================================================
-        //  启动
+        //  启动 —— 默认加载近一年
         // ================================================================
         document.addEventListener('DOMContentLoaded', () => {
-            loadFund('008591', '6M');
+            loadFund('008591', '1Y');
         });
 
         if (document.readyState === 'complete' || document.readyState === 'interactive') {
             if (!window._fundLoaded) {
                 window._fundLoaded = true;
-                loadFund('008591', '6M');
+                loadFund('008591', '1Y');
             }
         }
     </script>
