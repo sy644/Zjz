@@ -17,7 +17,6 @@ body {
     max-width: 1200px;
     width: 100%;
 }
-
 /* ===== 头部 ===== */
 .header {
     display: flex;
@@ -51,6 +50,22 @@ body {
     gap: 10px;
     align-items: center;
     flex-wrap: wrap;
+}
+/* 场内场外单选切换 */
+.type-switch {
+    display: flex;
+    gap: 12px;
+}
+.radio-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 13px;
+    color: #8899bb;
+    cursor: pointer;
+}
+.radio-item input:checked + span {
+    color: #00d4ff;
 }
 .search-box label {
     font-size: 13px;
@@ -108,7 +123,10 @@ body {
     font-weight: 400;
     font-size: 13px;
 }
-
+/* 隐藏类：场外模式隐藏场内卡片 */
+.hide-in {
+    display: none;
+}
 /* ===== 统计卡片 ===== */
 .stats-grid {
     display: grid;
@@ -141,12 +159,6 @@ body {
     font-family: 'SF Mono', 'Menlo', monospace;
     letter-spacing: 0.3px;
 }
-.stat-card .value .sub {
-    font-size: 13px;
-    font-weight: 400;
-    color: #8899bb;
-    margin-left: 4px;
-}
 .stat-card .date-tag {
     font-size: 11px;
     color: #667799;
@@ -158,10 +170,6 @@ body {
 .stat-card .highlight-down {
     color: #4ecdc4;
 }
-.stat-card .highlight-neutral {
-    color: #ffd93d;
-}
-
 /* ===== 时间周期切换 ===== */
 .period-bar {
     display: flex;
@@ -191,7 +199,6 @@ body {
     color: #00d4ff;
     box-shadow: 0 0 16px rgba(0, 200, 255, 0.1);
 }
-
 /* ===== 图表容器 ===== */
 .chart-wrapper {
     background: rgba(12, 22, 44, 0.7);
@@ -228,7 +235,6 @@ body {
         transform: rotate(360deg);
     }
 }
-
 /* ===== 数据表格 ===== */
 .table-section {
     background: rgba(12, 22, 44, 0.6);
@@ -287,7 +293,6 @@ body {
 .table-section .highlight-down {
     color: #4ecdc4;
 }
-
 /* ===== 响应式 ===== */
 @media (max-width: 640px) {
     .header {
@@ -317,8 +322,11 @@ body {
     .table-section {
         max-height: 180px;
     }
+    .type-switch {
+        width: 100%;
+        justify-content: center;
+    }
 }
-
 /* 辅助类 */
 .text-muted {
     color: #667799;
