@@ -3,41 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>📊 场外基金净值追踪 · 高低点/涨幅/回撤</title>
+    <title>📊 全品类基金净值追踪 · 场内ETF/场外基金 高低点/涨幅/回撤</title>
     <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="app" id="app">
         <header class="header">
-            <h1>📈 净值追踪 <small>高低点 · 涨幅 · 回撤</small></h1>
+            <h1>📈 基金净值追踪 <small>场内ETF/场外基金 · 高低点 · 涨幅 · 回撤</small></h1>
             <div class="search-box">
+                <div class="type-switch">
+                    <label class="radio-item">
+                        <input type="radio" name="fundType" value="out" checked> 场外基金
+                    </label>
+                    <label class="radio-item">
+                        <input type="radio" name="fundType" value="in"> 场内ETF/LOF
+                    </label>
+                </div>
                 <label for="fundInput">基金代码</label>
-                <input type="text" id="fundInput" value="008591" maxlength="6" placeholder="如 008591">
+                <input type="text" id="fundInput" value="008591" maxlength="6" placeholder="6位代码">
                 <button id="fetchBtn">🚀 查询</button>
                 <span class="fund-name-display" id="fundNameDisplay">
                     <span class="code" id="fundCodeDisplay">008591</span>
                 </span>
             </div>
         </header>
-
+        <!-- 统计卡片：场内会自动多出溢价卡片 -->
         <div class="stats-grid" id="statsGrid">
             <div class="stat-card"><div class="label">📌 当前净值</div><div class="value" id="statCurrent">--</div><div class="date-tag" id="statDate">--</div></div>
-            <div class="stat-card"><div class="label">🔺 近期高点</div><div class="value highlight-up" id="statHigh">--</div><div class="date-tag" id="statHighDate">--</div></div>
-            <div class="stat-card"><div class="label">🔻 近期低点</div><div class="value highlight-down" id="statLow">--</div><div class="date-tag" id="statLowDate">--</div></div>
+            <div class="stat-card hide-in" id="statPriceCard"><div class="label">💰 场内现价</div><div class="value" id="statPrice">--</div><div class="date-tag" id="statPriceTime">--</div></div>
+            <div class="stat-card hide-in" id="statPremiumCard"><div class="label">📎 溢价率</div><div class="value" id="statPremium">--</div><div class="date-tag">现价相对净值</div></div>
+            <div class="stat-card"><div class="label">🔺 区间高点</div><div class="value highlight-up" id="statHigh">--</div><div class="date-tag" id="statHighDate">--</div></div>
+            <div class="stat-card"><div class="label">🔻 区间低点</div><div class="value highlight-down" id="statLow">--</div><div class="date-tag" id="statLowDate">--</div></div>
             <div class="stat-card"><div class="label">📈 低点→现涨幅</div><div class="value highlight-up" id="statRise">--</div><div class="date-tag" id="statRiseDate">--</div></div>
             <div class="stat-card"><div class="label">📉 高点回撤</div><div class="value highlight-down" id="statDrawdown">--</div><div class="date-tag" id="statDrawdownDate">--</div></div>
             <div class="stat-card"><div class="label">📊 区间涨跌</div><div class="value" id="statInterval">--</div><div class="date-tag" id="statIntervalDate">--</div></div>
         </div>
-
         <div class="period-bar" id="periodBar">
             <button class="period-btn" data-period="1M">近1月</button>
             <button class="period-btn" data-period="3M">近3月</button>
-            <button class="period-btn active" data-period="6M">近6月</button>
-            <button class="period-btn" data-period="1Y">近1年</button>
+            <button class="period-btn" data-period="6M">近6月</button>
+            <button class="period-btn active" data-period="1Y">近1年</button>
             <button class="period-btn" data-period="ALL">全部</button>
         </div>
-
         <div class="chart-wrapper">
             <div id="chart">
                 <div class="chart-loading" id="chartLoading">
@@ -46,15 +54,22 @@
                 </div>
             </div>
         </div>
-
         <div class="table-section" id="tableSection">
             <div style="font-size:12px;color:#667799;margin-bottom:8px;font-weight:600;letter-spacing:0.5px;">
                 📋 历史净值明细
                 <span style="font-weight:400;color:#445566;margin-left:8px;" id="tableCount"></span>
             </div>
             <table>
-                <thead><tr><th>日期</th><th style="text-align:right;">净值</th><th style="text-align:right;">涨跌幅</th><th style="text-align:right;">距高点</th><th style="text-align:right;">距低点</th></tr></thead>
-                <tbody id="tableBody"><tr><td colspan="5" style="text-align:center;color:#445566;padding:20px;">暂无数据</td></tr></tbody>
+                <thead>
+                    <tr>
+                        <th>日期</th>
+                        <th style="text-align:right;">单位净值</th>
+                        <th style="text-align:right;">当日涨跌</th>
+                        <th style="text-align:right;">距区间高点</th>
+                        <th style="text-align:right;">距区间低点</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody"><tr><td colspan="5" style="text-align:center;color:#445566;padding:20px;">暂无数据</td></tr>
             </table>
         </div>
     </div>
