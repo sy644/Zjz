@@ -1,0 +1,339 @@
+/* ===== 全局重置 & 暗色主题 ===== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: #0b1424;
+    color: #e8edf5;
+    min-height: 100vh;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+}
+.app {
+    max-width: 1200px;
+    width: 100%;
+}
+
+/* ===== 头部 ===== */
+.header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    padding: 16px 20px;
+    background: rgba(18, 30, 56, 0.7);
+    border-radius: 16px;
+    border: 1px solid rgba(0, 200, 255, 0.12);
+    backdrop-filter: blur(6px);
+}
+.header h1 {
+    font-size: 22px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #00d4ff, #7b61ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: 0.5px;
+}
+.header h1 small {
+    font-size: 14px;
+    font-weight: 400;
+    -webkit-text-fill-color: #8899bb;
+    background: none;
+    margin-left: 8px;
+}
+.search-box {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+.search-box label {
+    font-size: 13px;
+    color: #8899bb;
+    font-weight: 500;
+}
+.search-box input {
+    width: 120px;
+    padding: 8px 12px;
+    border-radius: 10px;
+    border: 1.5px solid rgba(0, 200, 255, 0.25);
+    background: rgba(0, 20, 50, 0.6);
+    color: #e8edf5;
+    font-size: 15px;
+    font-weight: 600;
+    font-family: monospace;
+    text-align: center;
+    outline: none;
+    transition: border 0.3s;
+}
+.search-box input:focus {
+    border-color: #00d4ff;
+    box-shadow: 0 0 12px rgba(0, 200, 255, 0.2);
+}
+.search-box button {
+    padding: 8px 20px;
+    border-radius: 10px;
+    border: none;
+    background: linear-gradient(135deg, #00c8ff, #7b61ff);
+    color: #fff;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.25s;
+    box-shadow: 0 0 16px rgba(0, 200, 255, 0.2);
+}
+.search-box button:hover {
+    transform: scale(1.03);
+    box-shadow: 0 0 24px rgba(0, 200, 255, 0.35);
+}
+.search-box button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+.fund-name-display {
+    font-size: 15px;
+    font-weight: 600;
+    color: #7bc8ff;
+    margin-left: 4px;
+    min-width: 120px;
+}
+.fund-name-display .code {
+    color: #8899bb;
+    font-weight: 400;
+    font-size: 13px;
+}
+
+/* ===== 统计卡片 ===== */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+    margin-bottom: 20px;
+}
+.stat-card {
+    background: rgba(18, 30, 56, 0.6);
+    border-radius: 14px;
+    padding: 14px 16px;
+    border: 1px solid rgba(0, 200, 255, 0.08);
+    backdrop-filter: blur(4px);
+    transition: border 0.3s;
+}
+.stat-card:hover {
+    border-color: rgba(0, 200, 255, 0.25);
+}
+.stat-card .label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: #667799;
+    font-weight: 600;
+}
+.stat-card .value {
+    font-size: 20px;
+    font-weight: 700;
+    margin-top: 4px;
+    font-family: 'SF Mono', 'Menlo', monospace;
+    letter-spacing: 0.3px;
+}
+.stat-card .value .sub {
+    font-size: 13px;
+    font-weight: 400;
+    color: #8899bb;
+    margin-left: 4px;
+}
+.stat-card .date-tag {
+    font-size: 11px;
+    color: #667799;
+    margin-top: 2px;
+}
+.stat-card .highlight-up {
+    color: #ff6b6b;
+}
+.stat-card .highlight-down {
+    color: #4ecdc4;
+}
+.stat-card .highlight-neutral {
+    color: #ffd93d;
+}
+
+/* ===== 时间周期切换 ===== */
+.period-bar {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+    padding: 4px 0;
+}
+.period-btn {
+    padding: 6px 16px;
+    border-radius: 20px;
+    border: 1px solid rgba(0, 200, 255, 0.15);
+    background: transparent;
+    color: #8899bb;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s;
+}
+.period-btn:hover {
+    border-color: rgba(0, 200, 255, 0.4);
+    color: #c8d8f0;
+}
+.period-btn.active {
+    background: rgba(0, 200, 255, 0.15);
+    border-color: #00c8ff;
+    color: #00d4ff;
+    box-shadow: 0 0 16px rgba(0, 200, 255, 0.1);
+}
+
+/* ===== 图表容器 ===== */
+.chart-wrapper {
+    background: rgba(12, 22, 44, 0.7);
+    border-radius: 16px;
+    padding: 12px 12px 4px 12px;
+    border: 1px solid rgba(0, 200, 255, 0.08);
+    margin-bottom: 20px;
+    position: relative;
+}
+#chart {
+    width: 100%;
+    height: 400px;
+}
+.chart-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 400px;
+    color: #667799;
+    font-size: 14px;
+    flex-direction: column;
+    gap: 12px;
+}
+.chart-loading .spinner {
+    width: 32px;
+    height: 32px;
+    border: 3px solid rgba(0, 200, 255, 0.1);
+    border-top-color: #00c8ff;
+    border-radius: 50%;
+    animation: spin 0.9s linear infinite;
+}
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* ===== 数据表格 ===== */
+.table-section {
+    background: rgba(12, 22, 44, 0.6);
+    border-radius: 16px;
+    padding: 16px 18px;
+    border: 1px solid rgba(0, 200, 255, 0.06);
+    max-height: 280px;
+    overflow-y: auto;
+}
+.table-section::-webkit-scrollbar {
+    width: 4px;
+}
+.table-section::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+}
+.table-section::-webkit-scrollbar-thumb {
+    background: rgba(0, 200, 255, 0.3);
+    border-radius: 4px;
+}
+.table-section table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+.table-section th {
+    text-align: left;
+    padding: 8px 6px;
+    color: #667799;
+    font-weight: 600;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid rgba(0, 200, 255, 0.08);
+    position: sticky;
+    top: 0;
+    background: rgba(12, 22, 44, 0.95);
+    backdrop-filter: blur(4px);
+}
+.table-section td {
+    padding: 6px 6px;
+    border-bottom: 1px solid rgba(0, 200, 255, 0.04);
+    font-family: 'SF Mono', 'Menlo', monospace;
+    font-size: 12px;
+    color: #b8c8e0;
+}
+.table-section td:first-child {
+    color: #8899bb;
+}
+.table-section tr:hover td {
+    background: rgba(0, 200, 255, 0.04);
+}
+.table-section .highlight-up {
+    color: #ff6b6b;
+}
+.table-section .highlight-down {
+    color: #4ecdc4;
+}
+
+/* ===== 响应式 ===== */
+@media (max-width: 640px) {
+    .header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+    .header h1 {
+        font-size: 18px;
+        text-align: center;
+    }
+    .search-box {
+        justify-content: center;
+    }
+    .search-box input {
+        width: 100px;
+    }
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .stat-card .value {
+        font-size: 17px;
+    }
+    #chart {
+        height: 280px;
+    }
+    .table-section {
+        max-height: 180px;
+    }
+}
+
+/* 辅助类 */
+.text-muted {
+    color: #667799;
+}
+.mt-8 {
+    margin-top: 8px;
+}
+.flex-between {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.gap-4 {
+    gap: 4px;
+}
+.fw-700 {
+    font-weight: 700;
+}
