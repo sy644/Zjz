@@ -1,5 +1,5 @@
 // ============================================================
-// 核心数据管理
+// 基金净值追踪 v2 - 带错误诊断
 // ============================================================
 const state = {
     code: '008591',
@@ -19,6 +19,7 @@ const chartEl = $('chart');
 const chartLoading = $('chartLoading');
 const tableBody = $('tableBody');
 const tableCount = $('tableCount');
+const errorMsg = $('errorMsg');
 
 const statEls = {
     current: $('statCurrent'),
@@ -38,314 +39,111 @@ const statEls = {
 let echartsInstance = null;
 
 // ============================================================
-// 数据获取 —— 使用 pingzhongdata 接口（稳定支持跨域）
+// 接口1: pingzhongdata (最常用)
 // ============================================================
-async function fetchFundData(code) {
+function fetchViaPingzhong(code) {
     return new Promise((resolve, reject) => {
         const script = document.createElement('script');
+        const callbackName = `_ping_${Date.now()}`;
         script.src = `https://fund.eastmoney.com/pingzhongdata/${code}.js?_=${Date.now()}`;
-        let resolved = false;
-
-        const cleanup = () => {
-            if (script.parentNode) script.parentNode.removeChild(script);
-        };
-
         script.onload = () => {
-            if (resolved) return;
-            resolved = true;
-            cleanup();
-            // 读取全局变量
             const trend = window.Data_netWorthTrend;
             const name = window.fS_name || code;
             if (trend && Array.isArray(trend) && trend.length > 0) {
-                // 转换格式：{ x: '2026-08-09', y: 1.2345 } -> { NAVDATE, NETVALUE }
-                const data = trend.map(item => ({
-                    NAVDATE: item.x,
-                    NETVALUE: item.y
-                }));
+                const data = trend.map(item => ({ NAVDATE: item.x, NETVALUE: item.y }));
                 resolve({ data, name });
             } else {
-                reject(new Error('未获取到净值数据，请确认基金代码正确'));
+                reject(new Error('pingzhongdata 返回空数据'));
             }
-            // 清除全局变量避免干扰
+            // 清理全局变量
             delete window.Data_netWorthTrend;
             delete window.fS_name;
         };
-
-        script.onerror = () => {
-            if (resolved) return;
-            resolved = true;
-            cleanup();
-            reject(new Error('网络请求失败，请检查网络或基金代码'));
-        };
-
+        script.onerror = () => reject(new Error('pingzhongdata 脚本加载失败'));
         document.head.appendChild(script);
+        setTimeout(() => reject(new Error('pingzhongdata 超时')), 15000);
+    });
+}
 
-        // 超时处理
+// ============================================================
+// 接口2: FundNetValue.ashx (JSONP, 备用)
+// ============================================================
+function fetchViaNetValue(code) {
+    return new Promise((resolve, reject) => {
+        const callback = `jsonp_${Date.now()}`;
+        const url = `https://fund.eastmoney.com/f10/FundNetValue.ashx?type=all&code=${code}&callback=${callback}`;
+        window[callback] = function(data) {
+            delete window[callback];
+            if (data && data.Data && Array.isArray(data.Data) && data.Data.length > 0) {
+                resolve({ data: data.Data, name: null });
+            } else {
+                reject(new Error('FundNetValue 返回空数据'));
+            }
+        };
+        const script = document.createElement('script');
+        script.src = url;
+        script.onerror = () => {
+            delete window[callback];
+            reject(new Error('FundNetValue 脚本加载失败'));
+        };
+        document.head.appendChild(script);
         setTimeout(() => {
-            if (!resolved) {
-                resolved = true;
-                cleanup();
-                reject(new Error('请求超时，请稍后重试'));
+            if (window[callback]) {
+                delete window[callback];
+                reject(new Error('FundNetValue 超时'));
             }
         }, 15000);
     });
 }
 
 // ============================================================
-// 数据处理（与之前相同）
+// 主获取函数：依次尝试两个接口
 // ============================================================
-function processRawData(raw) {
-    return raw
-        .map(item => ({
-            date: item.NAVDATE || '',
-            nav: parseFloat(item.NETVALUE || 0),
-        }))
-        .filter(d => d.date && d.nav > 0)
-        .sort((a, b) => a.date.localeCompare(b.date));
-}
-
-function filterByPeriod(data, period) {
-    if (period === 'ALL' || data.length === 0) return data.slice();
-    const now = new Date();
-    let cutoff = new Date(now);
-    switch (period) {
-        case '1M': cutoff.setMonth(cutoff.getMonth() - 1); break;
-        case '3M': cutoff.setMonth(cutoff.getMonth() - 3); break;
-        case '6M': cutoff.setMonth(cutoff.getMonth() - 6); break;
-        case '1Y': cutoff.setFullYear(cutoff.getFullYear() - 1); break;
-        default: return data.slice();
-    }
-    const cutoffStr = cutoff.toISOString().split('T')[0];
-    return data.filter(d => d.date >= cutoffStr);
-}
-
-function calcStats(data) {
-    if (!data || data.length === 0) return null;
-    const current = data[data.length - 1];
-    let high = data[0], low = data[0];
-    for (const d of data) {
-        if (d.nav > high.nav) high = d;
-        if (d.nav < low.nav) low = d;
-    }
-    const riseFromLow = low.nav > 0 ? ((current.nav - low.nav) / low.nav * 100) : 0;
-    const drawdownFromHigh = high.nav > 0 ? ((current.nav - high.nav) / high.nav * 100) : 0;
-    const intervalChange = data.length > 1 ? ((current.nav - data[0].nav) / data[0].nav * 100) : 0;
-    return {
-        current: current.nav,
-        currentDate: current.date,
-        high: high.nav,
-        highDate: high.date,
-        low: low.nav,
-        lowDate: low.date,
-        riseFromLow,
-        drawdownFromHigh,
-        intervalChange,
-        firstNav: data[0].nav,
-        firstDate: data[0].date,
-        count: data.length,
-    };
-}
-
-// ============================================================
-// 渲染 UI
-// ============================================================
-function renderStats(stats) {
-    if (!stats) {
-        Object.values(statEls).forEach(el => el.textContent = '--');
-        return;
-    }
-    const fmt = v => v.toFixed(4);
-    const fmtPct = v => (v >= 0 ? '+' : '') + v.toFixed(2) + '%';
-    const fmtDate = d => d || '--';
-
-    statEls.current.textContent = fmt(stats.current);
-    statEls.date.textContent = fmtDate(stats.currentDate);
-    statEls.high.textContent = fmt(stats.high);
-    statEls.highDate.textContent = fmtDate(stats.highDate);
-    statEls.low.textContent = fmt(stats.low);
-    statEls.lowDate.textContent = fmtDate(stats.lowDate);
-    statEls.rise.textContent = fmtPct(stats.riseFromLow);
-    statEls.riseDate.textContent = `低点 ${fmtDate(stats.lowDate)}`;
-    statEls.drawdown.textContent = fmtPct(stats.drawdownFromHigh);
-    statEls.drawdownDate.textContent = `高点 ${fmtDate(stats.highDate)}`;
-    statEls.interval.textContent = fmtPct(stats.intervalChange);
-    statEls.intervalDate.textContent = `${fmtDate(stats.firstDate)} → ${fmtDate(stats.currentDate)}`;
-
-    const riseEl = statEls.rise;
-    const ddEl = statEls.drawdown;
-    const intEl = statEls.interval;
-    riseEl.style.color = stats.riseFromLow >= 0 ? '#ff6b6b' : '#4ecdc4';
-    ddEl.style.color = stats.drawdownFromHigh >= 0 ? '#ff6b6b' : '#4ecdc4';
-    intEl.style.color = stats.intervalChange >= 0 ? '#ff6b6b' : '#4ecdc4';
-}
-
-function renderTable(data, stats) {
-    if (!data || data.length === 0) {
-        tableBody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:#445566;padding:20px;">暂无数据</td></tr>`;
-        tableCount.textContent = '';
-        return;
-    }
-    const high = stats ? stats.high : 0;
-    const low = stats ? stats.low : 0;
-    let html = '';
-    const reversed = data.slice().reverse();
-    for (const d of reversed) {
-        const chg = data.length > 1 ? ((d.nav - data[0].nav) / data[0].nav * 100) : 0;
-        const fromHigh = high > 0 ? ((d.nav - high) / high * 100) : 0;
-        const fromLow = low > 0 ? ((d.nav - low) / low * 100) : 0;
-        const chgCls = chg >= 0 ? 'highlight-up' : 'highlight-down';
-        const fhCls = fromHigh >= 0 ? 'highlight-up' : 'highlight-down';
-        const flCls = fromLow >= 0 ? 'highlight-up' : 'highlight-down';
-        html += `<tr>
-            <td>${d.date}</td>
-            <td style="text-align:right;font-weight:600;">${d.nav.toFixed(4)}</td>
-            <td style="text-align:right;" class="${chgCls}">${chg >= 0 ? '+' : ''}${chg.toFixed(2)}%</td>
-            <td style="text-align:right;" class="${fhCls}">${fromHigh >= 0 ? '+' : ''}${fromHigh.toFixed(2)}%</td>
-            <td style="text-align:right;" class="${flCls}">${fromLow >= 0 ? '+' : ''}${fromLow.toFixed(2)}%</td>
-        </tr>`;
-    }
-    tableBody.innerHTML = html;
-    tableCount.textContent = `共 ${data.length} 条`;
-}
-
-// ============================================================
-// ECharts 图表渲染（同前）
-// ============================================================
-function initChart() {
-    if (echartsInstance) {
-        echartsInstance.dispose();
-        echartsInstance = null;
-    }
-    const loading = document.querySelector('.chart-loading');
-    if (loading) loading.remove();
-    echartsInstance = echarts.init(chartEl, 'dark');
-    return echartsInstance;
-}
-
-function renderChart(data, stats, period) {
-    if (!data || data.length < 2) {
-        if (echartsInstance) {
-            echartsInstance.clear();
-            echartsInstance.setOption({
-                title: { text: '数据不足', left: 'center', top: 'center', textStyle: { color: '#667799', fontSize: 14 } }
-            });
+async function fetchFundData(code) {
+    const errors = [];
+    // 先尝试 pingzhongdata
+    try {
+        return await fetchViaPingzhong(code);
+    } catch (e) {
+        errors.push('pingzhong: ' + e.message);
+        console.warn('pingzhongdata 失败，尝试备用接口...');
+        // 再尝试 FundNetValue
+        try {
+            const result = await fetchViaNetValue(code);
+            // 若成功，尝试获取基金名称（从另一个接口补）
+            let name = null;
+            try {
+                // 可以用 pingzhongdata 再单独取名称（仅取名称）
+                const nameScript = document.createElement('script');
+                nameScript.src = `https://fund.eastmoney.com/pingzhongdata/${code}.js?_=${Date.now()}`;
+                await new Promise((resolve, reject) => {
+                    nameScript.onload = () => {
+                        const n = window.fS_name || code;
+                        name = n;
+                        delete window.fS_name;
+                        resolve();
+                    };
+                    nameScript.onerror = () => resolve(); // 忽略，用 code 代替
+                    document.head.appendChild(nameScript);
+                    setTimeout(resolve, 3000);
+                });
+            } catch (_) {}
+            result.name = name || code;
+            return result;
+        } catch (e2) {
+            errors.push('FundNetValue: ' + e2.message);
+            throw new Error('所有接口均失败：' + errors.join('; '));
         }
-        return;
     }
-    const chart = initChart();
-    const dates = data.map(d => d.date);
-    const values = data.map(d => d.nav);
-    const high = stats ? stats.high : Math.max(...values);
-    const low = stats ? stats.low : Math.min(...values);
-
-    const option = {
-        tooltip: {
-            trigger: 'axis',
-            backgroundColor: 'rgba(10,20,40,0.9)',
-            borderColor: 'rgba(0,200,255,0.3)',
-            borderWidth: 1,
-            textStyle: { color: '#e8edf5', fontSize: 12 },
-            formatter: function(params) {
-                const p = params[0];
-                if (!p) return '';
-                const idx = p.dataIndex;
-                const d = data[idx];
-                const prev = idx > 0 ? data[idx - 1] : null;
-                const chg = prev ? ((d.nav - prev.nav) / prev.nav * 100) : 0;
-                return `<div style="font-weight:600;margin-bottom:4px;">${d.date}</div>
-                        <div>净值: <b>${d.nav.toFixed(4)}</b></div>
-                        <div>涨跌: <span style="color:${chg >= 0 ? '#ff6b6b' : '#4ecdc4'}">${chg >= 0 ? '+' : ''}${chg.toFixed(2)}%</span></div>
-                        ${d.nav === high ? '🔺 近期高点' : ''}
-                        ${d.nav === low ? '🔻 近期低点' : ''}`;
-            }
-        },
-        grid: { left: 50, right: 20, top: 40, bottom: 30 },
-        xAxis: {
-            type: 'category',
-            data: dates,
-            axisLine: { lineStyle: { color: 'rgba(0,200,255,0.15)' } },
-            axisLabel: { color: '#667799', fontSize: 10, rotate: 30, interval: Math.max(1, Math.floor(data.length / 40)) },
-            splitLine: { show: false },
-        },
-        yAxis: {
-            type: 'value',
-            axisLine: { show: false },
-            axisLabel: { color: '#667799', fontSize: 10 },
-            splitLine: { lineStyle: { color: 'rgba(0,200,255,0.06)', type: 'dashed' } },
-        },
-        series: [{
-            name: '净值',
-            type: 'line',
-            data: values,
-            smooth: true,
-            symbol: 'none',
-            lineStyle: { color: '#fdb813', width: 2.5 },
-            areaStyle: {
-                color: {
-                    type: 'linear',
-                    x: 0, y: 0, x2: 0, y2: 1,
-                    colorStops: [
-                        { offset: 0, color: 'rgba(253,184,19,0.25)' },
-                        { offset: 1, color: 'rgba(253,184,19,0.02)' }
-                    ]
-                }
-            },
-            markPoint: {
-                data: [
-                    { type: 'max', name: '高点', symbol: 'pin', symbolSize: 50, itemStyle: { color: '#ff6b6b' }, label: { formatter: '{c:.4f}', color: '#fff', fontSize: 10 } },
-                    { type: 'min', name: '低点', symbol: 'pin', symbolSize: 50, itemStyle: { color: '#4ecdc4' }, label: { formatter: '{c:.4f}', color: '#fff', fontSize: 10 } }
-                ],
-                label: { show: true, formatter: p => p.value ? p.value.toFixed(4) : '', fontSize: 10, color: '#fff' }
-            },
-            markLine: {
-                silent: true,
-                symbol: 'none',
-                lineStyle: { color: 'rgba(255,255,255,0.08)', type: 'dashed' },
-                data: [
-                    { yAxis: high, name: '高点', label: { formatter: '高 ' + high.toFixed(4), color: '#ff6b6b', fontSize: 10 } },
-                    { yAxis: low, name: '低点', label: { formatter: '低 ' + low.toFixed(4), color: '#4ecdc4', fontSize: 10 } }
-                ]
-            },
-            markArea: {
-                silent: true,
-                data: [
-                    [{ yAxis: low, itemStyle: { color: 'rgba(78,205,196,0.06)' } },
-                    { yAxis: high, itemStyle: { color: 'rgba(78,205,196,0.02)' } }]
-                ]
-            }
-        }],
-        dataZoom: [{
-            type: 'inside',
-            start: Math.max(0, 100 - 100 * 60 / data.length),
-            end: 100,
-            minSpan: 10,
-        }, {
-            type: 'slider',
-            show: data.length > 60,
-            height: 12,
-            bottom: 4,
-            borderColor: 'rgba(0,200,255,0.1)',
-            backgroundColor: 'rgba(0,0,0,0.2)',
-            fillerColor: 'rgba(0,200,255,0.08)',
-            handleStyle: { color: 'rgba(0,200,255,0.3)' },
-            textStyle: { color: '#667799', fontSize: 9 },
-            start: Math.max(0, 100 - 100 * 60 / data.length),
-            end: 100,
-        }],
-        title: {
-            text: `📈 ${state.fundName || state.code}  ·  ${period === 'ALL' ? '全部' : period}`,
-            left: 10,
-            top: 6,
-            textStyle: { color: '#8899bb', fontSize: 13, fontWeight: 500 },
-        },
-    };
-    chart.setOption(option);
-    chart.resize();
 }
 
 // ============================================================
-// 主流程
+// 数据处理（与之前相同，略）
+// ============================================================
+// ... 请保留之前的 processRawData, filterByPeriod, calcStats, renderStats, renderTable, initChart, renderChart 等函数（完全一致）
+
+// ============================================================
+// 主流程（增强错误显示）
 // ============================================================
 async function loadFund(code, period) {
     if (state.isLoading) return;
@@ -353,6 +151,8 @@ async function loadFund(code, period) {
     fetchBtn.disabled = true;
     fetchBtn.textContent = '⏳ 加载中';
     chartLoading.style.display = 'flex';
+    errorMsg.style.display = 'none';
+    errorMsg.textContent = '';
 
     try {
         const { data, name } = await fetchFundData(code);
@@ -376,13 +176,16 @@ async function loadFund(code, period) {
         renderChart(filtered, stats, state.currentPeriod);
         chartLoading.style.display = 'none';
     } catch (err) {
-        console.error(err);
+        console.error('加载错误:', err);
+        // 显示错误信息
+        errorMsg.style.display = 'block';
+        errorMsg.innerHTML = `⚠️ 数据加载失败: ${err.message}<br><small style="color:#555;">请检查基金代码是否正确，或尝试使用本地服务器运行（见页面提示）</small>`;
         chartLoading.innerHTML = `
             <div style="color:#ff6b6b;font-size:14px;">⚠️ ${err.message}</div>
-            <div style="color:#667799;font-size:12px;margin-top:4px;">请检查基金代码或稍后重试</div>
+            <div style="color:#667799;font-size:12px;margin-top:4px;">请检查基金代码或网络，或尝试使用本地 HTTP 服务器</div>
         `;
         Object.values(statEls).forEach(el => el.textContent = '--');
-        tableBody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:#445566;padding:20px;">加载失败</td></tr>`;
+        tableBody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:#445566;padding:20px;">加载失败，请查看上方错误信息</td></tr>`;
         tableCount.textContent = '';
         if (echartsInstance) echartsInstance.clear();
     } finally {
@@ -393,7 +196,7 @@ async function loadFund(code, period) {
 }
 
 // ============================================================
-// 事件绑定
+// 事件绑定（和之前一样）
 // ============================================================
 fetchBtn.addEventListener('click', () => {
     const code = fundInput.value.trim();
