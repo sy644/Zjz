@@ -1,0 +1,1117 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>周记账 · 资产养成</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;}
+        :root{
+            --primary:#7c5cfc;
+            --primary-light:#a08aff;
+            --primary-dark:#5a3fd4;
+            --bg:#f5f3ff;
+            --card-bg:#ffffff;
+            --text:#2d2a3e;
+            --text-secondary:#6b6a7a;
+            --border:#e8e6f0;
+            --shadow:0 8px 24px rgba(124,92,252,0.10);
+            --radius:20px;
+            --radius-sm:12px;
+            --success:#34c759;
+            --danger:#ff6b6b;
+            --warning:#ffb347;
+            --info:#5b9aff;
+            --transition:0.25s ease;
+        }
+        body{
+            font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+            background:var(--bg);
+            color:var(--text);
+            max-width:480px;
+            margin:0 auto;
+            padding:0 16px 90px 16px;
+            min-height:100vh;
+            position:relative;
+        }
+        ::-webkit-scrollbar{width:4px;}
+        ::-webkit-scrollbar-track{background:transparent;}
+        ::-webkit-scrollbar-thumb{background:var(--primary-light);border-radius:8px;}
+        .app-header{padding:20px 0 12px 0;display:flex;align-items:center;justify-content:space-between;}
+        .app-header h1{font-size:22px;font-weight:700;background:linear-gradient(135deg,var(--primary),var(--primary-light));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+        .app-header .sub{font-size:13px;color:var(--text-secondary);background:none;font-weight:400;}
+        .header-actions{display:flex;gap:8px;}
+        .header-actions button{background:var(--card-bg);border:none;border-radius:50%;width:40px;height:40px;font-size:18px;cursor:pointer;box-shadow:var(--shadow);transition:var(--transition);display:flex;align-items:center;justify-content:center;color:var(--text);}
+        .header-actions button:active{transform:scale(0.92);}
+        .tab-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:var(--card-bg);border-radius:28px 28px 0 0;box-shadow:0 -4px 20px rgba(0,0,0,0.06);display:flex;justify-content:space-around;padding:8px 0 env(safe-area-inset-bottom,8px) 0;z-index:100;backdrop-filter:blur(12px);background:rgba(255,255,255,0.92);border-top:1px solid var(--border);}
+        .tab-item{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 12px;border:none;background:transparent;font-size:11px;color:var(--text-secondary);cursor:pointer;transition:var(--transition);border-radius:16px;min-width:56px;position:relative;}
+        .tab-item .tab-icon{font-size:22px;line-height:1.2;}
+        .tab-item.active{color:var(--primary);font-weight:600;}
+        .tab-item.active .tab-icon{transform:scale(1.05);}
+        .tab-item:active{transform:scale(0.92);}
+        .page{display:none;animation:fadeUp 0.3s ease;}
+        .page.active{display:block;}
+        @keyframes fadeUp{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
+        .card{background:var(--card-bg);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow);margin-bottom:16px;transition:var(--transition);}
+        .card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;font-size:15px;font-weight:600;}
+        .card-header .action-link{font-size:13px;font-weight:400;color:var(--primary);cursor:pointer;background:none;border:none;padding:4px 8px;border-radius:8px;transition:var(--transition);}
+        .card-header .action-link:active{background:var(--bg);}
+        .asset-summary{background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;border-radius:var(--radius);padding:22px 24px;margin-bottom:16px;box-shadow:0 8px 30px rgba(124,92,252,0.30);cursor:pointer;transition:var(--transition);position:relative;}
+        .asset-summary:active{transform:scale(0.98);}
+        .asset-summary .click-hint{position:absolute;right:20px;top:18px;font-size:13px;opacity:0.6;display:flex;align-items:center;gap:4px;}
+        .asset-summary .total-label{font-size:13px;opacity:0.8;}
+        .asset-summary .total-amount{font-size:34px;font-weight:700;letter-spacing:0.5px;margin:6px 0 14px 0;}
+        .asset-summary .row-stats{display:flex;gap:20px;flex-wrap:wrap;}
+        .asset-summary .stat-item{flex:1;min-width:60px;}
+        .asset-summary .stat-item .label{font-size:11px;opacity:0.7;}
+        .asset-summary .stat-item .value{font-size:17px;font-weight:600;}
+        .asset-summary .stat-item .value.positive{color:#b8ffb0;}
+        .asset-summary .stat-item .value.negative{color:#ffb0b0;}
+        .asset-summary .stat-item .value.clickable{cursor:pointer;border-bottom:1px dashed rgba(255,255,255,0.4);}
+        .asset-summary .stat-item .value.clickable:active{opacity:0.6;}
+
+        .preset-account-wrap{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;}
+        .preset-acc-item{padding:8px;border:1px solid var(--border);border-radius:var(--radius-sm);text-align:center;cursor:pointer;font-size:13px;}
+        .preset-acc-item:active{border-color:var(--primary);background:var(--bg);}
+        .recent-list{display:flex;flex-direction:column;gap:6px;}
+        .recent-item{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-radius:var(--radius-sm);background:var(--bg);font-size:14px;}
+        .recent-item .left{display:flex;align-items:center;gap:10px;flex:1;min-width:0;}
+        .recent-item .left .category{background:var(--card-bg);padding:2px 10px;border-radius:20px;font-size:12px;color:var(--text-secondary);white-space:nowrap;}
+        .recent-item .left .note{color:var(--text-secondary);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:80px;}
+        .recent-item .amount{font-weight:600;font-size:15px;}
+        .recent-item .amount.expense{color:var(--danger);}
+        .recent-item .amount.income{color:var(--success);}
+        .recent-item .amount.transfer{color:var(--info);}
+        .recent-item .amount.asset_gain{color:#22bb99;}
+        .recent-item .amount.asset_loss{color:#ee7722;}
+        .recent-item .amount.adjustment{color:var(--warning);}
+        .recent-item .date{font-size:11px;color:var(--text-secondary);margin-right:8px;}
+        .recent-item .del-txn{background:none;border:none;color:var(--text-secondary);font-size:14px;cursor:pointer;padding:4px 6px;border-radius:6px;transition:var(--transition);}
+        .recent-item .del-txn:active{background:rgba(255,107,107,0.12);color:var(--danger);}
+        .form-group{margin-bottom:14px;}
+        .form-group label{display:block;font-size:13px;font-weight:500;color:var(--text-secondary);margin-bottom:4px;}
+        .form-group select,.form-group input{width:100%;padding:12px 14px;border:2px solid var(--border);border-radius:var(--radius-sm);font-size:15px;background:var(--bg);transition:var(--transition);color:var(--text);appearance:none;-webkit-appearance:none;font-family:inherit;}
+        .form-group select:focus,.form-group input:focus{outline:none;border-color:var(--primary);background:#fff;}
+        .form-group .radio-group{display:flex;gap:8px;flex-wrap:wrap;}
+        .form-group .radio-group label{display:flex;align-items:center;gap:6px;font-weight:400;color:var(--text);cursor:pointer;padding:8px 10px;border-radius:30px;border:2px solid var(--border);transition:var(--transition);font-size:13px;}
+        .form-group .radio-group input[type="radio"]{display:none;}
+        .form-group .radio-group label:has(input[type="radio"][value="expense"]:checked){border-color:var(--danger);background:var(--danger);color:#fff;}
+        .form-group .radio-group label:has(input[type="radio"][value="income"]:checked){border-color:var(--success);background:var(--success);color:#fff;}
+        .form-group .radio-group label:has(input[type="radio"][value="transfer"]:checked){border-color:var(--info);background:var(--info);color:#fff;}
+        .form-group .radio-group label:has(input[type="radio"][value="asset_gain"]:checked){border-color:#22bb99;background:#22bb99;color:#fff;}
+        .form-group .radio-group label:has(input[type="radio"][value="asset_loss"]:checked){border-color:#ee7722;background:#ee7722;color:#fff;}
+        .btn-primary{width:100%;padding:14px;background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;border:none;border-radius:var(--radius-sm);font-size:16px;font-weight:600;cursor:pointer;transition:var(--transition);box-shadow:0 4px 16px rgba(124,92,252,0.30);}
+        .btn-primary:active{transform:scale(0.97);}
+        .filter-select{width:100%;padding:10px 12px;border:2px solid var(--border);border-radius:var(--radius-sm);font-size:15px;background:var(--bg);color:var(--text);appearance:none;-webkit-appearance:none;font-family:inherit;margin-bottom:12px;}
+        .filter-select:focus{outline:none;border-color:var(--primary);background:#fff;}
+        .txn-list{display:flex;flex-direction:column;gap:6px;max-height:400px;overflow-y:auto;}
+        .txn-list .empty-tip{text-align:center;color:var(--text-secondary);padding:30px 0;font-size:14px;}
+        .week-summary{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;text-align:center;}
+        .week-summary .ws-item{background:var(--bg);border-radius:var(--radius-sm);padding:12px 8px;}
+        .week-summary .ws-item .ws-label{font-size:11px;color:var(--text-secondary);}
+        .week-summary .ws-item .ws-value{font-size:18px;font-weight:700;margin-top:2px;}
+        .week-summary .ws-item .ws-value.positive{color:var(--success);}
+        .week-summary .ws-item .ws-value.negative{color:var(--danger);}
+        .checkin-area{text-align:center;padding:8px 0 4px 0;}
+        .checkin-area .big-icon{font-size:52px;margin-bottom:6px;}
+        .checkin-area .status-text{font-size:18px;font-weight:600;}
+        .checkin-area .sub-text{font-size:14px;color:var(--text-secondary);margin:4px 0 12px 0;}
+        .checkin-btn{padding:12px 40px;border:none;border-radius:30px;font-size:16px;font-weight:600;cursor:pointer;transition:var(--transition);background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;box-shadow:0 4px 16px rgba(124,92,252,0.30);}
+        .checkin-btn:disabled{opacity:0.5;transform:none;cursor:not-allowed;box-shadow:none;}
+        .checkin-btn:active:not(:disabled){transform:scale(0.94);}
+        .checkin-btn.done{background:var(--success);box-shadow:0 4px 16px rgba(52,199,89,0.30);}
+        .streak-display{display:flex;justify-content:center;gap:20px;margin:12px 0 4px 0;}
+        .streak-display .sd-item{text-align:center;}
+        .streak-display .sd-item .sd-num{font-size:28px;font-weight:700;color:var(--primary);}
+        .streak-display .sd-item .sd-label{font-size:11px;color:var(--text-secondary);}
+        .goal-item{background:var(--bg);border-radius:var(--radius-sm);padding:14px 16px;margin-bottom:10px;}
+        .goal-item .goal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+        .goal-item .goal-name{font-weight:600;font-size:15px;}
+        .goal-item .goal-progress-text{font-size:13px;color:var(--text-secondary);}
+        .goal-item .goal-track{height:8px;background:var(--border);border-radius:8px;overflow:hidden;margin:6px 0 8px 0;}
+        .goal-item .goal-track .goal-fill{height:100%;border-radius:8px;background:linear-gradient(90deg,var(--primary-light),var(--primary));transition:width 0.5s ease;}
+        .goal-item .goal-actions{display:flex;gap:8px;justify-content:flex-end;}
+        .goal-item .goal-actions button{background:var(--card-bg);border:none;border-radius:8px;padding:4px 12px;font-size:12px;cursor:pointer;color:var(--text-secondary);transition:var(--transition);border:1px solid var(--border);}
+        .goal-item .goal-actions button:active{transform:scale(0.94);}
+        .add-goal-btn{border:2px dashed var(--border);background:transparent;border-radius:var(--radius-sm);padding:12px;width:100%;font-size:14px;color:var(--text-secondary);cursor:pointer;transition:var(--transition);}
+        .add-goal-btn:active{background:var(--bg);}
+        .achievement-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:4px;}
+        .achievement-item{text-align:center;padding:12px 6px;background:var(--bg);border-radius:var(--radius-sm);transition:var(--transition);}
+        .achievement-item .ach-icon{font-size:30px;display:block;margin-bottom:4px;}
+        .achievement-item .ach-name{font-size:12px;font-weight:500;}
+        .achievement-item.locked{opacity:0.4;filter:grayscale(0.6);}
+        .achievement-item.unlocked{background:rgba(124,92,252,0.08);border:1px solid var(--primary-light);}
+        .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.40);z-index:200;align-items:center;justify-content:center;padding:24px;backdrop-filter:blur(4px);animation:fadeIn 0.2s ease;}
+        .modal-overlay.show{display:flex;}
+        @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+        .modal-box{background:var(--card-bg);border-radius:var(--radius);padding:24px 20px 20px 20px;max-width:400px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,0.20);animation:slideUp 0.25s ease;max-height:90vh;overflow-y:auto;}
+        @keyframes slideUp{from{transform:translateY(30px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+        .modal-box h3{font-size:20px;font-weight:700;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;}
+        .modal-box .modal-actions{display:flex;gap:10px;margin-top:16px;}
+        .modal-box .modal-actions button{flex:1;padding:12px;border:none;border-radius:var(--radius-sm);font-size:15px;font-weight:500;cursor:pointer;transition:var(--transition);}
+        .modal-box .modal-actions .btn-cancel{background:var(--bg);color:var(--text);}
+        .modal-box .modal-actions .btn-confirm{background:var(--primary);color:#fff;}
+        .modal-box .modal-actions .btn-confirm:active,.modal-box .modal-actions .btn-cancel:active{transform:scale(0.96);}
+        .modal-box .balance-input-group{display:flex;align-items:center;gap:12px;margin-bottom:10px;}
+        .modal-box .balance-input-group .acc-label{width:80px;font-weight:500;flex-shrink:0;}
+        .modal-box .balance-input-group input{flex:1;padding:10px 12px;border:2px solid var(--border);border-radius:var(--radius-sm);font-size:15px;}
+        .modal-box .balance-input-group input:focus{border-color:var(--primary);outline:none;}
+        .modal-box .txn-detail-item{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:14px;}
+        .modal-box .txn-detail-item .cat{color:var(--text-secondary);}
+        .modal-box .txn-detail-item .amt{font-weight:600;}
+        .modal-box .txn-detail-item .amt.income{color:var(--success);}
+        .modal-box .txn-detail-item .amt.expense{color:var(--danger);}
+        .modal-box .txn-detail-item .note{color:var(--text-secondary);font-size:12px;}
+        .account-detail-clickable{cursor:pointer;transition:var(--transition);}
+        .account-detail-clickable:active{background:var(--bg);border-radius:var(--radius-sm);}
+        .toast{position:fixed;top:24px;left:50%;transform:translateX(-50%);background:var(--text);color:#fff;padding:12px 24px;border-radius:30px;font-size:14px;font-weight:500;box-shadow:0 8px 24px rgba(0,0,0,0.20);z-index:300;opacity:0;transition:opacity 0.3s ease,transform 0.3s ease;pointer-events:none;max-width:90%;}
+        .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+        .text-muted{color:var(--text-secondary);font-size:13px;}
+        .text-center{text-align:center;}
+        .mb-8{margin-bottom:8px;}
+        .account-detail-item{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);cursor:pointer;}
+        .account-detail-item:last-child{border-bottom:none;}
+        .account-detail-item .left-info{display:flex;align-items:center;gap:12px;flex:1;}
+        .account-detail-item .left-info .icon{font-size:28px;}
+        .account-detail-item .left-info .name{font-weight:500;font-size:15px;}
+        .account-detail-item .right-info{text-align:right;display:flex;align-items:center;gap:8px;}
+        .account-detail-item .right-info .bal{font-weight:600;font-size:16px;}
+        .account-detail-item .right-info .pct{font-size:12px;color:var(--text-secondary);}
+        .account-detail-item .right-info .edit-icon{font-size:16px;color:var(--text-secondary);opacity:0.6;}
+        .account-detail-total{display:flex;justify-content:space-between;padding:14px 0 4px 0;border-top:2px solid var(--primary);margin-top:6px;font-weight:700;font-size:17px;}
+        .account-detail-empty{padding:20px 0;text-align:center;color:var(--text-secondary);}
+        .week-snapshot-info{display:flex;justify-content:space-between;margin-top:12px;background:var(--bg);border-radius:var(--radius-sm);padding:12px;font-size:14px;}
+        .week-snapshot-info .label{color:var(--text-secondary);}
+        .week-snapshot-info .value{font-weight:500;}
+        .bar-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+        .bar-row .bar-label{font-size:12px;color:var(--text-secondary);width:44px;flex-shrink:0;text-align:right;}
+        .bar-row .bar-track{flex:1;height:22px;background:var(--bg);border-radius:12px;overflow:hidden;position:relative;}
+        .bar-row .bar-track .bar-fill{height:100%;border-radius:12px;transition:width 0.6s ease;background:linear-gradient(90deg,var(--primary-light),var(--primary));}
+        .bar-row .bar-track .bar-fill.negative{background:linear-gradient(90deg,#ff9a9e,var(--danger));}
+        .bar-row .bar-value{font-size:13px;font-weight:500;width:60px;flex-shrink:0;}
+        .snapshot-history-item{padding:6px 0;border-bottom:1px solid var(--border);font-size:14px;display:flex;justify-content:space-between;}
+        .snapshot-history-item .date{color:var(--text-secondary);}
+        .snapshot-history-item .bal{font-weight:500;}
+        @media (max-width:420px){
+            body{padding:0 12px 80px 12px;}
+            .asset-summary .total-amount{font-size:28px;}
+            .achievement-grid{grid-template-columns:repeat(3,1fr);gap:6px;}
+            .week-summary{grid-template-columns:1fr 1fr 1fr;gap:4px;}
+            .modal-box .balance-input-group{flex-wrap:wrap;}
+            .modal-box .balance-input-group .acc-label{width:100%;}
+        }
+        @media (min-width:600px){
+            body{padding:0 24px 90px 24px;}
+            .tab-nav{border-radius:32px 32px 0 0;}
+        }
+        .hidden-page{display:none !important;}
+    </style>
+</head>
+<body>
+<div id="toast" class="toast"></div>
+<header class="app-header">
+    <div>
+        <h1>📒 周记账</h1>
+        <span class="sub">资产养成 · 每周录入真实余额核算收支</span>
+    </div>
+    <div class="header-actions">
+        <button onclick="resetAllData()" title="重置数据">🔄</button>
+    </div>
+</header>
+
+<!-- 首页 -->
+<div id="page-home" class="page active">
+    <!-- 总资产卡片 -->
+    <div class="asset-summary" id="assetSummary" onclick="showAccountDetail()">
+        <div class="click-hint">📊 点击查看明细</div>
+        <div class="total-label">💰 总资产</div>
+        <div class="total-amount" id="totalAsset">¥0.00</div>
+        <div class="row-stats">
+            <div class="stat-item">
+                <div class="label">本周收入</div>
+                <div class="value positive clickable" id="weekIncome" onclick="event.stopPropagation();showWeekDetail('income')">+¥0</div>
+            </div>
+            <div class="stat-item">
+                <div class="label">本周支出</div>
+                <div class="value negative clickable" id="weekExpense" onclick="event.stopPropagation();showWeekDetail('expense')">-¥0</div>
+            </div>
+            <div class="stat-item">
+                <div class="label">本周结余</div>
+                <div class="value" id="weekBalance">¥0</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 近四周对比 -->
+    <div class="card">
+        <div class="card-header"><span>📈 近四周对比</span></div>
+        <div id="homeWeekChart"></div>
+    </div>
+
+    <!-- 记录卡片（原交易记录，标题改为"记录"，右侧新增"记账"按钮） -->
+    <div class="card">
+        <div class="card-header">
+            <span>📋 记录</span>
+            <button class="action-link" onclick="openJournalModal()" style="font-weight:600;font-size:14px;">+ 记账</button>
+        </div>
+        <select class="filter-select" id="homeTxnFilter">
+            <option value="all">全部</option>
+            <option value="expense">支出</option>
+            <option value="income">收入</option>
+            <option value="transfer">转账</option>
+            <option value="adjustment">调整</option>
+        </select>
+        <div class="txn-list" id="homeTxnList"></div>
+    </div>
+</div>
+
+<!-- 激励页 -->
+<div id="page-inspire" class="page">
+    <div class="card">
+        <div class="card-header"><span>🌟 每日打卡</span></div>
+        <div class="checkin-area">
+            <div class="big-icon" id="checkinIcon">🌱</div>
+            <div class="status-text" id="checkinStatus">今日未打卡</div>
+            <div class="sub-text" id="checkinSub">每周上传余额，养成资产记账好习惯！</div>
+            <button class="checkin-btn" id="checkinBtn" onclick="handleCheckin()">✅ 打卡</button>
+            <div class="streak-display">
+                <div class="sd-item"><div class="sd-num" id="streakDays">0</div><div class="sd-label">连续打卡</div></div>
+                <div class="sd-item"><div class="sd-num" id="totalCheckins">0</div><div class="sd-label">总打卡</div></div>
+            </div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-header"><span>🎯 储蓄目标</span><button class="action-link" onclick="showAddGoalModal()">+ 添加</button></div>
+        <div id="goalList"></div>
+    </div>
+    <div class="card">
+        <div class="card-header"><span>🏆 成就徽章</span></div>
+        <div class="achievement-grid" id="achievementGrid"></div>
+    </div>
+</div>
+
+<!-- 导航栏：首页 + 激励（记账已移除） -->
+<nav class="tab-nav">
+    <button class="tab-item active" data-tab="home" onclick="switchTab('home')"><span class="tab-icon">🏠</span> 首页</button>
+    <button class="tab-item" data-tab="inspire" onclick="switchTab('inspire')"><span class="tab-icon">🌟</span> 激励</button>
+</nav>
+
+<!-- ==================== 模态框 ==================== -->
+
+<!-- 账户余额明细模态框 -->
+<div class="modal-overlay" id="modalAccountDetail">
+    <div class="modal-box">
+        <h3>
+            <span>💳 账户余额明细</span>
+            <button class="action-link" onclick="closeModal('modalAccountDetail');showAddAccountModal();" style="font-size:15px;font-weight:600;">+ 添加</button>
+        </h3>
+        <div id="accountDetailList"></div>
+        <div class="modal-actions">
+            <button class="btn-cancel" onclick="closeModal('modalAccountDetail')">关闭</button>
+        </div>
+    </div>
+</div>
+
+<!-- 本周收入/支出明细弹窗 -->
+<div class="modal-overlay" id="modalWeekDetail">
+    <div class="modal-box">
+        <h3 id="weekDetailTitle">本周收入明细</h3>
+        <div id="weekDetailListModal"></div>
+        <div class="modal-actions">
+            <button class="btn-cancel" onclick="closeModal('modalWeekDetail')">关闭</button>
+        </div>
+    </div>
+</div>
+
+<!-- 记账模态框（从首页"记账"按钮弹出） -->
+<div class="modal-overlay" id="modalJournal">
+    <div class="modal-box">
+        <h3>✏️ 手动记一笔</h3>
+        <form id="journalForm" onsubmit="saveJournalEntry(event)">
+            <div class="form-group">
+                <label>来源账户</label>
+                <select id="journalAccount" required></select>
+            </div>
+            <div class="form-group" id="journalTransferWrap" style="display:none;">
+                <label>转入账户（转账专用）</label>
+                <select id="journalTransferTarget"></select>
+            </div>
+            <div class="form-group">
+                <label>交易类型</label>
+                <div class="radio-group">
+                    <label><input type="radio" name="journalType" value="expense" checked><span>💸支出</span></label>
+                    <label><input type="radio" name="journalType" value="income"><span>💰收入</span></label>
+                    <label><input type="radio" name="journalType" value="transfer"><span>🔄转账</span></label>
+                    <label><input type="radio" name="journalType" value="asset_gain"><span>📈资产增值</span></label>
+                    <label><input type="radio" name="journalType" value="asset_loss"><span>📉资产减值</span></label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>分类</label>
+                <select id="journalCategory" required>
+                    <option value="餐饮">🍜 餐饮</option>
+                    <option value="购物">🛍️ 购物</option>
+                    <option value="交通">🚗 交通</option>
+                    <option value="娱乐">🎮 娱乐</option>
+                    <option value="居住">🏠 居住</option>
+                    <option value="医疗">💊 医疗</option>
+                    <option value="教育">📚 教育</option>
+                    <option value="工资">💼 工资</option>
+                    <option value="奖金">🎯 奖金</option>
+                    <option value="投资">📈 投资</option>
+                    <option value="其他收入">💵 其他收入</option>
+                    <option value="余额调整">⚖️ 余额调整</option>
+                    <option value="账户互转">🔄账户互转</option>
+                    <option value="理财收益">✨理财收益</option>
+                    <option value="理财亏损">📉理财亏损</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>金额 (¥)</label>
+                <input type="number" id="journalAmount" step="0.01" min="0.01" placeholder="0.00" required>
+            </div>
+            <div class="form-group">
+                <label>日期</label>
+                <input type="date" id="journalDate" required>
+            </div>
+            <div class="form-group">
+                <label>备注 (可选)</label>
+                <input type="text" id="journalNote" placeholder="备注信息..." maxlength="30">
+            </div>
+            <button type="submit" class="btn-primary">✅ 保存记录</button>
+        </form>
+        <div style="margin-top:12px;text-align:center;">
+            <button class="btn-cancel" onclick="closeModal('modalJournal')" style="padding:8px 24px;border:none;border-radius:var(--radius-sm);background:var(--bg);color:var(--text);font-size:14px;cursor:pointer;">取消</button>
+        </div>
+    </div>
+</div>
+
+<!-- 添加账户模态框 -->
+<div class="modal-overlay" id="modalAccount">
+    <div class="modal-box">
+        <h3>➕ 添加账户</h3>
+        <div class="text-muted mb-8">快速选择预设账户，也可以自定义填写</div>
+        <div class="preset-account-wrap" id="presetAccountWrap"></div>
+        <div class="form-group">
+            <label>账户名称</label>
+            <input type="text" id="accName" placeholder="如：招商银行" value="">
+        </div>
+        <div class="form-group">
+            <label>图标 (emoji)</label>
+            <input type="text" id="accIcon" placeholder="🏦" value="" maxlength="2">
+        </div>
+        <div class="form-group">
+            <label>初始余额 (¥)</label>
+            <input type="number" id="accBalance" step="0.01" value="0.00">
+        </div>
+        <div class="modal-actions">
+            <button class="btn-cancel" onclick="closeModal('modalAccount')">取消</button>
+            <button class="btn-confirm" onclick="addAccount()">确认添加</button>
+        </div>
+    </div>
+</div>
+
+<!-- 上传余额模态框 -->
+<div class="modal-overlay" id="modalUploadBalance">
+    <div class="modal-box">
+        <h3>📤 上传本周余额</h3>
+        <p style="font-size:14px;color:var(--text-secondary);margin-bottom:12px;">录入每个账户当前真实余额，系统自动计算差额生成余额调整记录，以此核算本周收支。</p>
+        <div id="balanceInputs"></div>
+        <div class="form-group" style="margin-top:8px;">
+            <label>记录日期</label>
+            <input type="date" id="uploadDate" required>
+        </div>
+        <div class="modal-actions">
+            <button class="btn-cancel" onclick="closeModal('modalUploadBalance')">取消</button>
+            <button class="btn-confirm" onclick="submitBalanceUpload()">确认上传</button>
+        </div>
+    </div>
+</div>
+
+<!-- 目标模态框 -->
+<div class="modal-overlay" id="modalGoal">
+    <div class="modal-box">
+        <h3>🎯 添加目标</h3>
+        <div class="form-group">
+            <label>目标名称</label>
+            <input type="text" id="goalName" placeholder="如：旅行基金" value="梦想基金">
+        </div>
+        <div class="form-group">
+            <label>目标金额 (¥)</label>
+            <input type="number" id="goalTarget" step="0.01" value="5000">
+        </div>
+        <div class="form-group">
+            <label>当前已存 (¥)</label>
+            <input type="number" id="goalCurrent" step="0.01" value="0">
+        </div>
+        <div class="modal-actions">
+            <button class="btn-cancel" onclick="closeModal('modalGoal')">取消</button>
+            <button class="btn-confirm" onclick="addGoal()">确认添加</button>
+        </div>
+    </div>
+</div>
+
+<!-- 目标进度模态框 -->
+<div class="modal-overlay" id="modalGoalProgress">
+    <div class="modal-box">
+        <h3>📈 更新进度</h3>
+        <div class="form-group">
+            <label>增加金额 (¥)</label>
+            <input type="number" id="goalProgressAmount" step="0.01" min="0.01" placeholder="输入金额" value="100">
+        </div>
+        <div style="font-size:13px;color:var(--text-secondary);margin-bottom:12px;">当前进度: <span id="goalProgressCurrent">0</span> / <span id="goalProgressTarget">0</span></div>
+        <div class="modal-actions">
+            <button class="btn-cancel" onclick="closeModal('modalGoalProgress')">取消</button>
+            <button class="btn-confirm" onclick="updateGoalProgress()">确认增加</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const PRESET_ACCOUNTS = [
+        {name:"微信钱包",icon:"📱",balance:0},
+        {name:"支付宝",icon:"💳",balance:0},
+        {name:"工资银行卡",icon:"🏦",balance:0},
+        {name:"理财账户",icon:"📈",balance:0},
+        {name:"现金",icon:"💵",balance:0},
+        {name:"信用卡",icon:"💳",balance:0},
+    ];
+    const STORAGE_KEY = 'financeAppData';
+
+    function getDefaultData(){
+        const now=new Date();
+        const today=now.toISOString().slice(0,10);
+        const weekAgo=new Date(now);
+        weekAgo.setDate(weekAgo.getDate()-7);
+        const weekAgoStr=weekAgo.toISOString().slice(0,10);
+        return {
+            accounts:[
+                {id:'acc1',name:'工资银行卡',icon:'🏦',balance:12800},
+                {id:'acc2',name:'支付宝',icon:'💳',balance:6350},
+                {id:'acc3',name:'微信钱包',icon:'📱',balance:2200},
+            ],
+            transactions:[
+                {id:'txn1',accountId:'acc1',type:'expense',category:'餐饮',amount:48,date:today,note:'午餐'},
+                {id:'txn2',accountId:'acc2',type:'expense',category:'购物',amount:199,date:today,note:'日用品'},
+                {id:'txn3',accountId:'acc1',type:'income',category:'工资',amount:8500,date:weekAgoStr,note:'8月工资'},
+                {id:'txn4',accountId:'acc2',type:'expense',category:'交通',amount:32,date:weekAgoStr,note:'地铁卡'},
+                {id:'txn5',accountId:'acc3',type:'expense',category:'餐饮',amount:76,date:weekAgoStr,note:'晚餐'},
+            ],
+            snapshots:[
+                {accountId:'acc1',date:weekAgoStr,balance:12300},
+                {accountId:'acc2',date:weekAgoStr,balance:6100},
+                {accountId:'acc3',date:weekAgoStr,balance:2100},
+            ],
+            goals:[
+                {id:'goal1',name:'旅行基金',target:10000,current:3200},
+                {id:'goal2',name:'换新手机',target:6000,current:1800},
+            ],
+            checkins:[
+                {date:today},
+                {date:new Date(now.getTime()-86400000).toISOString().slice(0,10)},
+                {date:new Date(now.getTime()-86400000*2).toISOString().slice(0,10)},
+                {date:new Date(now.getTime()-86400000*3).toISOString().slice(0,10)},
+                {date:new Date(now.getTime()-86400000*4).toISOString().slice(0,10)},
+                {date:new Date(now.getTime()-86400000*5).toISOString().slice(0,10)},
+            ],
+            achievements:[
+                {id:'first_txn',name:'首次记账',icon:'📝',unlocked:true},
+                {id:'streak_7',name:'连续7天',icon:'🔥',unlocked:false},
+                {id:'streak_30',name:'连续30天',icon:'🌟',unlocked:false},
+                {id:'txn_10',name:'记账达人',icon:'📊',unlocked:false},
+                {id:'goal_done',name:'储蓄先锋',icon:'🏅',unlocked:false},
+                {id:'wealthy',name:'万元户',icon:'💰',unlocked:false},
+                {id:'snapshot_4',name:'周周坚持',icon:'📆',unlocked:false},
+            ]
+        };
+    }
+    let data=null;
+    function loadData(){
+        const raw=localStorage.getItem(STORAGE_KEY);
+        if(raw){
+            try{
+                data=JSON.parse(raw);
+                if(!data.snapshots) data.snapshots=[];
+                if(!data.achievements) data.achievements=getDefaultData().achievements;
+                if(!data.checkins) data.checkins=[];
+                if(!data.goals) data.goals=[];
+                if(!data.transactions) data.transactions=[];
+                if(!data.accounts) data.accounts=[];
+                data.transactions.forEach(t=>{if(!t.id) t.id='txn_'+Date.now()+Math.random().toString(36).slice(2,6);});
+                data.accounts.forEach(a=>{if(!a.id) a.id='acc_'+Date.now()+Math.random().toString(36).slice(2,6);});
+                data.goals.forEach(g=>{if(!g.id) g.id='goal_'+Date.now()+Math.random().toString(36).slice(2,6);});
+                return;
+            }catch(e){}
+        }
+        data=getDefaultData();
+        saveData();
+    }
+    function saveData(){
+        localStorage.setItem(STORAGE_KEY,JSON.stringify(data));
+    }
+    function resetAllData(){
+        if(confirm('确定重置所有数据吗？此操作不可撤销！')){
+            data=getDefaultData();
+            saveData();
+            renderAll();
+            showToast('已重置数据');
+        }
+    }
+    function genId(){
+        return Date.now().toString(36)+Math.random().toString(36).slice(2,8);
+    }
+    function formatMoney(v){
+        return '¥'+v.toFixed(2);
+    }
+    function parseDate(d){
+        const parts=d.split('-');
+        return new Date(parseInt(parts[0]),parseInt(parts[1])-1,parseInt(parts[2]));
+    }
+    function getTodayStr(){
+        return new Date().toISOString().slice(0,10);
+    }
+    function getWeekStart(dateStr){
+        const d=parseDate(dateStr);
+        const day=d.getDay()||7;
+        const diff=(day-1)*86400000;
+        const monday=new Date(d.getTime()-diff);
+        monday.setHours(0,0,0,0);
+        return monday.toISOString().slice(0,10);
+    }
+    function getAccountBalance(accId){
+        const acc=data.accounts.find(a=>a.id===accId);
+        if(!acc) return 0;
+        const txnTotal=data.transactions.filter(t=>t.accountId===accId).reduce((sum,t)=>{
+            if(t.type==='income'||t.type==='asset_gain') return sum+t.amount;
+            if(t.type==='expense'||t.type==='asset_loss') return sum-t.amount;
+            if(t.type==='transfer'){
+                if(t.transferTargetId) return sum-t.amount;
+                else return sum+t.amount;
+            }
+            return sum;
+        },0);
+        return acc.balance+txnTotal;
+    }
+    let toastTimer=null;
+    function showToast(msg){
+        const el=document.getElementById('toast');
+        el.textContent=msg;
+        el.classList.add('show');
+        clearTimeout(toastTimer);
+        toastTimer=setTimeout(()=>{el.classList.remove('show');},2000);
+    }
+    function openModal(id){document.getElementById(id).classList.add('show');}
+    function closeModal(id){document.getElementById(id).classList.remove('show');}
+    document.querySelectorAll('.modal-overlay').forEach(el=>{
+        el.addEventListener('click',function(e){if(e.target===this) this.classList.remove('show');});
+    });
+    let currentTab='home';
+    function switchTab(tab){
+        currentTab=tab;
+        document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+        document.getElementById('page-'+tab).classList.add('active');
+        document.querySelectorAll('.tab-item').forEach(t=>t.classList.remove('active'));
+        document.querySelector(`.tab-item[data-tab="${tab}"]`).classList.add('active');
+        renderAll();
+    }
+
+    // ========== 账户明细弹窗 ==========
+    function showAccountDetail(){
+        const container=document.getElementById('accountDetailList');
+        const total=data.accounts.reduce((sum,acc)=>sum+getAccountBalance(acc.id),0);
+        if(data.accounts.length===0){
+            container.innerHTML='<div class="account-detail-empty">📭 暂无账户，请点击右上角「+ 添加」</div>';
+        }else{
+            let html='';
+            data.accounts.forEach(acc=>{
+                const bal=getAccountBalance(acc.id);
+                const pct=total>0?(bal/total*100):0;
+                html+=`
+                    <div class="account-detail-item account-detail-clickable" onclick="updateAccountBalance('${acc.id}')">
+                        <div class="left-info">
+                            <span class="icon">${acc.icon||'🏦'}</span>
+                            <span class="name">${acc.name}</span>
+                        </div>
+                        <div class="right-info">
+                            <div class="bal">${formatMoney(bal)}</div>
+                            <div class="pct">占比 ${pct.toFixed(1)}%</div>
+                            <span class="edit-icon">✎</span>
+                        </div>
+                    </div>
+                `;
+            });
+            html+=`
+                <div class="account-detail-total">
+                    <span>📊 合计</span>
+                    <span>${formatMoney(total)}</span>
+                </div>
+            `;
+            container.innerHTML=html;
+        }
+        openModal('modalAccountDetail');
+    }
+
+    function updateAccountBalance(accId){
+        const acc=data.accounts.find(a=>a.id===accId);
+        if(!acc) return;
+        const current=getAccountBalance(accId);
+        const newBalance = prompt(`更新「${acc.name}」的余额\n当前余额：${current.toFixed(2)}\n请输入新的余额：`, current.toFixed(2));
+        if(newBalance===null) return;
+        const newVal=parseFloat(newBalance);
+        if(isNaN(newVal)||newVal<0){
+            showToast('请输入有效金额');
+            return;
+        }
+        const diff = newVal - current;
+        if(Math.abs(diff)<0.001){
+            showToast('余额无变化');
+            return;
+        }
+        const adjType = diff>0?'income':'expense';
+        data.transactions.push({
+            id:genId(),
+            accountId:accId,
+            type:adjType,
+            category:'余额调整',
+            amount:Math.abs(diff),
+            date:getTodayStr(),
+            note:'手动更新余额'
+        });
+        saveData();
+        if(document.getElementById('modalAccountDetail').classList.contains('show')){
+            showAccountDetail();
+        }
+        renderAll();
+        showToast(`已更新 ${acc.name} 余额为 ${formatMoney(newVal)}`);
+    }
+
+    // ========== 本周收入/支出明细 ==========
+    function showWeekDetail(type){
+        const today=getTodayStr();
+        const weekStart=getWeekStart(today);
+        const weekTxns=data.transactions.filter(t=>t.date>=weekStart&&t.date<=today);
+        let filtered = weekTxns.filter(t=>t.type===type);
+        if(type==='income') filtered = weekTxns.filter(t=>t.type==='income'||t.type==='asset_gain');
+        else if(type==='expense') filtered = weekTxns.filter(t=>t.type==='expense'||t.type==='asset_loss');
+        const title = type==='income' ? '本周收入明细' : '本周支出明细';
+        document.getElementById('weekDetailTitle').textContent = title;
+        const container=document.getElementById('weekDetailListModal');
+        if(filtered.length===0){
+            container.innerHTML='<div class="text-muted text-center" style="padding:16px 0;">本周暂无此类记录</div>';
+        }else{
+            let html='';
+            filtered.sort((a,b)=>b.date.localeCompare(a.date)||b.id.localeCompare(a.id));
+            filtered.forEach(t=>{
+                const acc=data.accounts.find(a=>a.id===t.accountId);
+                const accName=acc?acc.name:'未知';
+                const amtClass = (t.type==='income'||t.type==='asset_gain')?'income':'expense';
+                const sign = (t.type==='income'||t.type==='asset_gain')?'+':'-';
+                html+=`
+                    <div class="txn-detail-item">
+                        <div>
+                            <span>${t.category||'📦'}</span>
+                            <span class="cat">${accName}</span>
+                            ${t.note?`<span class="note">${t.note}</span>`:''}
+                            <span style="font-size:12px;color:var(--text-secondary);margin-left:8px;">${t.date}</span>
+                        </div>
+                        <span class="amt ${amtClass}">${sign}${t.amount.toFixed(2)}</span>
+                    </div>
+                `;
+            });
+            container.innerHTML=html;
+        }
+        openModal('modalWeekDetail');
+    }
+
+    // ========== 记账模态框 ==========
+    function openJournalModal(){
+        // 填充账户下拉
+        populateJournalAccounts();
+        document.getElementById('journalDate').value = getTodayStr();
+        // 重置表单
+        document.getElementById('journalForm').reset();
+        document.querySelector('input[name="journalType"][value="expense"]').checked = true;
+        document.getElementById('journalTransferWrap').style.display = 'none';
+        openModal('modalJournal');
+    }
+
+    function populateJournalAccounts(){
+        const sel=document.getElementById('journalAccount');
+        const targetSel=document.getElementById('journalTransferTarget');
+        sel.innerHTML=data.accounts.map(a=>{
+            const bal=getAccountBalance(a.id);
+            return `<option value="${a.id}">${a.icon||'🏦'} ${a.name} (${formatMoney(bal)})</option>`;
+        }).join('');
+        targetSel.innerHTML=data.accounts.map(a=>`<option value="${a.id}">${a.icon||'🏦'} ${a.name}</option>`).join('');
+        if(data.accounts.length===0){
+            sel.innerHTML='<option value="">请先添加账户</option>';
+            targetSel.innerHTML='';
+        }
+    }
+
+    // 监听记账模态框中的类型切换
+    document.querySelectorAll('input[name="journalType"]').forEach(radio=>{
+        radio.addEventListener('change',function(){
+            const wrap=document.getElementById('journalTransferWrap');
+            const val=document.querySelector('input[name="journalType"]:checked').value;
+            wrap.style.display=val==='transfer'?'block':'none';
+        });
+    });
+
+    function saveJournalEntry(e){
+        e.preventDefault();
+        const accId=document.getElementById('journalAccount').value;
+        const type=document.querySelector('input[name="journalType"]:checked').value;
+        const cat=document.getElementById('journalCategory').value;
+        const amt=parseFloat(document.getElementById('journalAmount').value);
+        const dt=document.getElementById('journalDate').value;
+        const note=document.getElementById('journalNote').value.trim();
+        if(!accId||!dt||isNaN(amt)||amt<=0){showToast('请完善表单');return;}
+        if(type==='transfer'){
+            const targetId=document.getElementById('journalTransferTarget').value;
+            if(targetId===accId){showToast('转出和转入账户不能相同');return;}
+            data.transactions.push({id:genId(),accountId:accId,type:'transfer',transferTargetId:targetId,category:'账户互转',amount:amt,date:dt,note:note||'账户转账'});
+            data.transactions.push({id:genId(),accountId:targetId,type:'transfer',transferTargetId:accId,category:'账户互转',amount:amt,date:dt,note:note||'账户转账'});
+        }else{
+            data.transactions.push({id:genId(),accountId:accId,type:type,category:cat,amount:amt,date:dt,note:note});
+        }
+        saveData();
+        closeModal('modalJournal');
+        renderAll();
+        showToast('记录已保存');
+        // 检查成就
+        checkAchievements();
+    }
+
+    // ========== 删除交易 ==========
+    function deleteTransaction(tid){
+        if(!confirm('确定删除此记录？')) return;
+        data.transactions=data.transactions.filter(t=>t.id!==tid);
+        saveData();renderAll();showToast('已删除记录');
+    }
+
+    // ========== 首页交易记录（下拉筛选） ==========
+    function renderHomeTxnList(){
+        const container=document.getElementById('homeTxnList');
+        const filter=document.getElementById('homeTxnFilter').value;
+        let filtered=[...data.transactions];
+        if(filter==='expense') filtered=filtered.filter(t=>t.type==='expense'||t.type==='asset_loss');
+        else if(filter==='income') filtered=filtered.filter(t=>t.type==='income'||t.type==='asset_gain');
+        else if(filter==='transfer') filtered=filtered.filter(t=>t.type==='transfer');
+        else if(filter==='adjustment') filtered=filtered.filter(t=>t.category==='余额调整');
+        filtered.sort((a,b)=>b.date.localeCompare(a.date)||b.id.localeCompare(a.id));
+        if(filtered.length===0){
+            container.innerHTML=`<div class="empty-tip">📭 暂无交易记录</div>`;
+            return;
+        }
+        container.innerHTML=filtered.map(t=>{
+            const acc=data.accounts.find(a=>a.id===t.accountId);
+            const accName=acc?acc.name:'已删除';
+            let sign='',cls='';
+            if(t.type==='expense'||t.type==='asset_loss'){sign='-';cls='expense';}
+            else if(t.type==='income'||t.type==='asset_gain'){sign='+';cls='income';}
+            else if(t.type==='transfer'){sign='';cls='transfer';}
+            else {cls='adjustment';}
+            return `<div class="recent-item">
+    <div class="left"><span>${t.category||'📦'}</span><span class="category">${accName}</span>${t.note?`<span class="note">${t.note}</span>`:''}</div>
+    <div style="display:flex;align-items:center;gap:6px;"><span class="date">${t.date}</span><span class="amount ${cls}">${sign}${t.amount.toFixed(2)}</span><button class="del-txn" onclick="deleteTransaction('${t.id}')">✕</button></div>
+    </div>`;
+        }).join('');
+    }
+    document.getElementById('homeTxnFilter').addEventListener('change', renderHomeTxnList);
+
+    // ========== 首页近四周对比 ==========
+    function renderHomeWeekChart(){
+        const container=document.getElementById('homeWeekChart');
+        const todayDate=parseDate(getTodayStr());
+        const weeks=[];
+        for(let i=0;i<4;i++){
+            const d=new Date(todayDate);
+            d.setDate(d.getDate()-i*7);
+            const monday=getWeekStart(d.toISOString().slice(0,10));
+            const mondayDate=parseDate(monday);
+            const sunday=new Date(mondayDate);
+            sunday.setDate(sunday.getDate()+6);
+            const endStr=sunday.toISOString().slice(0,10);
+            const weekTxns=data.transactions.filter(t=>t.date>=monday&&t.date<=endStr);
+            const income=weekTxns.filter(t=>t.type==='income'||t.type==='asset_gain').reduce((s,t)=>s+t.amount,0);
+            const expense=weekTxns.filter(t=>t.type==='expense'||t.type==='asset_loss').reduce((s,t)=>s+t.amount,0);
+            weeks.push({
+                label:'第'+(getWeekNumber(mondayDate).week)+'周',
+                balance:income-expense,
+                monday:monday
+            });
+        }
+        const maxVal=Math.max(...weeks.map(w=>Math.abs(w.balance)),1);
+        container.innerHTML=weeks.map(w=>{
+            const pct=Math.abs(w.balance)/maxVal*100;
+            const isNeg=w.balance<0;
+            const cls=isNeg?'negative':'';
+            const sign=w.balance>=0?'+':'';
+            return `<div class="bar-row">
+                <span class="bar-label">${w.label}</span>
+                <div class="bar-track"><div class="bar-fill ${cls}" style="width:${Math.max(pct,2)}%;"></div></div>
+                <span class="bar-value">${sign}${w.balance.toFixed(2)}</span>
+            </div>`;
+        }).join('');
+    }
+    function getWeekNumber(date){
+        const d=new Date(date);
+        d.setHours(0,0,0,0);
+        const day=d.getDay()||7;
+        const diff=(day-1)*86400000;
+        const monday=new Date(d.getTime()-diff);
+        monday.setHours(0,0,0,0);
+        const startOfYear=new Date(monday.getFullYear(),0,1);
+        const days=Math.floor((monday-startOfYear)/86400000);
+        return {week:Math.ceil((days+startOfYear.getDay()+1)/7)};
+    }
+
+    function renderAssetSummary(){
+        const total=data.accounts.reduce((sum,acc)=>sum+getAccountBalance(acc.id),0);
+        document.getElementById('totalAsset').textContent=formatMoney(total);
+        const today=getTodayStr();
+        const weekStart=getWeekStart(today);
+        const weekTxns=data.transactions.filter(t=>t.date>=weekStart&&t.date<=today);
+        const weekIncome=weekTxns.filter(t=>t.type==='income'||t.type==='asset_gain').reduce((s,t)=>s+t.amount,0);
+        const weekExpense=weekTxns.filter(t=>t.type==='expense'||t.type==='asset_loss').reduce((s,t)=>s+t.amount,0);
+        const balance=weekIncome-weekExpense;
+        document.getElementById('weekIncome').textContent='+¥'+weekIncome.toFixed(2);
+        document.getElementById('weekExpense').textContent='-¥'+weekExpense.toFixed(2);
+        const balEl=document.getElementById('weekBalance');
+        balEl.textContent=(balance>=0?'+':'')+'¥'+balance.toFixed(2);
+        balEl.className='value '+(balance>=0?'positive':'negative');
+    }
+
+    // ========== 预设账户 ==========
+    function renderPresetAccountModal(){
+        const wrap=document.getElementById('presetAccountWrap');
+        wrap.innerHTML=PRESET_ACCOUNTS.map(p=>`<div class="preset-acc-item" onclick="fillPresetAccount('${p.name}','${p.icon}')">${p.icon} ${p.name}</div>`).join('');
+    }
+    function fillPresetAccount(name,icon){
+        document.getElementById('accName').value=name;
+        document.getElementById('accIcon').value=icon;
+    }
+    function showAddAccountModal(){
+        document.getElementById('accName').value='';
+        document.getElementById('accIcon').value='';
+        document.getElementById('accBalance').value='0.00';
+        openModal('modalAccount');
+    }
+    function addAccount(){
+        const name=document.getElementById('accName').value.trim();
+        const icon=document.getElementById('accIcon').value.trim()||'🏦';
+        const bal=parseFloat(document.getElementById('accBalance').value)||0;
+        if(!name){showToast('请填写账户名称');return;}
+        data.accounts.push({id:genId(),name:name,icon:icon,balance:bal});
+        saveData();
+        closeModal('modalAccount');
+        renderAll();
+        if(document.getElementById('modalAccountDetail').classList.contains('show')){
+            showAccountDetail();
+        }
+        showToast('账户已添加');
+    }
+
+    // ========== 上传余额（保留） ==========
+    function openUploadBalanceModal(){
+        if(data.accounts.length===0){showToast('请先添加账户');return;}
+        const wrap=document.getElementById('balanceInputs');
+        wrap.innerHTML=data.accounts.map(acc=>{
+            const curr=getAccountBalance(acc.id);
+            return `<div class="balance-input-group"><span class="acc-label">${acc.name}</span><input type="number" step="0.01" id="bal_${acc.id}" value="${curr.toFixed(2)}" placeholder="输入真实余额"></div>`;
+        }).join('');
+        document.getElementById('uploadDate').value=getTodayStr();
+        openModal('modalUploadBalance');
+    }
+    function submitBalanceUpload(){
+        const uploadDt=document.getElementById('uploadDate').value;
+        if(!uploadDt){showToast('请选择日期');return;}
+        data.accounts.forEach(acc=>{
+            const inp=document.getElementById(`bal_${acc.id}`);
+            const realBal=parseFloat(inp.value)||0;
+            const calcBal=getAccountBalance(acc.id);
+            const diff=realBal-calcBal;
+            data.snapshots.push({accountId:acc.id,date:uploadDt,balance:realBal});
+            if(Math.abs(diff)>0.001){
+                const adjType=diff>0?'income':'expense';
+                data.transactions.push({
+                    id:genId(),
+                    accountId:acc.id,
+                    type:adjType,
+                    category:'余额调整',
+                    amount:Math.abs(diff),
+                    date:uploadDt,
+                    note:'周报上传余额自动调整'
+                });
+            }
+        });
+        saveData();
+        closeModal('modalUploadBalance');
+        renderAll();
+        showToast('已保存本周余额快照，自动生成调整记录');
+    }
+
+    // ========== 打卡 ==========
+    function renderCheckin(){
+        const today=getTodayStr();
+        const done=data.checkins.some(c=>c.date===today);
+        const btn=document.getElementById('checkinBtn');
+        const statusText=document.getElementById('checkinStatus');
+        const icon=document.getElementById('checkinIcon');
+        if(done){
+            statusText.textContent='今日已打卡';
+            icon.textContent='✅';
+            btn.textContent='已打卡';
+            btn.disabled=true;
+            btn.classList.add('done');
+        }else{
+            statusText.textContent='今日未打卡';
+            icon.textContent='🌱';
+            btn.textContent='✅ 打卡';
+            btn.disabled=false;
+            btn.classList.remove('done');
+        }
+        let streak=0;
+        let ptr=new Date();
+        while(true){
+            const dStr=ptr.toISOString().slice(0,10);
+            if(data.checkins.some(c=>c.date===dStr)){
+                streak++;
+                ptr.setDate(ptr.getDate()-1);
+            }else{break;}
+        }
+        document.getElementById('streakDays').textContent=streak;
+        document.getElementById('totalCheckins').textContent=data.checkins.length;
+    }
+    function handleCheckin(){
+        const today=getTodayStr();
+        if(data.checkins.some(c=>c.date===today)){showToast('今天已经打过卡');return;}
+        data.checkins.push({date:today});
+        saveData();renderAll();showToast('打卡成功！继续坚持记录资产');
+    }
+
+    // ========== 目标 ==========
+    let currentGoalId=null;
+    function showAddGoalModal(){
+        document.getElementById('goalName').value='梦想基金';
+        document.getElementById('goalTarget').value='5000';
+        document.getElementById('goalCurrent').value='0';
+        openModal('modalGoal');
+    }
+    function addGoal(){
+        const name=document.getElementById('goalName').value.trim();
+        const target=parseFloat(document.getElementById('goalTarget').value);
+        const curr=parseFloat(document.getElementById('goalCurrent').value);
+        if(!name||isNaN(target)||target<=0){showToast('请填写合法目标');return;}
+        data.goals.push({id:genId(),name:name,target:target,current:curr||0});
+        saveData();closeModal('modalGoal');renderAll();showToast('目标已添加');
+    }
+    function renderGoals(){
+        const wrap=document.getElementById('goalList');
+        if(data.goals.length===0){
+            wrap.innerHTML=`<div class="text-center text-muted" style="padding:14px 0;">暂无储蓄目标，点击上方添加</div>`;
+            return;
+        }
+        wrap.innerHTML=data.goals.map(g=>{
+            const pct=Math.min(100,Math.max(0,(g.current/g.target)*100));
+            return `<div class="goal-item">
+    <div class="goal-header"><div class="goal-name">${g.name}</div><div class="goal-progress-text">${formatMoney(g.current)} / ${formatMoney(g.target)}</div></div>
+    <div class="goal-track"><div class="goal-fill" style="width:${pct}%"></div></div>
+    <div class="goal-actions">
+    <button onclick="openGoalProgress('${g.id}')">增加存款</button>
+    <button onclick="deleteGoal('${g.id}')">删除</button>
+    </div>
+    </div>`;
+        }).join('');
+    }
+    function openGoalProgress(gid){
+        const g=data.goals.find(x=>x.id===gid);
+        if(!g)return;
+        currentGoalId=gid;
+        document.getElementById('goalProgressAmount').value='100';
+        document.getElementById('goalProgressCurrent').textContent=formatMoney(g.current);
+        document.getElementById('goalProgressTarget').textContent=formatMoney(g.target);
+        openModal('modalGoalProgress');
+    }
+    function updateGoalProgress(){
+        const g=data.goals.find(x=>x.id===currentGoalId);
+        if(!g)return;
+        const add=parseFloat(document.getElementById('goalProgressAmount').value);
+        if(isNaN(add)||add<=0){showToast('请输入有效金额');return;}
+        g.current+=add;
+        saveData();closeModal('modalGoalProgress');renderAll();showToast('已更新储蓄进度');
+    }
+    function deleteGoal(gid){
+        if(!confirm('确定删除该储蓄目标？')) return;
+        data.goals=data.goals.filter(g=>g.id!==gid);
+        saveData();renderAll();
+    }
+
+    // ========== 成就 ==========
+    function renderAchievements(){
+        const wrap=document.getElementById('achievementGrid');
+        wrap.innerHTML=data.achievements.map(a=>{
+            return `<div class="achievement-item ${a.unlocked?'unlocked':'locked'}"><div class="ach-icon">${a.icon}</div><div class="ach-name">${a.name}</div></div>`;
+        }).join('');
+    }
+    function checkAchievements(){
+        const ach=data.achievements;
+        if(data.transactions.length>0) unlockAchievement('first_txn');
+        if(calcStreak()>=7) unlockAchievement('streak_7');
+        if(calcStreak()>=30) unlockAchievement('streak_30');
+        if(data.transactions.length>=10) unlockAchievement('txn_10');
+        if(data.goals.some(g=>g.current>=g.target)) unlockAchievement('goal_done');
+        const total=data.accounts.reduce((sum,acc)=>sum+getAccountBalance(acc.id),0);
+        if(total>=10000) unlockAchievement('wealthy');
+        const weeks=new Set(data.snapshots.map(s=>getWeekStart(s.date)));
+        if(weeks.size>=4) unlockAchievement('snapshot_4');
+        saveData();
+        renderAchievements();
+    }
+    function unlockAchievement(id){
+        const a=data.achievements.find(x=>x.id===id);
+        if(a&&!a.unlocked){
+            a.unlocked=true;
+            showToast('🏆 解锁成就: '+a.name);
+        }
+    }
+    function calcStreak(){
+        const sorted=[...data.checkins].map(c=>c.date).sort();
+        if(sorted.length===0) return 0;
+        let streak=0;
+        const today=getTodayStr();
+        let checkDate=parseDate(today);
+        while(true){
+            const dStr=checkDate.toISOString().slice(0,10);
+            if(data.checkins.some(c=>c.date===dStr)){
+                streak++;
+                checkDate.setDate(checkDate.getDate()-1);
+            }else{break;}
+        }
+        return streak;
+    }
+
+    // ========== 渲染主函数 ==========
+    function renderAll(){
+        renderPresetAccountModal();
+        renderAssetSummary();
+        renderHomeWeekChart();
+        renderHomeTxnList();
+        renderCheckin();
+        renderGoals();
+        renderAchievements();
+        if(document.getElementById('modalAccountDetail').classList.contains('show')){
+            showAccountDetail();
+        }
+    }
+
+    window.onload=function(){
+        loadData();
+        renderAll();
+        // 上传余额功能仍然可用（保留入口，可通过控制台调用 openUploadBalanceModal()）
+        console.log('💡 提示：可通过 openUploadBalanceModal() 上传余额');
+    };
+</script>
+</body>
+</html>
