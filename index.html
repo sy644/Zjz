@@ -186,8 +186,8 @@
         .achievement-item .ach-icon{font-size:30px;display:block;margin-bottom:4px;}
         .achievement-item .ach-name{font-size:12px;font-weight:500;color:var(--text-muted);}
         .achievement-item.unlocked .ach-name{color:var(--text-primary);}
-        .plant-card .plant-canvas-wrap{display:flex;justify-content:center;align-items:center;padding:4px 0;position:relative;}
-        .plant-card .plant-canvas-wrap canvas{width:160px;height:160px;display:block;}
+        .plant-card .plant-canvas-wrap{display:flex;justify-content:center;align-items:center;padding:2px 0;position:relative;width:100%;}
+        .plant-card .plant-canvas-wrap canvas{width:100%;height:auto;max-width:320px;aspect-ratio:1/1;display:block;}
         .plant-card .plant-stats{display:flex;justify-content:center;gap:24px;margin:6px 0 10px 0;}
         .plant-card .plant-stats .stat-item{text-align:center;}
         .plant-card .plant-stats .stat-item .stat-num{font-size:22px;font-weight:700;color:var(--text-primary);}
@@ -209,7 +209,8 @@
         .plant-progress .plant-progress-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--green),var(--blue));transition:width 0.6s ease;}
         .no-account-tip{text-align:center;padding:20px 0;color:var(--text-muted);}
         .no-account-tip button{background:var(--blue);color:#fff;border:none;border-radius:30px;padding:10px 24px;font-size:14px;font-weight:600;cursor:pointer;margin-top:8px;box-shadow:0 4px 12px rgba(74,124,247,0.2);}
-        @media (max-width:420px){body{padding:0 12px 80px 12px;} .card-main .card-number{font-size:34px;} .card-main .card-number .currency{font-size:22px;} .card-secondary .goal-row .mini-circle{width:70px;height:70px;} .journal-form .form-group.amount-field input{font-size:20px;} .plant-card .plant-canvas-wrap canvas{width:130px;height:130px;} .plant-card .plant-stats .stat-item .stat-num{font-size:18px;}}
+        .growth-badge{display:inline-block;padding:2px 14px;border-radius:20px;font-size:12px;font-weight:600;color:#fff;}
+        @media (max-width:420px){body{padding:0 12px 80px 12px;} .card-main .card-number{font-size:34px;} .card-main .card-number .currency{font-size:22px;} .card-secondary .goal-row .mini-circle{width:70px;height:70px;} .journal-form .form-group.amount-field input{font-size:20px;} .plant-card .plant-canvas-wrap canvas{max-width:280px;}}
         @media (min-width:600px){body{padding:0 24px 90px 24px;} .tab-nav{border-radius:32px 32px 0 0;}}
     </style>
 </head>
@@ -285,10 +286,10 @@
     <div class="card-secondary plant-card">
         <div class="sec-header">
             <span class="sec-title">🌱 树苗成长</span>
-            <span class="sec-action" id="plantStageLabel">种子</span>
+            <span class="sec-action" id="plantStageLabel" style="font-weight:600;color:var(--blue);">种子</span>
         </div>
         <div class="plant-canvas-wrap">
-            <canvas id="plantCanvas" width="320" height="320"></canvas>
+            <canvas id="plantCanvas" width="640" height="640"></canvas>
         </div>
         <div class="plant-stats">
             <div class="stat-item"><div class="stat-num green" id="todayWaterCount">0</div><div class="stat-label">今日浇水</div></div>
@@ -460,89 +461,110 @@
     let animFrameId = null;
     let animTime = 0;
 
-    const PLANT_STAGES = [
-        { name: '种子', min: 0, max: 0 },
-        { name: '发芽', min: 1, max: 2 },
-        { name: '小苗', min: 3, max: 5 },
-        { name: '树苗', min: 6, max: 10 },
-        { name: '小树', min: 11, max: 20 },
-        { name: '大树', min: 21, max: 40 },
-        { name: '开花', min: 41, max: 60 },
-        { name: '结果', min: 61, max: Infinity }
+    // 成长体系阶段（丰富版）
+    const GROWTH_STAGES = [
+        { name: '种子', min: 0, max: 0, label: '🌰 种子', color: '#8D6E63' },
+        { name: '发芽', min: 1, max: 2, label: '🌱 发芽', color: '#66BB6A' },
+        { name: '小苗', min: 3, max: 5, label: '🌿 小苗', color: '#4CAF50' },
+        { name: '树苗', min: 6, max: 10, label: '🌳 树苗', color: '#388E3C' },
+        { name: '小树', min: 11, max: 20, label: '🌲 小树', color: '#2E7D32' },
+        { name: '大树', min: 21, max: 40, label: '🌳 大树', color: '#1B5E20' },
+        { name: '花园', min: 41, max: 60, label: '🌸 花园', color: '#E91E63' },
+        { name: '果园', min: 61, max: 80, label: '🍎 果园', color: '#F57C00' },
+        { name: '庄园', min: 81, max: Infinity, label: '🏡 庄园', color: '#4A148C' }
     ];
 
-    function getPlantStage(totalDays){
-        for(let s of PLANT_STAGES){
+    function getGrowthStage(totalDays){
+        for(let s of GROWTH_STAGES){
             if(totalDays >= s.min && totalDays <= s.max) return s;
         }
-        return PLANT_STAGES[0];
+        return GROWTH_STAGES[0];
     }
 
-    // ===== 核心绘制函数（含云朵，降低动画速度） =====
+    // ===== 核心绘制函数（丰富版：小草、鲜花、小鸟、蝴蝶、青蛙、人物、房屋） =====
     function drawPlant(ctx, w, h, totalDays, time){
         ctx.clearRect(0, 0, w, h);
-        const progress = Math.min(1, totalDays / 70);
-        const groundY = h - 40;
+        const progress = Math.min(1, totalDays / 80);
+        const groundY = h - 60;
 
         // ---- 天空色 ----
         const skyGrad = ctx.createLinearGradient(0,0,0,groundY);
         skyGrad.addColorStop(0,'#b3d9ff');
-        skyGrad.addColorStop(1,'#d4eaff');
+        skyGrad.addColorStop(0.7,'#d4eaff');
+        skyGrad.addColorStop(1,'#e8f5e9');
         ctx.fillStyle = skyGrad;
         ctx.fillRect(0,0,w,groundY);
 
         // ---- 云朵（慢速飘动） ----
         const clouds = [
-            { x: 10, y: 20, w: 50, h: 18, speed: 0.02 },
-            { x: 100, y: 10, w: 60, h: 22, speed: 0.015 },
-            { x: 200, y: 30, w: 45, h: 16, speed: 0.025 }
+            { x: 30, y: 30, w: 70, h: 24, speed: 0.015 },
+            { x: 160, y: 15, w: 80, h: 28, speed: 0.01 },
+            { x: 310, y: 40, w: 60, h: 20, speed: 0.02 }
         ];
         clouds.forEach(c => {
-            const offsetX = Math.sin(time * c.speed + c.x) * 20;
+            const offsetX = Math.sin(time * c.speed + c.x * 0.01) * 30;
             const cx = c.x + offsetX;
             ctx.fillStyle = 'rgba(255,255,255,0.85)';
             ctx.beginPath();
             ctx.ellipse(cx, c.y, c.w/2, c.h/2, 0, 0, Math.PI*2);
             ctx.fill();
             ctx.beginPath();
-            ctx.ellipse(cx - c.w*0.25, c.y + 4, c.w*0.3, c.h*0.5, 0, 0, Math.PI*2);
+            ctx.ellipse(cx - c.w*0.25, c.y + 5, c.w*0.3, c.h*0.5, 0, 0, Math.PI*2);
             ctx.fill();
             ctx.beginPath();
-            ctx.ellipse(cx + c.w*0.25, c.y + 3, c.w*0.3, c.h*0.5, 0, 0, Math.PI*2);
+            ctx.ellipse(cx + c.w*0.25, c.y + 4, c.w*0.3, c.h*0.5, 0, 0, Math.PI*2);
             ctx.fill();
         });
 
+        // ---- 远山 ----
+        if(totalDays >= 5){
+            ctx.fillStyle = 'rgba(100,150,100,0.15)';
+            ctx.beginPath();
+            ctx.moveTo(0, groundY-30);
+            ctx.quadraticCurveTo(80, groundY-100, 160, groundY-40);
+            ctx.quadraticCurveTo(240, groundY-120, 320, groundY-50);
+            ctx.quadraticCurveTo(400, groundY-90, w, groundY-30);
+            ctx.lineTo(w, groundY);
+            ctx.lineTo(0, groundY);
+            ctx.fill();
+        }
+
         // ---- 草地 ----
-        ctx.fillStyle = '#8B6B4A';
-        ctx.fillRect(0, groundY, w, 40);
-        const grassCount = 10 + totalDays * 0.5;
-        for(let i=0; i<grassCount; i++){
-            const gx = (i / grassCount) * w + Math.sin(i * 1.7 + time * 0.15) * 6; // 减慢摆动
-            const gy = groundY - 2 - Math.random() * 8 - Math.sin(i * 2.1 + time * 0.2) * 3;
+        ctx.fillStyle = '#7CB342';
+        ctx.fillRect(0, groundY, w, 60);
+        ctx.fillStyle = '#8BC34A';
+        ctx.fillRect(0, groundY+8, w, 52);
+
+        // ---- 小草（随风摆动） ----
+        const grassCount = 15 + totalDays * 0.6;
+        for(let i=0; i<Math.min(grassCount, 60); i++){
+            const gx = (i / Math.min(grassCount, 60)) * w + Math.sin(i * 1.7 + time * 0.12) * 8;
+            const gy = groundY - 2 - Math.random() * 14 - Math.sin(i * 2.1 + time * 0.15) * 4;
+            const len = 8 + Math.random() * 12 + Math.min(totalDays * 0.05, 8);
             ctx.strokeStyle = i%3===0 ? '#66BB6A' : '#81C784';
-            ctx.lineWidth = 1.2;
+            ctx.lineWidth = 1.5;
             ctx.beginPath();
             ctx.moveTo(gx, groundY+2);
-            ctx.quadraticCurveTo(gx-4 + Math.sin(i+time*0.2)*2, gy, gx-2, groundY);
+            ctx.quadraticCurveTo(gx-4 + Math.sin(i+time*0.15)*3, gy, gx-2, groundY-2);
             ctx.stroke();
             ctx.beginPath();
             ctx.moveTo(gx+2, groundY+2);
-            ctx.quadraticCurveTo(gx+6 + Math.cos(i+time*0.2)*2, gy+3, gx+4, groundY);
+            ctx.quadraticCurveTo(gx+6 + Math.cos(i+time*0.12)*3, gy+3, gx+4, groundY-2);
             ctx.stroke();
         }
 
         // ---- 小花（3天以上） ----
         if(totalDays >= 3){
-            const flowerCount = Math.min(3 + Math.floor((totalDays-3)/3), 15);
+            const flowerCount = Math.min(4 + Math.floor((totalDays-3)/2.5), 25);
             for(let i=0; i<flowerCount; i++){
-                const fx = 15 + (i / flowerCount) * (w-30) + Math.sin(i*2.3 + time*0.1) * 8;
-                const fy = groundY - 5 - Math.random() * 12 - Math.sin(i*1.1 + time*0.2) * 4;
-                const size = 3 + Math.random() * 4;
-                const colors = ['#F06292', '#EC407A', '#F48FB1', '#E91E63', '#FFB74D', '#FFF176'];
+                const fx = 15 + (i / flowerCount) * (w-30) + Math.sin(i*2.3 + time*0.08) * 10;
+                const fy = groundY - 4 - Math.random() * 16 - Math.sin(i*1.1 + time*0.1) * 5;
+                const size = 4 + Math.random() * 5;
+                const colors = ['#F06292', '#EC407A', '#F48FB1', '#E91E63', '#FFB74D', '#FFF176', '#CE93D8', '#EF9A9A'];
                 ctx.fillStyle = colors[i % colors.length];
                 for(let p=0; p<5; p++){
-                    const angle = (p/5)*Math.PI*2 - Math.PI/2 + time*0.03;
-                    const r = p%2===0 ? size : size*0.6;
+                    const angle = (p/5)*Math.PI*2 - Math.PI/2 + time*0.02;
+                    const r = p%2===0 ? size : size*0.55;
                     const px = fx + Math.cos(angle)*r;
                     const py = fy + Math.sin(angle)*r;
                     ctx.beginPath();
@@ -556,191 +578,363 @@
             }
         }
 
-        const cx = w/2;
+        // ---- 小房子（41天以上） ----
+        if(totalDays >= 41){
+            const hx = w * 0.75;
+            const hy = groundY - 2;
+            // 墙壁
+            ctx.fillStyle = '#D7A86E';
+            ctx.fillRect(hx-25, hy-32, 50, 32);
+            // 屋顶
+            ctx.fillStyle = '#B71C1C';
+            ctx.beginPath();
+            ctx.moveTo(hx-30, hy-32);
+            ctx.lineTo(hx, hy-52);
+            ctx.lineTo(hx+30, hy-32);
+            ctx.fill();
+            // 门
+            ctx.fillStyle = '#5D4037';
+            ctx.fillRect(hx-5, hy-14, 10, 14);
+            // 窗户
+            ctx.fillStyle = '#81D4FA';
+            ctx.fillRect(hx-18, hy-22, 10, 10);
+            ctx.fillRect(hx+8, hy-22, 10, 10);
+            ctx.strokeStyle = '#5D4037';
+            ctx.lineWidth = 1;
+            ctx.strokeRect(hx-18, hy-22, 10, 10);
+            ctx.strokeRect(hx+8, hy-22, 10, 10);
+            // 烟囱
+            ctx.fillStyle = '#795548';
+            ctx.fillRect(hx+18, hy-46, 8, 16);
+            ctx.fillStyle = '#8D6E63';
+            ctx.fillRect(hx+16, hy-50, 12, 6);
+        }
+
+        // ---- 人物（61天以上） ----
+        if(totalDays >= 61){
+            const px = w * 0.2 + Math.sin(time*0.1)*5;
+            const py = groundY - 4;
+            // 身体
+            ctx.fillStyle = '#42A5F5';
+            ctx.fillRect(px-6, py-28, 12, 18);
+            // 头
+            ctx.fillStyle = '#FFCCBC';
+            ctx.beginPath();
+            ctx.arc(px, py-32, 8, 0, Math.PI*2);
+            ctx.fill();
+            // 头发
+            ctx.fillStyle = '#5D4037';
+            ctx.beginPath();
+            ctx.arc(px, py-35, 8, Math.PI, 2*Math.PI);
+            ctx.fill();
+            // 眼睛
+            ctx.fillStyle = '#000';
+            ctx.beginPath();
+            ctx.arc(px-4, py-33, 1.5, 0, Math.PI*2);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(px+4, py-33, 1.5, 0, Math.PI*2);
+            ctx.fill();
+            // 嘴巴
+            ctx.beginPath();
+            ctx.arc(px, py-29, 3, 0, Math.PI);
+            ctx.stroke();
+            // 手臂
+            ctx.strokeStyle = '#FFCCBC';
+            ctx.lineWidth = 3;
+            const armSwing = Math.sin(time*0.8)*0.3;
+            ctx.beginPath();
+            ctx.moveTo(px-6, py-24);
+            ctx.lineTo(px-14, py-18 + armSwing*8);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(px+6, py-24);
+            ctx.lineTo(px+14, py-18 - armSwing*8);
+            ctx.stroke();
+            // 腿
+            ctx.strokeStyle = '#1A237E';
+            ctx.lineWidth = 3;
+            const legSwing = Math.sin(time*0.6)*0.2;
+            ctx.beginPath();
+            ctx.moveTo(px-3, py-10);
+            ctx.lineTo(px-5+legSwing*5, py);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(px+3, py-10);
+            ctx.lineTo(px+5-legSwing*5, py);
+            ctx.stroke();
+        }
+
+        // ---- 树苗主体 ----
+        const cx = w * 0.4;
         const baseY = groundY;
 
         // ---- 种子 ----
         if(totalDays === 0){
             ctx.fillStyle = '#8B6B4A';
             ctx.beginPath();
-            ctx.ellipse(cx, groundY - 6, 12, 8, 0, 0, Math.PI*2);
+            ctx.ellipse(cx, groundY - 6, 16, 10, 0, 0, Math.PI*2);
             ctx.fill();
             ctx.fillStyle = '#5D4037';
             ctx.beginPath();
-            ctx.ellipse(cx, groundY - 8, 6, 5, 0, 0, Math.PI*2);
+            ctx.ellipse(cx, groundY - 8, 8, 6, 0, 0, Math.PI*2);
             ctx.fill();
             ctx.fillStyle = '#8D6E63';
-            ctx.font = '20px sans-serif';
+            ctx.font = '28px sans-serif';
             ctx.textAlign = 'center';
             ctx.fillText('🌰', cx, groundY - 6);
             return;
         }
 
         // ---- 树干 ----
-        const trunkH = 20 + progress * 80;
-        const trunkW = 4 + progress * 12;
+        const trunkH = 25 + progress * 100;
+        const trunkW = 5 + progress * 14;
         const trunkTop = baseY - trunkH;
         ctx.fillStyle = '#5D4037';
         ctx.fillRect(cx - trunkW/2, trunkTop, trunkW, trunkH);
+        // 树纹
+        ctx.strokeStyle = '#4E342E';
+        ctx.lineWidth = 0.5;
+        for(let i=0; i<3; i++){
+            const yy = trunkTop + 10 + i * (trunkH-20)/3;
+            ctx.beginPath();
+            ctx.moveTo(cx - trunkW/2 + 2, yy);
+            ctx.lineTo(cx + trunkW/2 - 2, yy + 4);
+            ctx.stroke();
+        }
 
         // ---- 树冠 ----
-        const crownSize = 10 + progress * 60;
-        const crownY = trunkTop - 4;
-        const gradient = ctx.createRadialGradient(cx, crownY - 10, 5, cx, crownY, crownSize);
+        const crownSize = 15 + progress * 75;
+        const crownY = trunkTop - 6;
+        const gradient = ctx.createRadialGradient(cx, crownY - 15, 5, cx, crownY, crownSize);
         if(totalDays >= 41){
-            gradient.addColorStop(0, '#66BB6A');
-            gradient.addColorStop(0.6, '#4CAF50');
-            gradient.addColorStop(0.85, '#388E3C');
+            gradient.addColorStop(0, '#81C784');
+            gradient.addColorStop(0.5, '#4CAF50');
+            gradient.addColorStop(0.8, '#388E3C');
             gradient.addColorStop(1, '#2E7D32');
         }else if(totalDays >= 21){
-            gradient.addColorStop(0, '#81C784');
-            gradient.addColorStop(0.6, '#4CAF50');
-            gradient.addColorStop(1, '#2E7D32');
-        }else{
             gradient.addColorStop(0, '#A5D6A7');
             gradient.addColorStop(0.6, '#66BB6A');
             gradient.addColorStop(1, '#388E3C');
+        }else if(totalDays >= 6){
+            gradient.addColorStop(0, '#C8E6C9');
+            gradient.addColorStop(0.6, '#81C784');
+            gradient.addColorStop(1, '#4CAF50');
+        }else{
+            gradient.addColorStop(0, '#E8F5E9');
+            gradient.addColorStop(0.6, '#A5D6A7');
+            gradient.addColorStop(1, '#66BB6A');
         }
         ctx.beginPath();
         ctx.arc(cx, crownY, crownSize, 0, Math.PI*2);
         ctx.fillStyle = gradient;
         ctx.fill();
 
+        // 次要树冠
         if(totalDays >= 3){
             const offset = crownSize * 0.7;
-            ctx.beginPath();
-            ctx.arc(cx - offset * 0.5 + Math.sin(time*0.1)*2, crownY + 8, crownSize * 0.7, 0, Math.PI*2);
-            ctx.fillStyle = totalDays >= 41 ? 'rgba(102,187,106,0.8)' : 'rgba(76,175,80,0.8)';
-            ctx.fill();
-            ctx.beginPath();
-            ctx.arc(cx + offset * 0.5 + Math.cos(time*0.08)*2, crownY + 8, crownSize * 0.7, 0, Math.PI*2);
-            ctx.fill();
-        }
-
-        // ---- 开花（41天以上） ----
-        if(totalDays >= 41){
-            const flowerColors = ['#F06292', '#EC407A', '#F48FB1', '#E91E63', '#F8BBD0'];
-            const flowerCount = Math.min(3 + Math.floor((totalDays-41)/5), 12);
-            for(let i=0; i<flowerCount; i++){
-                const angle = (i / flowerCount) * Math.PI * 2 + 0.3 + time*0.01;
-                const radius = crownSize * (0.4 + Math.random() * 0.4);
-                const fx = cx + Math.cos(angle) * radius;
-                const fy = crownY + Math.sin(angle) * radius * 0.7 - 4;
-                const size = 4 + Math.random() * 6;
-                ctx.fillStyle = flowerColors[i % flowerColors.length];
+            const sizes = [crownSize * 0.65, crownSize * 0.55];
+            for(let i=0; i<2; i++){
+                const ang = i===0 ? -0.4 : 0.4;
+                const ox = cx + Math.sin(ang + time*0.05) * offset * 0.3;
+                const oy = crownY + 6 + Math.cos(ang + time*0.04) * 4;
                 ctx.beginPath();
-                for(let p=0; p<5; p++){
-                    const a = (p/5) * Math.PI*2 - Math.PI/2 + time*0.01;
-                    const r = p%2===0 ? size : size*0.5;
-                    if(p===0) ctx.moveTo(fx + Math.cos(a)*r, fy + Math.sin(a)*r);
-                    else ctx.lineTo(fx + Math.cos(a)*r, fy + Math.sin(a)*r);
-                }
-                ctx.closePath();
-                ctx.fill();
-                ctx.fillStyle = '#FFD54F';
-                ctx.beginPath();
-                ctx.arc(fx, fy, size*0.25, 0, Math.PI*2);
+                ctx.arc(ox, oy, sizes[i], 0, Math.PI*2);
+                ctx.fillStyle = totalDays >= 41 ? 'rgba(102,187,106,0.75)' : 'rgba(76,175,80,0.75)';
                 ctx.fill();
             }
         }
 
-        // ---- 结果（61天以上） ----
-        if(totalDays >= 61){
-            const fruitColors = ['#E53935', '#EF5350', '#FF6F00', '#F9A825'];
-            const fruitCount = Math.min(2 + Math.floor((totalDays-61)/10), 8);
-            for(let i=0; i<fruitCount; i++){
-                const angle = (i / fruitCount) * Math.PI * 2 + 0.8 + time*0.005;
-                const radius = crownSize * (0.5 + Math.random() * 0.3);
+        // ---- 树冠上的花（41天以上） ----
+        if(totalDays >= 41){
+            const flowerColors = ['#F06292', '#EC407A', '#F48FB1', '#E91E63', '#F8BBD0', '#FF80AB'];
+            const flowerCount = Math.min(4 + Math.floor((totalDays-41)/4), 18);
+            for(let i=0; i<flowerCount; i++){
+                const angle = (i / flowerCount) * Math.PI * 2 + 0.3 + time*0.015;
+                const radius = crownSize * (0.35 + Math.random() * 0.45);
                 const fx = cx + Math.cos(angle) * radius;
-                const fy = crownY + Math.sin(angle) * radius * 0.6 + 4;
-                const size = 5 + Math.random() * 5;
+                const fy = crownY + Math.sin(angle) * radius * 0.7 - 4;
+                const size = 5 + Math.random() * 7;
+                ctx.fillStyle = flowerColors[i % flowerColors.length];
+                for(let p=0; p<5; p++){
+                    const a = (p/5) * Math.PI*2 - Math.PI/2 + time*0.01;
+                    const r = p%2===0 ? size : size*0.5;
+                    const px = fx + Math.cos(a)*r;
+                    const py = fy + Math.sin(a)*r;
+                    ctx.beginPath();
+                    ctx.arc(px, py, size*0.5, 0, Math.PI*2);
+                    ctx.fill();
+                }
+                ctx.fillStyle = '#FFD54F';
+                ctx.beginPath();
+                ctx.arc(fx, fy, size*0.3, 0, Math.PI*2);
+                ctx.fill();
+            }
+        }
+
+        // ---- 果实（61天以上） ----
+        if(totalDays >= 61){
+            const fruitColors = ['#E53935', '#EF5350', '#FF6F00', '#F9A825', '#FF8A65', '#FFAB91'];
+            const fruitCount = Math.min(3 + Math.floor((totalDays-61)/8), 12);
+            for(let i=0; i<fruitCount; i++){
+                const angle = (i / fruitCount) * Math.PI * 2 + 0.8 + time*0.008;
+                const radius = crownSize * (0.45 + Math.random() * 0.35);
+                const fx = cx + Math.cos(angle) * radius;
+                const fy = crownY + Math.sin(angle) * radius * 0.6 + 6;
+                const size = 6 + Math.random() * 7;
                 ctx.fillStyle = fruitColors[i % fruitColors.length];
                 ctx.beginPath();
                 ctx.arc(fx, fy, size, 0, Math.PI*2);
                 ctx.fill();
                 ctx.fillStyle = 'rgba(255,255,255,0.3)';
                 ctx.beginPath();
-                ctx.arc(fx-2, fy-2, size*0.3, 0, Math.PI*2);
+                ctx.arc(fx-2.5, fy-2.5, size*0.3, 0, Math.PI*2);
                 ctx.fill();
-            }
-        }
-
-        // ---- 小鸟（3天以上） ----
-        if(totalDays >= 3){
-            const birdPositions = [
-                { x: 20, y: 30, phase: 0 },
-                { x: w-30, y: 25, phase: 1.5 }
-            ];
-            birdPositions.forEach((b, idx) => {
-                const t = time * 0.4 + idx * 1.2;
-                const bx = b.x + Math.sin(t) * 25;
-                const by = b.y + Math.cos(t * 0.5 + idx) * 15 + Math.sin(t * 0.2) * 5;
-                ctx.fillStyle = '#795548';
-                ctx.beginPath();
-                ctx.ellipse(bx, by, 8, 5, 0, 0, Math.PI*2);
-                ctx.fill();
-                const wingAngle = Math.sin(t * 2.0) * 0.5;
-                ctx.fillStyle = '#8D6E63';
-                ctx.beginPath();
-                ctx.ellipse(bx-5, by-2 + Math.sin(t*2.0)*2, 6, 3, -0.3 + wingAngle, 0, Math.PI*2);
-                ctx.fill();
-                ctx.beginPath();
-                ctx.ellipse(bx+5, by-2 + Math.cos(t*2.0)*2, 6, 3, 0.3 - wingAngle, 0, Math.PI*2);
-                ctx.fill();
-                ctx.fillStyle = '#6D4C41';
-                ctx.beginPath();
-                ctx.moveTo(bx-8, by+2);
-                ctx.lineTo(bx-14, by+6);
-                ctx.lineTo(bx-8, by+6);
-                ctx.fill();
-                ctx.fillStyle = '#000';
-                ctx.beginPath();
-                ctx.arc(bx+3, by-2, 1.5, 0, Math.PI*2);
-                ctx.fill();
-                ctx.fillStyle = '#FF9800';
-                ctx.beginPath();
-                ctx.moveTo(bx+8, by+1);
-                ctx.lineTo(bx+13, by+2);
-                ctx.lineTo(bx+8, by+4);
-                ctx.fill();
-            });
-        }
-
-        // ---- 蝴蝶（5天以上） ----
-        if(totalDays >= 5){
-            const butterflyData = [
-                { x: 50, y: 50, phase: 0 },
-                { x: w-40, y: 40, phase: 2.0 },
-                { x: 80, y: 70, phase: 1.3 }
-            ];
-            butterflyData.forEach((b, idx) => {
-                const t = time * 0.35 + idx * 1.8;
-                const bx = b.x + Math.sin(t) * 30;
-                const by = b.y + Math.cos(t * 0.4 + idx) * 20 + Math.sin(t * 0.3) * 10;
-                const wingSize = 6 + Math.sin(t * 1.5) * 1.5;
-                ctx.fillStyle = idx%2===0 ? '#FF80AB' : '#4DD0E1';
-                ctx.beginPath();
-                ctx.ellipse(bx-3 + Math.sin(t*0.8)*2, by-2, wingSize, wingSize*0.6, -0.4 + Math.sin(t)*0.1, 0, Math.PI*2);
-                ctx.fill();
-                ctx.fillStyle = idx%2===0 ? '#F48FB1' : '#4FC3F7';
-                ctx.beginPath();
-                ctx.ellipse(bx+3 + Math.cos(t*0.9)*2, by-2, wingSize, wingSize*0.6, 0.4 + Math.cos(t)*0.1, 0, Math.PI*2);
-                ctx.fill();
-                ctx.fillStyle = '#4E342E';
-                ctx.beginPath();
-                ctx.ellipse(bx, by, 2, 6, 0, 0, Math.PI*2);
-                ctx.fill();
+                // 小梗
                 ctx.strokeStyle = '#4E342E';
                 ctx.lineWidth = 1;
                 ctx.beginPath();
-                ctx.moveTo(bx-1, by-4);
-                ctx.lineTo(bx-5 + Math.sin(t)*2, by-9 + Math.cos(t)*2);
+                ctx.moveTo(fx, fy-size);
+                ctx.lineTo(fx+1, fy-size-3);
+                ctx.stroke();
+            }
+        }
+
+        // ---- 小鸟（6天以上） ----
+        if(totalDays >= 6){
+            const birdPositions = [
+                { x: 40, y: 45, phase: 0 },
+                { x: w-50, y: 35, phase: 1.8 }
+            ];
+            birdPositions.forEach((b, idx) => {
+                const t = time * 0.35 + idx * 1.5;
+                const bx = b.x + Math.sin(t) * 30;
+                const by = b.y + Math.cos(t * 0.45 + idx) * 18 + Math.sin(t * 0.2) * 6;
+                // 身体
+                ctx.fillStyle = '#795548';
+                ctx.beginPath();
+                ctx.ellipse(bx, by, 10, 6, 0, 0, Math.PI*2);
+                ctx.fill();
+                // 翅膀（扇动）
+                const wingAngle = Math.sin(t * 2.0) * 0.6;
+                ctx.fillStyle = '#8D6E63';
+                ctx.beginPath();
+                ctx.ellipse(bx-6, by-2 + Math.sin(t*2.0)*3, 7, 3.5, -0.3 + wingAngle, 0, Math.PI*2);
+                ctx.fill();
+                ctx.beginPath();
+                ctx.ellipse(bx+6, by-2 + Math.cos(t*2.0)*3, 7, 3.5, 0.3 - wingAngle, 0, Math.PI*2);
+                ctx.fill();
+                // 尾巴
+                ctx.fillStyle = '#6D4C41';
+                ctx.beginPath();
+                ctx.moveTo(bx-10, by+2);
+                ctx.lineTo(bx-17, by+7);
+                ctx.lineTo(bx-10, by+7);
+                ctx.fill();
+                // 眼睛
+                ctx.fillStyle = '#000';
+                ctx.beginPath();
+                ctx.arc(bx+4, by-2, 1.8, 0, Math.PI*2);
+                ctx.fill();
+                // 嘴
+                ctx.fillStyle = '#FF9800';
+                ctx.beginPath();
+                ctx.moveTo(bx+10, by+1);
+                ctx.lineTo(bx+16, by+2.5);
+                ctx.lineTo(bx+10, by+4.5);
+                ctx.fill();
+            });
+        }
+
+        // ---- 蝴蝶（11天以上） ----
+        if(totalDays >= 11){
+            const butterflyData = [
+                { x: 70, y: 60, phase: 0 },
+                { x: w-60, y: 50, phase: 2.2 },
+                { x: 120, y: 80, phase: 1.5 }
+            ];
+            butterflyData.forEach((b, idx) => {
+                const t = time * 0.3 + idx * 2.0;
+                const bx = b.x + Math.sin(t) * 35;
+                const by = b.y + Math.cos(t * 0.4 + idx) * 22 + Math.sin(t * 0.3) * 10;
+                const wingSize = 7 + Math.sin(t * 1.5) * 2;
+                // 翅膀
+                ctx.fillStyle = idx%2===0 ? '#FF80AB' : '#4DD0E1';
+                ctx.beginPath();
+                ctx.ellipse(bx-4 + Math.sin(t*0.8)*3, by-3, wingSize, wingSize*0.6, -0.4 + Math.sin(t)*0.12, 0, Math.PI*2);
+                ctx.fill();
+                ctx.fillStyle = idx%2===0 ? '#F48FB1' : '#4FC3F7';
+                ctx.beginPath();
+                ctx.ellipse(bx+4 + Math.cos(t*0.9)*3, by-3, wingSize, wingSize*0.6, 0.4 + Math.cos(t)*0.12, 0, Math.PI*2);
+                ctx.fill();
+                // 身体
+                ctx.fillStyle = '#4E342E';
+                ctx.beginPath();
+                ctx.ellipse(bx, by, 2.5, 8, 0, 0, Math.PI*2);
+                ctx.fill();
+                // 触角
+                ctx.strokeStyle = '#4E342E';
+                ctx.lineWidth = 1.2;
+                ctx.beginPath();
+                ctx.moveTo(bx-1.5, by-5);
+                ctx.lineTo(bx-6 + Math.sin(t)*3, by-11 + Math.cos(t)*3);
                 ctx.stroke();
                 ctx.beginPath();
-                ctx.moveTo(bx+1, by-4);
-                ctx.lineTo(bx+5 + Math.sin(t+0.5)*2, by-9 + Math.cos(t+0.5)*2);
+                ctx.moveTo(bx+1.5, by-5);
+                ctx.lineTo(bx+6 + Math.sin(t+0.5)*3, by-11 + Math.cos(t+0.5)*3);
                 ctx.stroke();
             });
+        }
+
+        // ---- 青蛙（21天以上） ----
+        if(totalDays >= 21){
+            const fx = w * 0.65 + Math.sin(time*0.15)*8;
+            const fy = groundY - 4 + Math.sin(time*0.2)*3;
+            // 身体
+            ctx.fillStyle = '#4CAF50';
+            ctx.beginPath();
+            ctx.ellipse(fx, fy, 14, 10, 0, 0, Math.PI*2);
+            ctx.fill();
+            ctx.fillStyle = '#66BB6A';
+            ctx.beginPath();
+            ctx.ellipse(fx-4, fy-4, 6, 5, 0, 0, Math.PI*2);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.ellipse(fx+4, fy-4, 6, 5, 0, 0, Math.PI*2);
+            ctx.fill();
+            // 眼睛
+            ctx.fillStyle = '#fff';
+            ctx.beginPath();
+            ctx.arc(fx-5, fy-7, 4, 0, Math.PI*2);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(fx+5, fy-7, 4, 0, Math.PI*2);
+            ctx.fill();
+            ctx.fillStyle = '#1A237E';
+            ctx.beginPath();
+            ctx.arc(fx-5, fy-6, 2, 0, Math.PI*2);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(fx+5, fy-6, 2, 0, Math.PI*2);
+            ctx.fill();
+            // 嘴巴
+            ctx.strokeStyle = '#2E7D32';
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.arc(fx, fy-2, 6, 0, Math.PI);
+            ctx.stroke();
+            // 腿
+            const legSwing2 = Math.sin(time*0.3)*0.2;
+            ctx.strokeStyle = '#388E3C';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(fx-10, fy+4);
+            ctx.lineTo(fx-14+legSwing2*6, fy+12);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(fx+10, fy+4);
+            ctx.lineTo(fx+14-legSwing2*6, fy+12);
+            ctx.stroke();
         }
     }
 
@@ -753,7 +947,7 @@
             if(canvas && document.getElementById('page-inspire').classList.contains('active')){
                 const ctx = canvas.getContext('2d');
                 const rect = canvas.parentElement.getBoundingClientRect();
-                const size = Math.min(rect.width || 160, 200);
+                const size = Math.min(rect.width || 300, 340);
                 canvas.width = size * 2;
                 canvas.height = size * 2;
                 canvas.style.width = size + 'px';
@@ -788,20 +982,18 @@
         document.getElementById('todayWaterCount').textContent = todayCount;
         document.getElementById('totalWaterDays').textContent = totalDays;
 
-        const stage = getPlantStage(totalDays);
-        document.getElementById('plantStageLabel').textContent = stage.name;
+        const stage = getGrowthStage(totalDays);
+        document.getElementById('plantStageLabel').textContent = stage.label + ' ' + (totalDays>0?totalDays+'天':'');
 
-        const pct = Math.min(100, (totalDays / 70) * 100);
+        const pct = Math.min(100, (totalDays / 80) * 100);
         document.getElementById('plantProgressFill').style.width = pct + '%';
 
         const btn = document.getElementById('waterBtn');
         if(btn){
-            // 浇水按钮只触发动画，不影响数据
             btn.textContent = '💧 浇水';
             btn.disabled = false;
             btn.style.background = 'var(--blue)';
         }
-        // 确保动画运行
         if(document.getElementById('page-inspire').classList.contains('active')){
             startPlantAnimation();
         }
@@ -818,28 +1010,28 @@
         can.textContent = '🧹';
         container.appendChild(can);
 
-        for(let i=0; i<35; i++){
+        for(let i=0; i<40; i++){
             const drop = document.createElement('div');
             drop.className = 'water-drop';
-            const x = 15 + Math.random() * 70;
+            const x = 10 + Math.random() * 80;
             const delay = Math.random() * 0.5;
             drop.style.left = x + '%';
-            drop.style.top = '10%';
+            drop.style.top = '8%';
             drop.style.animationDelay = delay + 's';
-            drop.style.width = (5 + Math.random() * 7) + 'px';
-            drop.style.height = (12 + Math.random() * 16) + 'px';
+            drop.style.width = (5 + Math.random() * 8) + 'px';
+            drop.style.height = (12 + Math.random() * 18) + 'px';
             container.appendChild(drop);
         }
 
-        for(let i=0; i<15; i++){
+        for(let i=0; i<18; i++){
             const splash = document.createElement('div');
             splash.className = 'water-splash';
-            const x = 15 + Math.random() * 70;
-            const delay = 0.5 + Math.random() * 0.6;
+            const x = 10 + Math.random() * 80;
+            const delay = 0.5 + Math.random() * 0.7;
             splash.style.left = x + '%';
-            splash.style.top = '50%';
+            splash.style.top = '48%';
             splash.style.animationDelay = delay + 's';
-            splash.style.width = (20 + Math.random() * 25) + 'px';
+            splash.style.width = (22 + Math.random() * 28) + 'px';
             splash.style.height = splash.style.width;
             container.appendChild(splash);
         }
@@ -849,13 +1041,15 @@
         }, 2000);
     }
 
-    // ---- 浇水（仅动画） ----
+    // ---- 浇水（仅动画 + 刷新统计） ----
     function waterPlant(){
         triggerWaterAnimation();
-        // 更新显示（统计不变）
+        // 重新统计并渲染
         renderPlant();
-        // 更新成就（基于交易）
+        // 刷新所有数据
+        renderAll();
         checkAchievements();
+        showToast('💧 浇水啦！树苗在成长！');
     }
 
     function handleWaterPlant(){
@@ -1079,6 +1273,8 @@
         renderAll();
         if(document.getElementById('modalFullManage').classList.contains('show')) renderFullAccountList();
         showToast('账户已添加');
+        // 添加账户后强制刷新理财卡片
+        renderFinanceCard();
     }
 
     function showWeekDetail(type){
@@ -1364,8 +1560,11 @@
 
         const hasFinance = data.accounts.some(a => isFinanceAccount(a));
         const card = document.getElementById('financeCard');
-        if(hasFinance) card.classList.remove('card-hidden');
-        else card.classList.add('card-hidden');
+        if(hasFinance){
+            card.classList.remove('card-hidden');
+        }else{
+            card.classList.add('card-hidden');
+        }
     }
 
     function renderGoalMini(){
@@ -1596,7 +1795,7 @@
     function renderAll(){
         renderPresetAccountModal();
         renderAssetSummary();
-        renderFinanceCard();
+        renderFinanceCard();  // 理财卡片渲染
         renderGoalMini();
         renderHomeWeekChart();
         renderGoals();
