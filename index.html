@@ -481,7 +481,7 @@
         return GROWTH_STAGES[0];
     }
 
-    // ===== 核心绘制函数（丰富版：小草、鲜花、小鸟、蝴蝶、青蛙、人物、房屋） =====
+    // ===== 核心绘制函数（丰富版：小草、鲜花、小鸟、蝴蝶、青蛙、人物、房屋、云朵） =====
     function drawPlant(ctx, w, h, totalDays, time){
         ctx.clearRect(0, 0, w, h);
         const progress = Math.min(1, totalDays / 80);
@@ -1268,7 +1268,7 @@
         data.snapshots.push({accountId:newAcc.id, date:date, balance:bal});
         saveData();
         closeModal('modalAccount');
-        renderAll(); // 确保所有数据刷新
+        renderAll();
         if(document.getElementById('modalFullManage').classList.contains('show')) renderFullAccountList();
         showToast('账户已添加');
         // 强制刷新理财卡片
@@ -1793,7 +1793,7 @@
     function renderAll(){
         renderPresetAccountModal();
         renderAssetSummary();
-        renderFinanceCard();  // 关键：更新理财卡片
+        renderFinanceCard();
         renderGoalMini();
         renderHomeWeekChart();
         renderGoals();
