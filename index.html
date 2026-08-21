@@ -188,6 +188,9 @@
         .snapshot-history-item{padding:6px 0;border-bottom:1px solid var(--border);font-size:14px;display:flex;justify-content:space-between;}
         .snapshot-history-item .date{color:var(--text-secondary);}
         .snapshot-history-item .bal{font-weight:500;}
+        .preset-account-wrap{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;}
+        .preset-acc-item{padding:8px;border:1px solid var(--border);border-radius:var(--radius-sm);text-align:center;cursor:pointer;font-size:13px;}
+        .preset-acc-item:active{border-color:var(--primary);background:var(--bg);}
         @media (max-width:420px){
             body{padding:0 12px 80px 12px;}
             .asset-summary .total-amount{font-size:28px;}
@@ -200,10 +203,6 @@
             body{padding:0 24px 90px 24px;}
             .tab-nav{border-radius:32px 32px 0 0;}
         }
-        .preset-account-wrap{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;}
-        .preset-acc-item{padding:8px;border:1px solid var(--border);border-radius:var(--radius-sm);text-align:center;cursor:pointer;font-size:13px;}
-        .preset-acc-item:active{border-color:var(--primary);background:var(--bg);}
-        .sync-btn{font-size:20px;}
     </style>
 </head>
 <body>
@@ -214,7 +213,7 @@
         <span class="sub">资产养成 · 每周录入真实余额核算收支</span>
     </div>
     <div class="header-actions">
-        <button onclick="openSyncModal()" title="导入/导出账本数据" class="sync-btn">📂</button>
+        <button onclick="openSyncModal()" title="导入/导出账本数据" style="font-size:20px;">📂</button>
     </div>
 </header>
 
@@ -311,6 +310,28 @@
     </div>
 </div>
 
+<!-- 编辑余额模态框 -->
+<div class="modal-overlay" id="modalEditBalance">
+    <div class="modal-box">
+        <h3>✏️ 编辑余额</h3>
+        <div style="margin-bottom:12px;">
+            <span style="font-weight:500;">账户：</span><span id="editBalanceAccountName"></span>
+        </div>
+        <div class="form-group">
+            <label>当前余额</label>
+            <input type="text" id="editBalanceCurrent" disabled style="background:#f0f0f0;color:#888;">
+        </div>
+        <div class="form-group">
+            <label>新余额 (¥)</label>
+            <input type="number" id="editBalanceNew" step="0.01" min="0" placeholder="输入新余额">
+        </div>
+        <div class="modal-actions">
+            <button class="btn-cancel" onclick="closeModal('modalEditBalance')">取消</button>
+            <button class="btn-confirm" onclick="confirmEditBalance()">确认更新</button>
+        </div>
+    </div>
+</div>
+
 <!-- 本周收入/支出明细弹窗 -->
 <div class="modal-overlay" id="modalWeekDetail">
     <div class="modal-box">
@@ -385,7 +406,7 @@
     </div>
 </div>
 
-<!-- 添加账户模态框（无初始余额输入） -->
+<!-- 添加账户模态框（含预设账户、初始余额） -->
 <div class="modal-overlay" id="modalAccount">
     <div class="modal-box">
         <h3>➕ 添加账户</h3>
@@ -399,7 +420,10 @@
             <label>图标 (emoji)</label>
             <input type="text" id="accIcon" placeholder="🏦" value="" maxlength="2">
         </div>
-        <!-- 去掉了初始余额输入框，添加时余额默认为0 -->
+        <div class="form-group">
+            <label>初始余额 (¥)</label>
+            <input type="number" id="accBalance" step="0.01" min="0" value="0.00">
+        </div>
         <div class="modal-actions">
             <button class="btn-cancel" onclick="closeModal('modalAccount')">取消</button>
             <button class="btn-confirm" onclick="addAccount()">确认添加</button>
@@ -480,7 +504,7 @@
 </div>
 
 <script>
-    // ==================== 预设账户（供快速选择） ====================
+    // ==================== 预设账户 ====================
     const PRESET_ACCOUNTS = [
         {name:"微信钱包",icon:"📱",balance:0},
         {name:"支付宝",icon:"💳",balance:0},
@@ -494,15 +518,13 @@
 
     // ==================== 默认数据（空账本） ====================
     function getDefaultData(){
-        const now=new Date();
-        const today=now.toISOString().slice(0,10);
         return {
-            accounts:[],          // 无预设账户
-            transactions:[],      // 无交易
-            snapshots:[],         // 无快照
-            goals:[],             // 无目标
-            checkins:[],          // 无打卡
-            achievements:[        // 保留成就定义，初始全部未解锁
+            accounts:[],
+            transactions:[],
+            snapshots:[],
+            goals:[],
+            checkins:[],
+            achievements:[
                 {id:'first_txn',name:'首次记账',icon:'📝',unlocked:false},
                 {id:'streak_7',name:'连续7天',icon:'🔥',unlocked:false},
                 {id:'streak_30',name:'连续30天',icon:'🌟',unlocked:false},
@@ -520,14 +542,12 @@
         if(raw){
             try{
                 data=JSON.parse(raw);
-                // 确保字段完整
                 if(!data.accounts) data.accounts=[];
                 if(!data.transactions) data.transactions=[];
                 if(!data.snapshots) data.snapshots=[];
                 if(!data.goals) data.goals=[];
                 if(!data.checkins) data.checkins=[];
                 if(!data.achievements) data.achievements=getDefaultData().achievements;
-                // 为每个对象补充id
                 data.transactions.forEach(t=>{if(!t.id) t.id='txn_'+Date.now()+Math.random().toString(36).slice(2,6);});
                 data.accounts.forEach(a=>{if(!a.id) a.id='acc_'+Date.now()+Math.random().toString(36).slice(2,6);});
                 data.goals.forEach(g=>{if(!g.id) g.id='goal_'+Date.now()+Math.random().toString(36).slice(2,6);});
@@ -603,8 +623,10 @@
         renderAll();
     }
 
-    // ==================== 账户明细（长按删除） ====================
+    // ==================== 账户明细（点击编辑余额，长按删除） ====================
     let longPressTimer = null;
+    let editingAccountId = null;
+
     function showAccountDetail(){
         const container=document.getElementById('accountDetailList');
         const total=data.accounts.reduce((sum,acc)=>sum+getAccountBalance(acc.id),0);
@@ -624,7 +646,7 @@
                          onmousedown="startLongPress(event, '${acc.id}')" 
                          onmouseup="cancelLongPress(event)"
                          onmouseleave="cancelLongPress(event)"
-                         onclick="updateAccountBalance('${acc.id}')">
+                         onclick="openEditBalanceModal('${acc.id}')">
                         <div class="left-info">
                             <span class="icon">${acc.icon||'🏦'}</span>
                             <span class="name">${acc.name}</span>
@@ -668,7 +690,6 @@
     function deleteAccount(accId){
         data.accounts=data.accounts.filter(a=>a.id!==accId);
         saveData();
-        // 刷新明细弹窗和首页
         if(document.getElementById('modalAccountDetail').classList.contains('show')){
             showAccountDetail();
         }
@@ -676,22 +697,35 @@
         showToast('账户已删除');
     }
 
-    function updateAccountBalance(accId){
+    // ==================== 编辑余额模态框 ====================
+    function openEditBalanceModal(accId){
         const acc=data.accounts.find(a=>a.id===accId);
         if(!acc) return;
-        const current=getAccountBalance(accId);
-        const newBalance = prompt(`更新「${acc.name}」的余额\n当前余额：${current.toFixed(2)}\n请输入新的余额：`, current.toFixed(2));
-        if(newBalance===null) return;
-        const newVal=parseFloat(newBalance);
-        if(isNaN(newVal)||newVal<0){
+        editingAccountId = accId;
+        const current = getAccountBalance(accId);
+        document.getElementById('editBalanceAccountName').textContent = acc.name;
+        document.getElementById('editBalanceCurrent').value = formatMoney(current);
+        document.getElementById('editBalanceNew').value = current.toFixed(2);
+        openModal('modalEditBalance');
+    }
+
+    function confirmEditBalance(){
+        const accId = editingAccountId;
+        const acc = data.accounts.find(a=>a.id===accId);
+        if(!acc){ showToast('账户不存在'); return; }
+        const newVal = parseFloat(document.getElementById('editBalanceNew').value);
+        if(isNaN(newVal) || newVal < 0){
             showToast('请输入有效金额');
             return;
         }
+        const current = getAccountBalance(accId);
         const diff = newVal - current;
-        if(Math.abs(diff)<0.001){
+        if(Math.abs(diff) < 0.001){
             showToast('余额无变化');
+            closeModal('modalEditBalance');
             return;
         }
+        // 生成调整交易
         const adjType = diff>0?'income':'expense';
         data.transactions.push({
             id:genId(),
@@ -703,6 +737,7 @@
             note:'手动更新余额'
         });
         saveData();
+        closeModal('modalEditBalance');
         if(document.getElementById('modalAccountDetail').classList.contains('show')){
             showAccountDetail();
         }
@@ -710,7 +745,7 @@
         showToast(`已更新 ${acc.name} 余额为 ${formatMoney(newVal)}`);
     }
 
-    // ==================== 添加账户（无初始余额输入） ====================
+    // ==================== 添加账户（含预设账户、初始余额） ====================
     function renderPresetAccountModal(){
         const wrap=document.getElementById('presetAccountWrap');
         wrap.innerHTML=PRESET_ACCOUNTS.map(p=>`<div class="preset-acc-item" onclick="fillPresetAccount('${p.name}','${p.icon}')">${p.icon} ${p.name}</div>`).join('');
@@ -722,14 +757,15 @@
     function showAddAccountModal(){
         document.getElementById('accName').value='';
         document.getElementById('accIcon').value='';
+        document.getElementById('accBalance').value='0.00';
         openModal('modalAccount');
     }
     function addAccount(){
         const name=document.getElementById('accName').value.trim();
         const icon=document.getElementById('accIcon').value.trim()||'🏦';
+        const bal=parseFloat(document.getElementById('accBalance').value)||0;
         if(!name){showToast('请填写账户名称');return;}
-        // 余额默认为0
-        data.accounts.push({id:genId(),name:name,icon:icon,balance:0});
+        data.accounts.push({id:genId(),name:name,icon:icon,balance:bal});
         saveData();
         closeModal('modalAccount');
         renderAll();
@@ -1139,14 +1175,12 @@
         reader.onload = function(e){
             try{
                 const imported = JSON.parse(e.target.result);
-                // 简单验证数据结构
                 if(typeof imported !== 'object' || !imported.accounts || !imported.transactions){
                     showToast('无效的账本文件');
                     return;
                 }
                 if(!confirm('导入将覆盖当前所有数据，确定继续？')) return;
                 data = imported;
-                // 确保每个对象有id
                 data.transactions.forEach(t=>{if(!t.id) t.id='txn_'+Date.now()+Math.random().toString(36).slice(2,6);});
                 data.accounts.forEach(a=>{if(!a.id) a.id='acc_'+Date.now()+Math.random().toString(36).slice(2,6);});
                 data.goals.forEach(g=>{if(!g.id) g.id='goal_'+Date.now()+Math.random().toString(36).slice(2,6);});
@@ -1162,7 +1196,6 @@
             }
         };
         reader.readAsText(file);
-        // 重置input，允许重复选择同一文件
         event.target.value = '';
     }
 
@@ -1183,7 +1216,6 @@
     window.onload=function(){
         loadData();
         renderAll();
-        // 保留上传余额功能入口（控制台可用）
         console.log('💡 提示：可通过 openUploadBalanceModal() 上传余额');
     };
 </script>
