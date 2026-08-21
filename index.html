@@ -488,7 +488,7 @@
         return GROWTH_STAGES[0];
     }
 
-    // ===== 核心绘制函数（减慢动画速度） =====
+    // ===== 核心绘制函数（云流动，小鸟斜飞，草花静止） =====
     function drawPlant(ctx, w, h, totalDays, time){
         ctx.clearRect(0, 0, w, h);
         const progress = Math.min(1, totalDays / 80);
@@ -502,15 +502,15 @@
         ctx.fillStyle = skyGrad;
         ctx.fillRect(0,0,w,groundY);
 
-        // ---- 云朵（慢速飘动） ----
+        // ---- 云朵（水平流动） ----
         const clouds = [
-            { x: 30, y: 30, w: 70, h: 24, speed: 0.015 },
-            { x: 160, y: 15, w: 80, h: 28, speed: 0.01 },
-            { x: 310, y: 40, w: 60, h: 20, speed: 0.02 }
+            { w: 70, h: 24, y: 30, speed: 0.3 },
+            { w: 80, h: 28, y: 15, speed: 0.2 },
+            { w: 60, h: 20, y: 40, speed: 0.4 }
         ];
         clouds.forEach(c => {
-            const offsetX = Math.sin(time * c.speed + c.x * 0.01) * 30;
-            const cx = c.x + offsetX;
+            // 云水平位置随时间向右移动，循环
+            let cx = (time * c.speed * 30) % (w + c.w) - c.w/2;
             ctx.fillStyle = 'rgba(255,255,255,0.85)';
             ctx.beginPath();
             ctx.ellipse(cx, c.y, c.w/2, c.h/2, 0, 0, Math.PI*2);
@@ -542,35 +542,34 @@
         ctx.fillStyle = '#8BC34A';
         ctx.fillRect(0, groundY+8, w, 52);
 
-        // ---- 小草（降低摆动速度） ----
+        // ---- 小草（固定位置，无摆动） ----
         const grassCount = 15 + totalDays * 0.6;
         for(let i=0; i<Math.min(grassCount, 60); i++){
-            const gx = (i / Math.min(grassCount, 60)) * w + Math.sin(i * 1.7 + time * 0.06) * 8; // 降低速度
-            const gy = groundY - 2 - Math.random() * 14 - Math.sin(i * 2.1 + time * 0.08) * 4;
-            const len = 8 + Math.random() * 12 + Math.min(totalDays * 0.05, 8);
+            const gx = (i / Math.min(grassCount, 60)) * w + 5; // 均匀分布
+            const gy = groundY - 2 - Math.random() * 14;
             ctx.strokeStyle = i%3===0 ? '#66BB6A' : '#81C784';
             ctx.lineWidth = 1.5;
             ctx.beginPath();
             ctx.moveTo(gx, groundY+2);
-            ctx.quadraticCurveTo(gx-4 + Math.sin(i+time*0.08)*3, gy, gx-2, groundY-2);
+            ctx.quadraticCurveTo(gx-4, gy, gx-2, groundY-2);
             ctx.stroke();
             ctx.beginPath();
             ctx.moveTo(gx+2, groundY+2);
-            ctx.quadraticCurveTo(gx+6 + Math.cos(i+time*0.06)*3, gy+3, gx+4, groundY-2);
+            ctx.quadraticCurveTo(gx+6, gy+3, gx+4, groundY-2);
             ctx.stroke();
         }
 
-        // ---- 小花（降低摆动速度） ----
+        // ---- 小花（固定位置，无摆动） ----
         if(totalDays >= 3){
             const flowerCount = Math.min(4 + Math.floor((totalDays-3)/2.5), 25);
             for(let i=0; i<flowerCount; i++){
-                const fx = 15 + (i / flowerCount) * (w-30) + Math.sin(i*2.3 + time*0.04) * 10; // 降低速度
-                const fy = groundY - 4 - Math.random() * 16 - Math.sin(i*1.1 + time*0.05) * 5;
+                const fx = 15 + (i / flowerCount) * (w-30) + 5;
+                const fy = groundY - 4 - Math.random() * 16;
                 const size = 4 + Math.random() * 5;
                 const colors = ['#F06292', '#EC407A', '#F48FB1', '#E91E63', '#FFB74D', '#FFF176', '#CE93D8', '#EF9A9A'];
                 ctx.fillStyle = colors[i % colors.length];
                 for(let p=0; p<5; p++){
-                    const angle = (p/5)*Math.PI*2 - Math.PI/2 + time*0.01;
+                    const angle = (p/5)*Math.PI*2 - Math.PI/2;
                     const r = p%2===0 ? size : size*0.55;
                     const px = fx + Math.cos(angle)*r;
                     const py = fy + Math.sin(angle)*r;
@@ -791,48 +790,56 @@
             }
         }
 
-        // ---- 小鸟（降低速度） ----
+        // ---- 小鸟（斜线穿屏飞行：从左上到右下） ----
         if(totalDays >= 6){
-            const birdPositions = [
-                { x: 40, y: 45, phase: 0 },
-                { x: w-50, y: 35, phase: 1.8 }
-            ];
-            birdPositions.forEach((b, idx) => {
-                const t = time * 0.2 + idx * 1.5;
-                const bx = b.x + Math.sin(t) * 30;
-                const by = b.y + Math.cos(t * 0.3 + idx) * 18 + Math.sin(t * 0.1) * 6;
+            const birdCount = 2;
+            for(let i=0; i<birdCount; i++){
+                // 每个小鸟有不同偏移和速度
+                const offset = i * 0.7;
+                const speed = 0.15 + i * 0.05;
+                const t = (time * speed + offset) % 1.2; // 0~1.2 循环
+                // 从左上 (x=0, y=0) 到右下 (w, h*0.6)
+                const bx = (t / 1.2) * w;
+                const by = (t / 1.2) * h * 0.6 + 20;
+                // 当 t 在 0~1 范围内出现，超出部分隐藏（但因为我们循环，会不断出现）
+                if(t > 1.0) continue; // 只显示在0~1区间，避免重复出现
+                // 身体
                 ctx.fillStyle = '#795548';
                 ctx.beginPath();
                 ctx.ellipse(bx, by, 10, 6, 0, 0, Math.PI*2);
                 ctx.fill();
-                const wingAngle = Math.sin(t * 1.2) * 0.6;
+                // 翅膀（扇动）
+                const wingAngle = Math.sin(t * 20) * 0.6;
                 ctx.fillStyle = '#8D6E63';
                 ctx.beginPath();
-                ctx.ellipse(bx-6, by-2 + Math.sin(t*1.2)*3, 7, 3.5, -0.3 + wingAngle, 0, Math.PI*2);
+                ctx.ellipse(bx-6, by-2 + Math.sin(t*20)*3, 7, 3.5, -0.3 + wingAngle, 0, Math.PI*2);
                 ctx.fill();
                 ctx.beginPath();
-                ctx.ellipse(bx+6, by-2 + Math.cos(t*1.2)*3, 7, 3.5, 0.3 - wingAngle, 0, Math.PI*2);
+                ctx.ellipse(bx+6, by-2 + Math.cos(t*20)*3, 7, 3.5, 0.3 - wingAngle, 0, Math.PI*2);
                 ctx.fill();
+                // 尾巴
                 ctx.fillStyle = '#6D4C41';
                 ctx.beginPath();
                 ctx.moveTo(bx-10, by+2);
                 ctx.lineTo(bx-17, by+7);
                 ctx.lineTo(bx-10, by+7);
                 ctx.fill();
+                // 眼睛
                 ctx.fillStyle = '#000';
                 ctx.beginPath();
                 ctx.arc(bx+4, by-2, 1.8, 0, Math.PI*2);
                 ctx.fill();
+                // 嘴
                 ctx.fillStyle = '#FF9800';
                 ctx.beginPath();
                 ctx.moveTo(bx+10, by+1);
                 ctx.lineTo(bx+16, by+2.5);
                 ctx.lineTo(bx+10, by+4.5);
                 ctx.fill();
-            });
+            }
         }
 
-        // ---- 蝴蝶（降低速度） ----
+        // ---- 蝴蝶（保持原有飞舞） ----
         if(totalDays >= 11){
             const butterflyData = [
                 { x: 70, y: 60, phase: 0 },
@@ -869,7 +876,7 @@
             });
         }
 
-        // ---- 青蛙（21天以上） ----
+        // ---- 青蛙（保持原有跳跃） ----
         if(totalDays >= 21){
             const fx = w * 0.65 + Math.sin(time*0.08)*8;
             const fy = groundY - 4 + Math.sin(time*0.1)*3;
