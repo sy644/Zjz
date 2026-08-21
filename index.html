@@ -187,7 +187,7 @@
         .achievement-item .ach-name{font-size:12px;font-weight:500;color:var(--text-muted);}
         .achievement-item.unlocked .ach-name{color:var(--text-primary);}
         .plant-card .plant-canvas-wrap{display:flex;justify-content:center;align-items:center;padding:2px 0;position:relative;width:100%;}
-        .plant-card .plant-canvas-wrap canvas{width:100%;height:auto;max-width:320px;aspect-ratio:1/1;display:block;}
+        .plant-card .plant-canvas-wrap canvas{width:100%;height:auto;max-width:360px;aspect-ratio:1/1;display:block;}
         .plant-card .plant-stats{display:flex;justify-content:center;gap:24px;margin:6px 0 10px 0;}
         .plant-card .plant-stats .stat-item{text-align:center;}
         .plant-card .plant-stats .stat-item .stat-num{font-size:22px;font-weight:700;color:var(--text-primary);}
@@ -209,8 +209,7 @@
         .plant-progress .plant-progress-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--green),var(--blue));transition:width 0.6s ease;}
         .no-account-tip{text-align:center;padding:20px 0;color:var(--text-muted);}
         .no-account-tip button{background:var(--blue);color:#fff;border:none;border-radius:30px;padding:10px 24px;font-size:14px;font-weight:600;cursor:pointer;margin-top:8px;box-shadow:0 4px 12px rgba(74,124,247,0.2);}
-        .growth-badge{display:inline-block;padding:2px 14px;border-radius:20px;font-size:12px;font-weight:600;color:#fff;}
-        @media (max-width:420px){body{padding:0 12px 80px 12px;} .card-main .card-number{font-size:34px;} .card-main .card-number .currency{font-size:22px;} .card-secondary .goal-row .mini-circle{width:70px;height:70px;} .journal-form .form-group.amount-field input{font-size:20px;} .plant-card .plant-canvas-wrap canvas{max-width:280px;}}
+        @media (max-width:420px){body{padding:0 12px 80px 12px;} .card-main .card-number{font-size:34px;} .card-main .card-number .currency{font-size:22px;} .card-secondary .goal-row .mini-circle{width:70px;height:70px;} .journal-form .form-group.amount-field input{font-size:20px;} .plant-card .plant-canvas-wrap canvas{max-width:300px;}}
         @media (min-width:600px){body{padding:0 24px 90px 24px;} .tab-nav{border-radius:32px 32px 0 0;}}
     </style>
 </head>
@@ -411,10 +410,11 @@
         return acc.balance+txnTotal;
     }
 
+    // 判断是否为理财账户（分类包含"理财"或"基金"）
     function isFinanceAccount(acc){
         if(!acc || !acc.category) return false;
         const cat=acc.category.trim();
-        return cat==='理财'||cat.includes('理财');
+        return cat==='理财'||cat.includes('理财')||cat==='基金'||cat.includes('基金');
     }
 
     function getFinanceTotal(){
@@ -947,7 +947,7 @@
             if(canvas && document.getElementById('page-inspire').classList.contains('active')){
                 const ctx = canvas.getContext('2d');
                 const rect = canvas.parentElement.getBoundingClientRect();
-                const size = Math.min(rect.width || 300, 340);
+                const size = Math.min(rect.width || 300, 360);
                 canvas.width = size * 2;
                 canvas.height = size * 2;
                 canvas.style.width = size + 'px';
@@ -1044,9 +1044,7 @@
     // ---- 浇水（仅动画 + 刷新统计） ----
     function waterPlant(){
         triggerWaterAnimation();
-        // 重新统计并渲染
         renderPlant();
-        // 刷新所有数据
         renderAll();
         checkAchievements();
         showToast('💧 浇水啦！树苗在成长！');
@@ -1270,10 +1268,10 @@
         data.snapshots.push({accountId:newAcc.id, date:date, balance:bal});
         saveData();
         closeModal('modalAccount');
-        renderAll();
+        renderAll(); // 确保所有数据刷新
         if(document.getElementById('modalFullManage').classList.contains('show')) renderFullAccountList();
         showToast('账户已添加');
-        // 添加账户后强制刷新理财卡片
+        // 强制刷新理财卡片
         renderFinanceCard();
     }
 
@@ -1795,7 +1793,7 @@
     function renderAll(){
         renderPresetAccountModal();
         renderAssetSummary();
-        renderFinanceCard();  // 理财卡片渲染
+        renderFinanceCard();  // 关键：更新理财卡片
         renderGoalMini();
         renderHomeWeekChart();
         renderGoals();
