@@ -209,6 +209,7 @@
             body{padding:0 24px 90px 24px;}
             .tab-nav{border-radius:32px 32px 0 0;}
         }
+        .hidden{display:none !important;}
     </style>
 </head>
 <body>
@@ -363,7 +364,7 @@
     </div>
 </div>
 
-<!-- 记账模态框 -->
+<!-- 记账模态框（动态适配理财/非理财） -->
 <div class="modal-overlay" id="modalJournal">
     <div class="modal-box">
         <h3>✏️ 手动记一笔</h3>
@@ -376,17 +377,13 @@
                 <label>转入账户（转账专用）</label>
                 <select id="journalTransferTarget"></select>
             </div>
-            <div class="form-group">
+            <div class="form-group" id="journalTypeGroup">
                 <label>交易类型</label>
-                <div class="radio-group">
-                    <label><input type="radio" name="journalType" value="expense" checked><span>💸支出</span></label>
-                    <label><input type="radio" name="journalType" value="income"><span>💰收入</span></label>
-                    <label><input type="radio" name="journalType" value="transfer"><span>🔄转账</span></label>
-                    <label><input type="radio" name="journalType" value="asset_gain"><span>📈资产增值</span></label>
-                    <label><input type="radio" name="journalType" value="asset_loss"><span>📉资产减值</span></label>
+                <div class="radio-group" id="journalTypeRadios">
+                    <!-- 由JS动态填充 -->
                 </div>
             </div>
-            <div class="form-group">
+            <div class="form-group" id="journalCategoryGroup">
                 <label>分类</label>
                 <select id="journalCategory" required>
                     <option value="餐饮">🍜 餐饮</option>
@@ -547,21 +544,63 @@
 
     const STORAGE_KEY = 'financeAppData';
 
-    // ==================== 默认数据（空账本） ====================
+    // ==================== 默认示例数据 ====================
     function getDefaultData(){
+        const now=new Date();
+        const today=now.toISOString().slice(0,10);
+        const weekAgo=new Date(now);
+        weekAgo.setDate(weekAgo.getDate()-7);
+        const weekAgoStr=weekAgo.toISOString().slice(0,10);
+        const twoWeeksAgo=new Date(now);
+        twoWeeksAgo.setDate(twoWeeksAgo.getDate()-14);
+        const twoWeeksAgoStr=twoWeeksAgo.toISOString().slice(0,10);
         return {
-            accounts:[],
-            transactions:[],
-            snapshots:[],
-            goals:[],
-            checkins:[],
+            accounts:[
+                {id:'acc1',name:'工资银行卡',icon:'🏦',balance:12800,category:'日常'},
+                {id:'acc2',name:'支付宝',icon:'💳',balance:6350,category:'日常'},
+                {id:'acc3',name:'微信钱包',icon:'📱',balance:2200,category:'日常'},
+                {id:'acc4',name:'理财账户',icon:'📈',balance:50000,category:'理财'},
+            ],
+            transactions:[
+                {id:'txn1',accountId:'acc1',type:'expense',category:'餐饮',amount:48,date:today,note:'午餐'},
+                {id:'txn2',accountId:'acc2',type:'expense',category:'购物',amount:199,date:today,note:'日用品'},
+                {id:'txn3',accountId:'acc1',type:'income',category:'工资',amount:8500,date:weekAgoStr,note:'8月工资'},
+                {id:'txn4',accountId:'acc4',type:'asset_gain',category:'理财收益',amount:320,date:weekAgoStr,note:'基金分红'},
+                {id:'txn5',accountId:'acc4',type:'asset_loss',category:'理财亏损',amount:150,date:weekAgoStr,note:'股票回调'},
+            ],
+            snapshots:[
+                {accountId:'acc1',date:twoWeeksAgoStr,balance:12000},
+                {accountId:'acc2',date:twoWeeksAgoStr,balance:6000},
+                {accountId:'acc3',date:twoWeeksAgoStr,balance:2000},
+                {accountId:'acc4',date:twoWeeksAgoStr,balance:48000},
+                {accountId:'acc1',date:weekAgoStr,balance:12300},
+                {accountId:'acc2',date:weekAgoStr,balance:6100},
+                {accountId:'acc3',date:weekAgoStr,balance:2100},
+                {accountId:'acc4',date:weekAgoStr,balance:51000},
+                {accountId:'acc1',date:today,balance:12800},
+                {accountId:'acc2',date:today,balance:6350},
+                {accountId:'acc3',date:today,balance:2200},
+                {accountId:'acc4',date:today,balance:50000},
+            ],
+            goals:[
+                {id:'goal1',name:'旅行基金',target:10000,current:3200},
+                {id:'goal2',name:'换新手机',target:6000,current:1800},
+            ],
+            checkins:[
+                {date:today},
+                {date:new Date(now.getTime()-86400000).toISOString().slice(0,10)},
+                {date:new Date(now.getTime()-86400000*2).toISOString().slice(0,10)},
+                {date:new Date(now.getTime()-86400000*3).toISOString().slice(0,10)},
+                {date:new Date(now.getTime()-86400000*4).toISOString().slice(0,10)},
+                {date:new Date(now.getTime()-86400000*5).toISOString().slice(0,10)},
+            ],
             achievements:[
-                {id:'first_txn',name:'首次记账',icon:'📝',unlocked:false},
-                {id:'streak_7',name:'连续7天',icon:'🔥',unlocked:false},
+                {id:'first_txn',name:'首次记账',icon:'📝',unlocked:true},
+                {id:'streak_7',name:'连续7天',icon:'🔥',unlocked:true},
                 {id:'streak_30',name:'连续30天',icon:'🌟',unlocked:false},
                 {id:'txn_10',name:'记账达人',icon:'📊',unlocked:false},
                 {id:'goal_done',name:'储蓄先锋',icon:'🏅',unlocked:false},
-                {id:'wealthy',name:'万元户',icon:'💰',unlocked:false},
+                {id:'wealthy',name:'万元户',icon:'💰',unlocked:true},
                 {id:'snapshot_4',name:'周周坚持',icon:'📆',unlocked:false},
             ]
         };
@@ -757,7 +796,6 @@
             closeModal('modalEditBalance');
             return;
         }
-        // 生成调整交易
         const adjType = diff>0?'income':'expense';
         data.transactions.push({
             id:genId(),
@@ -777,11 +815,9 @@
         showToast(`已更新 ${acc.name} 余额为 ${formatMoney(newVal)}`);
     }
 
-    // ===== 撤销最近一笔余额调整（针对当前账户） =====
     function undoLastAdjustment(){
         const accId = editingAccountId;
         if(!accId){ showToast('请先选择账户'); return; }
-        // 查找该账户最近一条 category='余额调整' 的交易
         const adjustments = data.transactions
             .filter(t => t.accountId === accId && t.category === '余额调整')
             .sort((a,b) => b.date.localeCompare(a.date) || b.id.localeCompare(a.id));
@@ -791,14 +827,11 @@
         }
         const last = adjustments[0];
         if(!confirm(`撤销 ${last.date} 的余额调整 (${last.type==='income'?'+':'-'}${last.amount.toFixed(2)})？`)) return;
-        // 删除该交易
         data.transactions = data.transactions.filter(t => t.id !== last.id);
         saveData();
-        // 刷新编辑框中的当前余额显示
         const current = getAccountBalance(accId);
         document.getElementById('editBalanceCurrent').value = formatMoney(current);
         document.getElementById('editBalanceNew').value = current.toFixed(2);
-        // 刷新其他UI
         if(document.getElementById('modalAccountDetail').classList.contains('show')){
             showAccountDetail();
         }
@@ -843,55 +876,83 @@
         showToast('账户已添加');
     }
 
-    // ==================== 本周收入/支出明细 ====================
-    function showWeekDetail(type){
-        const today=getTodayStr();
-        const weekStart=getWeekStart(today);
-        const weekTxns=data.transactions.filter(t=>t.date>=weekStart&&t.date<=today);
-        let filtered = [];
-        if(type==='income'){
-            filtered = weekTxns.filter(t=>t.type==='income'||t.type==='asset_gain');
-        }else if(type==='expense'){
-            filtered = weekTxns.filter(t=>t.type==='expense'||t.type==='asset_loss');
-        }
-        const title = type==='income' ? '本周收入明细' : '本周支出明细';
-        document.getElementById('weekDetailTitle').textContent = title;
-        const container=document.getElementById('weekDetailListModal');
-        if(filtered.length===0){
-            container.innerHTML='<div class="text-muted text-center" style="padding:16px 0;">本周暂无此类记录</div>';
-        }else{
-            let html='';
-            filtered.sort((a,b)=>b.date.localeCompare(a.date)||b.id.localeCompare(a.id));
-            filtered.forEach(t=>{
-                const acc=data.accounts.find(a=>a.id===t.accountId);
-                const accName=acc?acc.name:'未知';
-                const amtClass = (t.type==='income'||t.type==='asset_gain')?'income':'expense';
-                const sign = (t.type==='income'||t.type==='asset_gain')?'+':'-';
-                html+=`
-                    <div class="txn-detail-item">
-                        <div>
-                            <span>${t.category||'📦'}</span>
-                            <span class="cat">${accName}</span>
-                            ${t.note?`<span class="note">${t.note}</span>`:''}
-                            <span style="font-size:12px;color:var(--text-secondary);margin-left:8px;">${t.date}</span>
-                        </div>
-                        <span class="amt ${amtClass}">${sign}${t.amount.toFixed(2)}</span>
-                    </div>
-                `;
-            });
-            container.innerHTML=html;
-        }
-        openModal('modalWeekDetail');
-    }
-
-    // ==================== 记账模态框 ====================
+    // ==================== 动态记账界面 ====================
     function openJournalModal(){
         populateJournalAccounts();
         document.getElementById('journalDate').value = getTodayStr();
         document.getElementById('journalForm').reset();
-        document.querySelector('input[name="journalType"][value="expense"]').checked = true;
-        document.getElementById('journalTransferWrap').style.display = 'none';
+        // 默认选中支出
+        document.querySelector('input[name="journalType"]')?.removeAttribute('checked');
+        // 根据当前账户动态刷新类型和分类
+        const accSelect = document.getElementById('journalAccount');
+        if(accSelect.value){
+            updateJournalFields(accSelect.value);
+        } else {
+            // 默认选中第一个账户
+            if(accSelect.options.length > 0){
+                accSelect.selectedIndex = 0;
+                updateJournalFields(accSelect.value);
+            }
+        }
+        // 监听账户切换
+        accSelect.onchange = function(){
+            updateJournalFields(this.value);
+        };
         openModal('modalJournal');
+    }
+
+    function updateJournalFields(accountId){
+        const acc = data.accounts.find(a => a.id === accountId);
+        if(!acc) return;
+        const isFinance = (acc.category === '理财');
+        const typeGroup = document.getElementById('journalTypeRadios');
+        const catGroup = document.getElementById('journalCategoryGroup');
+
+        // 生成交易类型radio
+        let html = '';
+        if(isFinance){
+            // 理财账户只显示资产增值和资产减值
+            html = `
+                <label><input type="radio" name="journalType" value="asset_gain" checked><span>📈资产增值</span></label>
+                <label><input type="radio" name="journalType" value="asset_loss"><span>📉资产减值</span></label>
+            `;
+            // 隐藏分类
+            catGroup.classList.add('hidden');
+        } else {
+            // 非理财显示所有类型
+            html = `
+                <label><input type="radio" name="journalType" value="expense" checked><span>💸支出</span></label>
+                <label><input type="radio" name="journalType" value="income"><span>💰收入</span></label>
+                <label><input type="radio" name="journalType" value="transfer"><span>🔄转账</span></label>
+                <label><input type="radio" name="journalType" value="asset_gain"><span>📈资产增值</span></label>
+                <label><input type="radio" name="journalType" value="asset_loss"><span>📉资产减值</span></label>
+            `;
+            catGroup.classList.remove('hidden');
+        }
+        typeGroup.innerHTML = html;
+
+        // 重新绑定change事件以控制转账目标显示（非理财才有转账）
+        const radios = typeGroup.querySelectorAll('input[name="journalType"]');
+        radios.forEach(r => {
+            r.addEventListener('change', function(){
+                const wrap = document.getElementById('journalTransferWrap');
+                if(this.value === 'transfer'){
+                    wrap.style.display = 'block';
+                } else {
+                    wrap.style.display = 'none';
+                }
+            });
+        });
+        // 默认选中第一个，触发一次
+        const checked = typeGroup.querySelector('input[type="radio"]:checked');
+        if(checked){
+            const wrap = document.getElementById('journalTransferWrap');
+            if(checked.value === 'transfer'){
+                wrap.style.display = 'block';
+            } else {
+                wrap.style.display = 'none';
+            }
+        }
     }
 
     function populateJournalAccounts(){
@@ -908,18 +969,11 @@
         }
     }
 
-    document.querySelectorAll('input[name="journalType"]').forEach(radio=>{
-        radio.addEventListener('change',function(){
-            const wrap=document.getElementById('journalTransferWrap');
-            const val=document.querySelector('input[name="journalType"]:checked').value;
-            wrap.style.display=val==='transfer'?'block':'none';
-        });
-    });
-
     function saveJournalEntry(e){
         e.preventDefault();
         const accId=document.getElementById('journalAccount').value;
-        const type=document.querySelector('input[name="journalType"]:checked').value;
+        const type=document.querySelector('input[name="journalType"]:checked')?.value;
+        if(!type){showToast('请选择交易类型');return;}
         const cat=document.getElementById('journalCategory').value;
         const amt=parseFloat(document.getElementById('journalAmount').value);
         const dt=document.getElementById('journalDate').value;
@@ -931,7 +985,13 @@
             data.transactions.push({id:genId(),accountId:accId,type:'transfer',transferTargetId:targetId,category:'账户互转',amount:amt,date:dt,note:note||'账户转账'});
             data.transactions.push({id:genId(),accountId:targetId,type:'transfer',transferTargetId:accId,category:'账户互转',amount:amt,date:dt,note:note||'账户转账'});
         }else{
-            data.transactions.push({id:genId(),accountId:accId,type:type,category:cat,amount:amt,date:dt,note:note});
+            // 如果账户是理财且类型为asset_gain/asset_loss，强制分类为理财收益/亏损
+            const acc = data.accounts.find(a=>a.id===accId);
+            let finalCat = cat;
+            if(acc && acc.category === '理财' && (type==='asset_gain' || type==='asset_loss')){
+                finalCat = type==='asset_gain' ? '理财收益' : '理财亏损';
+            }
+            data.transactions.push({id:genId(),accountId:accId,type:type,category:finalCat,amount:amt,date:dt,note:note});
         }
         saveData();
         closeModal('modalJournal');
@@ -947,7 +1007,7 @@
         saveData();renderAll();showToast('已删除记录');
     }
 
-    // ==================== 首页交易记录（下拉筛选） ====================
+    // ==================== 首页交易记录 ====================
     function renderHomeTxnList(){
         const container=document.getElementById('homeTxnList');
         const filter=document.getElementById('homeTxnFilter').value;
