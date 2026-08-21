@@ -143,11 +143,12 @@
         .modal-box{background:var(--card-bg);border-radius:var(--radius);padding:24px 20px 20px 20px;max-width:400px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,0.20);animation:slideUp 0.25s ease;max-height:90vh;overflow-y:auto;}
         @keyframes slideUp{from{transform:translateY(30px);opacity:0;}to{transform:translateY(0);opacity:1;}}
         .modal-box h3{font-size:20px;font-weight:700;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;}
-        .modal-box .modal-actions{display:flex;gap:10px;margin-top:16px;}
-        .modal-box .modal-actions button{flex:1;padding:12px;border:none;border-radius:var(--radius-sm);font-size:15px;font-weight:500;cursor:pointer;transition:var(--transition);}
+        .modal-box .modal-actions{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap;}
+        .modal-box .modal-actions button{flex:1;padding:12px;border:none;border-radius:var(--radius-sm);font-size:15px;font-weight:500;cursor:pointer;transition:var(--transition);min-width:80px;}
         .modal-box .modal-actions .btn-cancel{background:var(--bg);color:var(--text);}
         .modal-box .modal-actions .btn-confirm{background:var(--primary);color:#fff;}
-        .modal-box .modal-actions .btn-confirm:active,.modal-box .modal-actions .btn-cancel:active{transform:scale(0.96);}
+        .modal-box .modal-actions .btn-undo{background:#ffb347;color:#fff;}
+        .modal-box .modal-actions .btn-confirm:active,.modal-box .modal-actions .btn-cancel:active,.modal-box .modal-actions .btn-undo:active{transform:scale(0.96);}
         .modal-box .balance-input-group{display:flex;align-items:center;gap:12px;margin-bottom:10px;}
         .modal-box .balance-input-group .acc-label{width:80px;font-weight:500;flex-shrink:0;}
         .modal-box .balance-input-group input{flex:1;padding:10px 12px;border:2px solid var(--border);border-radius:var(--radius-sm);font-size:15px;}
@@ -174,7 +175,7 @@
         .account-detail-item .right-info{text-align:right;display:flex;align-items:center;gap:8px;}
         .account-detail-item .right-info .bal{font-weight:600;font-size:16px;}
         .account-detail-item .right-info .pct{font-size:12px;color:var(--text-secondary);}
-        .account-detail-item .right-info .edit-icon{font-size:16px;color:var(--text-secondary);opacity:0.6;}
+        .account-detail-item .right-info .edit-icon{font-size:16px;color:var(--text-secondary);opacity:0.6;cursor:pointer;}
         .account-detail-total{display:flex;justify-content:space-between;padding:14px 0 4px 0;border-top:2px solid var(--primary);margin-top:6px;font-weight:700;font-size:17px;}
         .account-detail-empty{padding:20px 0;text-align:center;color:var(--text-secondary);}
         .week-snapshot-info{display:flex;justify-content:space-between;margin-top:12px;background:var(--bg);border-radius:var(--radius-sm);padding:12px;font-size:14px;}
@@ -245,7 +246,7 @@
         </div>
     </div>
 
-    <!-- 资产趋势卡片（新增） -->
+    <!-- 资产趋势卡片 -->
     <div class="card">
         <div class="card-header"><span>📈 资产趋势</span></div>
         <div class="chart-container">
@@ -328,7 +329,7 @@
     </div>
 </div>
 
-<!-- 编辑余额模态框 -->
+<!-- 编辑余额模态框（含撤销按钮） -->
 <div class="modal-overlay" id="modalEditBalance">
     <div class="modal-box">
         <h3>✏️ 编辑余额</h3>
@@ -344,6 +345,7 @@
             <input type="number" id="editBalanceNew" step="0.01" min="0" placeholder="输入新余额">
         </div>
         <div class="modal-actions">
+            <button class="btn-undo" onclick="undoLastAdjustment()" style="flex:0.8;">↩️ 撤销调整</button>
             <button class="btn-cancel" onclick="closeModal('modalEditBalance')">取消</button>
             <button class="btn-confirm" onclick="confirmEditBalance()">确认更新</button>
         </div>
@@ -424,7 +426,7 @@
     </div>
 </div>
 
-<!-- 添加账户模态框（含预设账户、初始余额、分类） -->
+<!-- 添加账户模态框 -->
 <div class="modal-overlay" id="modalAccount">
     <div class="modal-box">
         <h3>➕ 添加账户</h3>
@@ -460,7 +462,7 @@
     </div>
 </div>
 
-<!-- 同步模态框（导入/导出） -->
+<!-- 同步模态框 -->
 <div class="modal-overlay" id="modalSync">
     <div class="modal-box">
         <h3>📂 数据同步</h3>
@@ -476,7 +478,7 @@
     </div>
 </div>
 
-<!-- 上传余额模态框（保留） -->
+<!-- 上传余额模态框 -->
 <div class="modal-overlay" id="modalUploadBalance">
     <div class="modal-box">
         <h3>📤 上传本周余额</h3>
@@ -775,7 +777,36 @@
         showToast(`已更新 ${acc.name} 余额为 ${formatMoney(newVal)}`);
     }
 
-    // ==================== 添加账户（含预设账户、初始余额、分类） ====================
+    // ===== 撤销最近一笔余额调整（针对当前账户） =====
+    function undoLastAdjustment(){
+        const accId = editingAccountId;
+        if(!accId){ showToast('请先选择账户'); return; }
+        // 查找该账户最近一条 category='余额调整' 的交易
+        const adjustments = data.transactions
+            .filter(t => t.accountId === accId && t.category === '余额调整')
+            .sort((a,b) => b.date.localeCompare(a.date) || b.id.localeCompare(a.id));
+        if(adjustments.length === 0){
+            showToast('没有可撤销的余额调整记录');
+            return;
+        }
+        const last = adjustments[0];
+        if(!confirm(`撤销 ${last.date} 的余额调整 (${last.type==='income'?'+':'-'}${last.amount.toFixed(2)})？`)) return;
+        // 删除该交易
+        data.transactions = data.transactions.filter(t => t.id !== last.id);
+        saveData();
+        // 刷新编辑框中的当前余额显示
+        const current = getAccountBalance(accId);
+        document.getElementById('editBalanceCurrent').value = formatMoney(current);
+        document.getElementById('editBalanceNew').value = current.toFixed(2);
+        // 刷新其他UI
+        if(document.getElementById('modalAccountDetail').classList.contains('show')){
+            showAccountDetail();
+        }
+        renderAll();
+        showToast('已撤销最近一笔余额调整');
+    }
+
+    // ==================== 添加账户 ====================
     function renderPresetAccountModal(){
         const wrap=document.getElementById('presetAccountWrap');
         wrap.innerHTML=PRESET_ACCOUNTS.map(p=>`<div class="preset-acc-item" onclick="fillPresetAccount('${p.name}','${p.icon}','${p.category}')">${p.icon} ${p.name}</div>`).join('');
@@ -817,9 +848,12 @@
         const today=getTodayStr();
         const weekStart=getWeekStart(today);
         const weekTxns=data.transactions.filter(t=>t.date>=weekStart&&t.date<=today);
-        let filtered = weekTxns.filter(t=>t.type===type);
-        if(type==='income') filtered = weekTxns.filter(t=>t.type==='income'||t.type==='asset_gain');
-        else if(type==='expense') filtered = weekTxns.filter(t=>t.type==='expense'||t.type==='asset_loss');
+        let filtered = [];
+        if(type==='income'){
+            filtered = weekTxns.filter(t=>t.type==='income'||t.type==='asset_gain');
+        }else if(type==='expense'){
+            filtered = weekTxns.filter(t=>t.type==='expense'||t.type==='asset_loss');
+        }
         const title = type==='income' ? '本周收入明细' : '本周支出明细';
         document.getElementById('weekDetailTitle').textContent = title;
         const container=document.getElementById('weekDetailListModal');
@@ -1010,7 +1044,6 @@
     function renderTrendChart(){
         const canvas = document.getElementById('trendChart');
         const ctx = canvas.getContext('2d');
-        // 设置画布尺寸
         const rect = canvas.parentElement.getBoundingClientRect();
         const dpr = window.devicePixelRatio || 1;
         canvas.width = rect.width * dpr;
@@ -1025,10 +1058,8 @@
         const chartW = width - padding.left - padding.right;
         const chartH = height - padding.top - padding.bottom;
 
-        // 清空
         ctx.clearRect(0, 0, width, height);
 
-        // 从快照中提取数据
         if(data.snapshots.length === 0){
             ctx.fillStyle = '#aaa';
             ctx.font = '14px sans-serif';
@@ -1037,7 +1068,6 @@
             return;
         }
 
-        // 按日期分组，计算每日总资产和理财资产
         const snapMap = {};
         data.snapshots.forEach(s=>{
             const acc = data.accounts.find(a=>a.id===s.accountId);
@@ -1056,7 +1086,6 @@
             return;
         }
 
-        // 计算最大最小值
         let maxVal = 0;
         let minVal = Infinity;
         dates.forEach(d=>{
@@ -1070,7 +1099,6 @@
         const range = maxVal - minVal || 1;
         const paddingY = range * 0.1;
 
-        // 绘制网格线
         ctx.strokeStyle = '#e0e0e0';
         ctx.lineWidth = 0.5;
         for(let i=0; i<=4; i++){
@@ -1079,7 +1107,6 @@
             ctx.moveTo(padding.left, y);
             ctx.lineTo(width - padding.right, y);
             ctx.stroke();
-            // 刻度值
             const val = minVal - paddingY + (i/4)*(range + 2*paddingY);
             ctx.fillStyle = '#888';
             ctx.font = '10px sans-serif';
@@ -1087,7 +1114,6 @@
             ctx.fillText(formatMoney(val).replace('¥',''), padding.left - 4, y + 3);
         }
 
-        // 绘制两条折线
         function drawLine(dataKey, color){
             ctx.beginPath();
             ctx.strokeStyle = color;
@@ -1107,7 +1133,6 @@
             });
             ctx.stroke();
 
-            // 绘制数据点
             dates.forEach((d, idx)=>{
                 const val = snapMap[d][dataKey];
                 const x = padding.left + (idx/(dates.length-1))*chartW;
@@ -1121,11 +1146,9 @@
 
         drawLine('total', '#7c5cfc');
         drawLine('finance', '#22bb99');
-
-        // 图例直接使用HTML，不再画
     }
 
-    // ==================== 上传余额（保留） ====================
+    // ==================== 上传余额 ====================
     function openUploadBalanceModal(){
         if(data.accounts.length===0){showToast('请先添加账户');return;}
         const wrap=document.getElementById('balanceInputs');
@@ -1373,7 +1396,6 @@
     window.onload=function(){
         loadData();
         renderAll();
-        // 窗口resize重新绘制图表
         let resizeTimer;
         window.addEventListener('resize', function(){
             clearTimeout(resizeTimer);
