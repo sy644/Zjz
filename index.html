@@ -39,7 +39,7 @@
         .app-header h1{font-size:24px;font-weight:700;color:var(--text-primary);letter-spacing:-0.5px;}
         .app-header .sub{font-size:13px;color:var(--text-muted);font-weight:400;}
         .header-actions{display:flex;gap:8px;}
-        .header-actions button{background:rgba(0,0,0,0.03);border:1px solid var(--border);border-radius:50%;width:42px;height:42px;font-size:18px;cursor:pointer;transition:0.2s;display:flex;align-items:center;justify-content:center;color:var(--text-primary);}
+        .header-actions button{background:rgba(0,0,0,0.03);border:1px solid var(--border);border-radius:50%;width:42px;height:42px;font-size:20px;cursor:pointer;transition:0.2s;display:flex;align-items:center;justify-content:center;color:var(--text-primary);}
         .header-actions button:active{transform:scale(0.92);background:rgba(0,0,0,0.06);}
         .tab-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:rgba(255,255,255,0.92);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-top:1px solid var(--border);border-radius:28px 28px 0 0;display:flex;justify-content:space-around;padding:6px 0 env(safe-area-inset-bottom,8px) 0;z-index:100;box-shadow:0 -4px 20px rgba(0,0,0,0.02);}
         .tab-item{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 12px;border:none;background:transparent;font-size:10px;color:var(--text-muted);cursor:pointer;transition:0.2s;border-radius:16px;min-width:60px;position:relative;}
@@ -237,7 +237,8 @@
 <header class="app-header">
     <div><h1>📒 周记账</h1><span class="sub">资产养成 · 每周录入真实余额核算收支</span></div>
     <div class="header-actions">
-        <button onclick="openSyncModal()" title="导入/导出账本数据" style="font-size:20px;">📂</button>
+        <!-- 替换为文件上传按钮 -->
+        <button onclick="document.getElementById('readerFileInput').click()" title="上传文件阅读" style="font-size:20px;">📤</button>
     </div>
 </header>
 
@@ -372,7 +373,6 @@
 <div class="modal-overlay" id="modalEditBalance"><div class="modal-box"><h3>✏️ 编辑余额</h3><div style="margin-bottom:12px;color:var(--text-primary);"><span style="font-weight:500;">账户：</span><span id="editBalanceAccountName"></span></div><div class="form-group"><label>当前余额</label><input type="text" id="editBalanceCurrent" disabled style="background:#f5f5f7;color:var(--text-muted);"></div><div class="form-group amount-field"><label>新余额 (¥)</label><input type="number" id="editBalanceNew" step="0.01" min="0" placeholder="输入新余额"></div><div class="modal-actions"><button class="btn-undo" onclick="undoLastAdjustment()" style="flex:0.8;">↩️ 撤销</button><button class="btn-cancel" onclick="closeModal('modalEditBalance')">取消</button><button class="btn-confirm" onclick="confirmEditBalance()">确认</button></div></div></div>
 <div class="modal-overlay" id="modalWeekDetail"><div class="modal-box"><h3 id="weekDetailTitle">本周收入明细</h3><div id="weekDetailListModal"></div><div class="modal-actions"><button class="btn-cancel" onclick="closeModal('modalWeekDetail')">关闭</button></div></div></div>
 <div class="modal-overlay" id="modalAccount"><div class="modal-box"><h3>➕ 添加账户</h3><div class="text-muted mb-8">快速选择预设账户，也可以自定义填写</div><div class="preset-account-wrap" id="presetAccountWrap"></div><div class="form-group"><label>账户名称</label><input type="text" id="accName" placeholder="如：招商银行" value=""></div><div class="form-group"><label>图标 (emoji)</label><input type="text" id="accIcon" placeholder="🏦" value="" maxlength="2"></div><div class="form-group"><label>分类 (自定义分支)</label><select id="accCategory"><option value="日常">日常</option><option value="理财">理财</option><option value="基金">基金</option><option value="股票">股票</option><option value="投资">投资</option><option value="负债">负债</option><option value="其他">其他</option></select><input type="text" id="accCategoryCustom" placeholder="或自定义分类" style="margin-top:4px;padding:8px 12px;font-size:14px;"></div><div class="form-group amount-field"><label>初始余额 (¥)</label><input type="number" id="accBalance" step="0.01" min="0" value="0.00"></div><div class="form-group"><label>余额日期</label><input type="date" id="accBalanceDate" required></div><div class="modal-actions"><button class="btn-cancel" onclick="closeModal('modalAccount')">取消</button><button class="btn-confirm" onclick="addAccount()">确认添加</button></div></div></div>
-<div class="modal-overlay" id="modalSync"><div class="modal-box"><h3>📂 数据同步</h3><div style="display:flex;flex-direction:column;gap:12px;"><button class="btn-primary" onclick="exportData()" style="background:var(--green);color:#fff;">📤 导出账本</button><div><label for="importFileInput" style="display:block;text-align:center;padding:12px;border:1px dashed var(--border);border-radius:14px;cursor:pointer;background:var(--bg);color:var(--text-muted);">📥 点击选择文件导入</label><input type="file" id="importFileInput" accept=".json" style="display:none;" onchange="importData(event)"></div><button class="btn-cancel" onclick="closeModal('modalSync')">关闭</button></div><div class="text-muted" style="margin-top:12px;font-size:12px;text-align:center;">导入将覆盖当前所有数据，请谨慎操作</div></div></div>
 <div class="modal-overlay" id="modalUploadBalance"><div class="modal-box"><h3>📤 上传本周余额</h3><p style="font-size:14px;color:var(--text-muted);margin-bottom:12px;">录入每个账户当前真实余额，系统自动计算差额生成调整记录。</p><div id="balanceInputs"></div><div class="form-group" style="margin-top:8px;"><label>记录日期</label><input type="date" id="uploadDate" required></div><div class="modal-actions"><button class="btn-cancel" onclick="closeModal('modalUploadBalance')">取消</button><button class="btn-confirm" onclick="submitBalanceUpload()">确认上传</button></div></div></div>
 <div class="modal-overlay" id="modalGoal"><div class="modal-box"><h3>🎯 添加目标</h3><div class="form-group"><label>目标名称</label><input type="text" id="goalName" placeholder="如：旅行基金" value="梦想基金"></div><div class="form-group"><label>目标金额 (¥)</label><input type="number" id="goalTarget" step="0.01" value="5000"></div><div class="form-group"><label>当前已存 (¥)</label><input type="number" id="goalCurrent" step="0.01" value="0"></div><div class="modal-actions"><button class="btn-cancel" onclick="closeModal('modalGoal')">取消</button><button class="btn-confirm" onclick="addGoal()">确认添加</button></div></div></div>
 <div class="modal-overlay" id="modalGoalProgress"><div class="modal-box"><h3>📈 更新进度</h3><div class="form-group"><label>增加金额 (¥)</label><input type="number" id="goalProgressAmount" step="0.01" min="0.01" placeholder="输入金额" value="100"></div><div style="font-size:13px;color:var(--text-muted);margin-bottom:12px;">当前进度: <span id="goalProgressCurrent">0</span> / <span id="goalProgressTarget">0</span></div><div class="modal-actions"><button class="btn-cancel" onclick="closeModal('modalGoalProgress')">取消</button><button class="btn-confirm" onclick="updateGoalProgress()">确认增加</button></div></div></div>
@@ -537,32 +537,36 @@
         }
     }
 
-    // 处理文件上传
+    // 处理文件上传（解决乱码）
     function handleReaderFile(event){
         const file = event.target.files[0];
         if(!file) return;
         const fileName = file.name;
         document.getElementById('readerFileInfo').textContent = '📄 ' + fileName;
 
-        // 根据扩展名选择解析方式
         const ext = fileName.split('.').pop().toLowerCase();
-        const reader = new FileReader();
         if(ext === 'txt'){
+            const reader = new FileReader();
             reader.onload = function(e){
-                const content = e.target.result;
-                displayReaderContent(content);
+                const buffer = e.target.result;
+                // 先尝试 UTF-8
+                let text = new TextDecoder('utf-8').decode(buffer);
+                // 如果包含替换字符或大量非ASCII字符，尝试GBK
+                if(text.includes('\uFFFD') || text.replace(/[\x20-\x7E\n\r\t]/g,'').length > text.length * 0.1){
+                    text = new TextDecoder('gbk').decode(buffer);
+                }
+                displayReaderContent(text);
+                switchTab('read');
                 startReading();
             };
-            reader.readAsText(file, 'UTF-8');
+            reader.readAsArrayBuffer(file);
         } else if(ext === 'pdf'){
-            // 动态加载PDF.js
             if(typeof pdfjsLib === 'undefined'){
                 loadPdfJsAndParse(file);
             } else {
                 parsePdf(file);
             }
         } else if(ext === 'docx'){
-            // 动态加载 mammoth
             if(typeof mammoth === 'undefined'){
                 loadMammothAndParse(file);
             } else {
@@ -580,7 +584,6 @@
         const el = document.getElementById('readerContent');
         el.textContent = content;
         el.style.display = 'block';
-        // 自动滚动到顶部
         el.scrollTop = 0;
     }
 
@@ -621,6 +624,7 @@
                 }
                 promise.then(function(){
                     displayReaderContent(fullText);
+                    switchTab('read');
                     startReading();
                 }).catch(function(err){
                     showToast('PDF解析失败：' + err.message);
@@ -651,6 +655,7 @@
             const arrayBuffer = e.target.result;
             mammoth.extractRawText({arrayBuffer: arrayBuffer}).then(function(result){
                 displayReaderContent(result.value);
+                switchTab('read');
                 startReading();
             }).catch(function(err){
                 showToast('Word解析失败：' + err.message);
@@ -682,7 +687,6 @@
         }
         if(tab==='read'){
             updateReaderStats();
-            // 如果已经打开文件，但未计时，可以继续计时（但需要用户点击停止）
         }
     }
 
@@ -722,7 +726,6 @@
         return acc.balance+txnTotal;
     }
 
-    // 修改 isFinanceAccount 增加股票
     function isFinanceAccount(acc){
         if(!acc || !acc.category) return false;
         const cat=acc.category.trim();
@@ -1384,11 +1387,6 @@
     });
 
     let currentTab='home';
-    // 重写switchTab（已在上面覆盖，这里保留原声明但会被覆盖，但为了兼容，用函数声明）
-    // 上面的 switchTab 已经定义了，但会被下面的覆盖，我们保留上面那个，但需要调整。
-    // 但我们为了清晰，重新定义一次并覆盖。
-    // 但上面已经定义了 switchTab，下面我们会重新赋值，所以没问题。
-    // 我们保留上面的实现，已经包含了阅读相关。
 
     // ==================== 账户管理 ====================
     let editingAccountId=null;
@@ -1832,7 +1830,6 @@
         if (weekExpense === 0) expenseWrap.style.display = 'none';
         else expenseWrap.style.display = 'flex';
 
-        // 控制空账户提示
         const hint = document.getElementById('emptyAccountHint');
         if(data.accounts.length === 0){
             hint.style.display = 'block';
@@ -2066,49 +2063,6 @@
         if(a&&!a.unlocked){a.unlocked=true; showToast('🏆 解锁成就: '+a.name);}
     }
 
-    function openSyncModal(){openModal('modalSync');}
-    function exportData(){
-        const json=JSON.stringify(data,null,2);
-        const blob=new Blob([json],{type:'application/json'});
-        const url=URL.createObjectURL(blob);
-        const a=document.createElement('a');
-        a.href=url;
-        a.download=`周记账_${getTodayStr()}.json`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-        showToast('账本导出成功');
-        closeModal('modalSync');
-    }
-    function importData(event){
-        const file=event.target.files[0];
-        if(!file) return;
-        const reader=new FileReader();
-        reader.onload=function(e){
-            try{
-                const imported=JSON.parse(e.target.result);
-                if(typeof imported!=='object'||!imported.accounts||!imported.transactions){
-                    showToast('无效的账本文件');
-                    return;
-                }
-                if(!confirm('导入将覆盖当前所有数据，确定继续？')) return;
-                data=imported;
-                data.transactions.forEach(t=>{if(!t.id) t.id='txn_'+Date.now()+Math.random().toString(36).slice(2,6);});
-                data.accounts.forEach(a=>{if(!a.id) a.id='acc_'+Date.now()+Math.random().toString(36).slice(2,6); if(!a.category) a.category='日常';});
-                data.goals.forEach(g=>{if(!g.id) g.id='goal_'+Date.now()+Math.random().toString(36).slice(2,6);});
-                if(!data.snapshots) data.snapshots=[];
-                if(!data.achievements) data.achievements=getDefaultData().achievements;
-                saveData();
-                renderAll();
-                showToast('账本导入成功');
-                closeModal('modalSync');
-            }catch(err){showToast('文件解析失败');}
-        };
-        reader.readAsText(file);
-        event.target.value='';
-    }
-
     function renderAll(){
         renderPresetAccountModal();
         renderAssetSummary();
@@ -2126,7 +2080,6 @@
         if(document.getElementById('page-journal').classList.contains('active')) renderJournalPage();
         if(document.getElementById('modalFullManage').classList.contains('show')) renderFullAccountList();
         if(document.getElementById('modalFinanceAccounts').classList.contains('show')) showFinanceAccounts();
-        // 更新阅读统计（如果阅读页可见）
         if(document.getElementById('page-read').classList.contains('active')){
             updateReaderStats();
         }
@@ -2135,7 +2088,6 @@
     window.onload=function(){
         loadData();
         loadReaderData();
-        // 如果阅读页可见，更新统计
         renderAll();
         let resizeTimer;
         window.addEventListener('resize', function(){
@@ -2147,7 +2099,6 @@
             renderPlant();
             startPlantAnimation();
         }
-        // 监听页面关闭，保存阅读数据（如果正在阅读则停止）
         window.addEventListener('beforeunload', function(){
             if(readingStartTime){
                 stopReading();
