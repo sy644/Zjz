@@ -64,7 +64,7 @@
         .card-main .card-footer .tag .num.blue{color:var(--blue);}
         .card-main .sub-note{font-size:11px;color:var(--text-muted);margin-top:10px;text-align:center;opacity:0.6;}
         .card-main.card-blue{background:var(--card-blue-bg);border-color:rgba(74,124,247,0.12);}
-        .card-secondary .sec-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
+        .card-secondary .sec-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;cursor:pointer;}
         .card-secondary .sec-header .sec-title{font-size:15px;font-weight:600;color:var(--text-primary);}
         .card-secondary .sec-header .sec-action{font-size:13px;color:var(--text-muted);}
         .card-secondary .goal-row{display:flex;align-items:center;gap:16px;}
@@ -209,6 +209,11 @@
         .plant-progress .plant-progress-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--green),var(--blue));transition:width 0.6s ease;}
         .no-account-tip{text-align:center;padding:20px 0;color:var(--text-muted);}
         .no-account-tip button{background:var(--blue);color:#fff;border:none;border-radius:30px;padding:10px 24px;font-size:14px;font-weight:600;cursor:pointer;margin-top:8px;box-shadow:0 4px 12px rgba(74,124,247,0.2);}
+        .stage-preview-container{display:flex;gap:12px;overflow-x:auto;padding:8px 4px;flex-wrap:nowrap;max-height:70vh;align-items:flex-start;}
+        .stage-preview-container .stage-card{flex:0 0 auto;width:120px;background:var(--bg);border-radius:12px;padding:8px;text-align:center;}
+        .stage-preview-container .stage-card canvas{width:120px;height:120px;display:block;margin:0 auto;border-radius:8px;}
+        .stage-preview-container .stage-card .stage-name{font-size:12px;font-weight:600;margin-bottom:4px;}
+        .stage-preview-container .stage-card .stage-days{font-size:10px;color:var(--text-muted);}
         @media (max-width:420px){body{padding:0 12px 80px 12px;} .card-main .card-number{font-size:34px;} .card-main .card-number .currency{font-size:22px;} .card-secondary .goal-row .mini-circle{width:70px;height:70px;} .journal-form .form-group.amount-field input{font-size:20px;} .plant-card .plant-canvas-wrap canvas{max-width:300px;}}
         @media (min-width:600px){body{padding:0 24px 90px 24px;} .tab-nav{border-radius:32px 32px 0 0;}}
     </style>
@@ -283,7 +288,8 @@
 <!-- ===== 激励页（树苗成长） ===== -->
 <div id="page-inspire" class="page">
     <div class="card-secondary plant-card">
-        <div class="sec-header">
+        <!-- 点击标题打开预览 -->
+        <div class="sec-header" onclick="openStagePreview()">
             <span class="sec-title">🌱 树苗成长</span>
             <span class="sec-action" id="plantStageLabel" style="font-weight:600;color:var(--blue);">种子</span>
         </div>
@@ -324,6 +330,19 @@
 <div class="modal-overlay" id="modalUploadBalance"><div class="modal-box"><h3>📤 上传本周余额</h3><p style="font-size:14px;color:var(--text-muted);margin-bottom:12px;">录入每个账户当前真实余额，系统自动计算差额生成调整记录。</p><div id="balanceInputs"></div><div class="form-group" style="margin-top:8px;"><label>记录日期</label><input type="date" id="uploadDate" required></div><div class="modal-actions"><button class="btn-cancel" onclick="closeModal('modalUploadBalance')">取消</button><button class="btn-confirm" onclick="submitBalanceUpload()">确认上传</button></div></div></div>
 <div class="modal-overlay" id="modalGoal"><div class="modal-box"><h3>🎯 添加目标</h3><div class="form-group"><label>目标名称</label><input type="text" id="goalName" placeholder="如：旅行基金" value="梦想基金"></div><div class="form-group"><label>目标金额 (¥)</label><input type="number" id="goalTarget" step="0.01" value="5000"></div><div class="form-group"><label>当前已存 (¥)</label><input type="number" id="goalCurrent" step="0.01" value="0"></div><div class="modal-actions"><button class="btn-cancel" onclick="closeModal('modalGoal')">取消</button><button class="btn-confirm" onclick="addGoal()">确认添加</button></div></div></div>
 <div class="modal-overlay" id="modalGoalProgress"><div class="modal-box"><h3>📈 更新进度</h3><div class="form-group"><label>增加金额 (¥)</label><input type="number" id="goalProgressAmount" step="0.01" min="0.01" placeholder="输入金额" value="100"></div><div style="font-size:13px;color:var(--text-muted);margin-bottom:12px;">当前进度: <span id="goalProgressCurrent">0</span> / <span id="goalProgressTarget">0</span></div><div class="modal-actions"><button class="btn-cancel" onclick="closeModal('modalGoalProgress')">取消</button><button class="btn-confirm" onclick="updateGoalProgress()">确认增加</button></div></div></div>
+
+<!-- ===== 成长阶段预览模态框 ===== -->
+<div class="modal-overlay" id="modalStagePreview">
+    <div class="modal-box" style="max-width:100%;">
+        <h3>
+            <span>🌱 成长阶段预览</span>
+            <button class="sec-action" onclick="closeModal('modalStagePreview')" style="background:none;border:none;color:var(--text-muted);font-size:18px;cursor:pointer;">✕</button>
+        </h3>
+        <div id="stagePreviewContainer" class="stage-preview-container">
+            <!-- 由JS动态生成 -->
+        </div>
+    </div>
+</div>
 
 <script>
     // ==================== 预设账户 ====================
@@ -382,7 +401,6 @@
     }
 
     // ==================== 工具函数 ====================
-    // 修正：使用本地日期，避免时区问题
     function getTodayStr(){
         const now = new Date();
         const y = now.getFullYear();
@@ -418,7 +436,6 @@
         return acc.balance+txnTotal;
     }
 
-    // 判断是否为理财账户（分类包含"理财"或"基金"）
     function isFinanceAccount(acc){
         if(!acc || !acc.category) return false;
         const cat=acc.category.trim();
@@ -488,8 +505,8 @@
         return GROWTH_STAGES[0];
     }
 
-    // ===== 核心绘制函数（云流动，小鸟斜飞，草花静止） =====
-    function drawPlant(ctx, w, h, totalDays, time){
+    // ===== 核心绘制函数（不依赖外部数据，直接传入天数） =====
+    function drawPlantCore(ctx, w, h, totalDays, time){
         ctx.clearRect(0, 0, w, h);
         const progress = Math.min(1, totalDays / 80);
         const groundY = h - 60;
@@ -509,7 +526,6 @@
             { w: 60, h: 20, y: 40, speed: 0.4 }
         ];
         clouds.forEach(c => {
-            // 云水平位置随时间向右移动，循环
             let cx = (time * c.speed * 30) % (w + c.w) - c.w/2;
             ctx.fillStyle = 'rgba(255,255,255,0.85)';
             ctx.beginPath();
@@ -542,10 +558,10 @@
         ctx.fillStyle = '#8BC34A';
         ctx.fillRect(0, groundY+8, w, 52);
 
-        // ---- 小草（固定位置，无摆动） ----
+        // ---- 小草（固定） ----
         const grassCount = 15 + totalDays * 0.6;
         for(let i=0; i<Math.min(grassCount, 60); i++){
-            const gx = (i / Math.min(grassCount, 60)) * w + 5; // 均匀分布
+            const gx = (i / Math.min(grassCount, 60)) * w + 5;
             const gy = groundY - 2 - Math.random() * 14;
             ctx.strokeStyle = i%3===0 ? '#66BB6A' : '#81C784';
             ctx.lineWidth = 1.5;
@@ -559,7 +575,7 @@
             ctx.stroke();
         }
 
-        // ---- 小花（固定位置，无摆动） ----
+        // ---- 小花（固定） ----
         if(totalDays >= 3){
             const flowerCount = Math.min(4 + Math.floor((totalDays-3)/2.5), 25);
             for(let i=0; i<flowerCount; i++){
@@ -790,25 +806,20 @@
             }
         }
 
-        // ---- 小鸟（斜线穿屏飞行：从左上到右下） ----
+        // ---- 小鸟（斜线穿屏） ----
         if(totalDays >= 6){
             const birdCount = 2;
             for(let i=0; i<birdCount; i++){
-                // 每个小鸟有不同偏移和速度
                 const offset = i * 0.7;
                 const speed = 0.15 + i * 0.05;
-                const t = (time * speed + offset) % 1.2; // 0~1.2 循环
-                // 从左上 (x=0, y=0) 到右下 (w, h*0.6)
+                const t = (time * speed + offset) % 1.2;
                 const bx = (t / 1.2) * w;
                 const by = (t / 1.2) * h * 0.6 + 20;
-                // 当 t 在 0~1 范围内出现，超出部分隐藏（但因为我们循环，会不断出现）
-                if(t > 1.0) continue; // 只显示在0~1区间，避免重复出现
-                // 身体
+                if(t > 1.0) continue;
                 ctx.fillStyle = '#795548';
                 ctx.beginPath();
                 ctx.ellipse(bx, by, 10, 6, 0, 0, Math.PI*2);
                 ctx.fill();
-                // 翅膀（扇动）
                 const wingAngle = Math.sin(t * 20) * 0.6;
                 ctx.fillStyle = '#8D6E63';
                 ctx.beginPath();
@@ -817,19 +828,16 @@
                 ctx.beginPath();
                 ctx.ellipse(bx+6, by-2 + Math.cos(t*20)*3, 7, 3.5, 0.3 - wingAngle, 0, Math.PI*2);
                 ctx.fill();
-                // 尾巴
                 ctx.fillStyle = '#6D4C41';
                 ctx.beginPath();
                 ctx.moveTo(bx-10, by+2);
                 ctx.lineTo(bx-17, by+7);
                 ctx.lineTo(bx-10, by+7);
                 ctx.fill();
-                // 眼睛
                 ctx.fillStyle = '#000';
                 ctx.beginPath();
                 ctx.arc(bx+4, by-2, 1.8, 0, Math.PI*2);
                 ctx.fill();
-                // 嘴
                 ctx.fillStyle = '#FF9800';
                 ctx.beginPath();
                 ctx.moveTo(bx+10, by+1);
@@ -839,7 +847,7 @@
             }
         }
 
-        // ---- 蝴蝶（保持原有飞舞） ----
+        // ---- 蝴蝶 ----
         if(totalDays >= 11){
             const butterflyData = [
                 { x: 70, y: 60, phase: 0 },
@@ -876,7 +884,7 @@
             });
         }
 
-        // ---- 青蛙（保持原有跳跃） ----
+        // ---- 青蛙 ----
         if(totalDays >= 21){
             const fx = w * 0.65 + Math.sin(time*0.08)*8;
             const fy = groundY - 4 + Math.sin(time*0.1)*3;
@@ -924,6 +932,36 @@
         }
     }
 
+    // ===== 预览：打开成长阶段预览 =====
+    function openStagePreview(){
+        const container = document.getElementById('stagePreviewContainer');
+        container.innerHTML = '';
+        const stages = GROWTH_STAGES;
+        stages.forEach(stage => {
+            const days = stage.min;
+            const card = document.createElement('div');
+            card.className = 'stage-card';
+            const nameDiv = document.createElement('div');
+            nameDiv.className = 'stage-name';
+            nameDiv.textContent = stage.label;
+            card.appendChild(nameDiv);
+            const canvas = document.createElement('canvas');
+            canvas.width = 240;
+            canvas.height = 240;
+            canvas.style.width = '120px';
+            canvas.style.height = '120px';
+            const ctx = canvas.getContext('2d');
+            drawPlantCore(ctx, 240, 240, days, 0);
+            card.appendChild(canvas);
+            const daysDiv = document.createElement('div');
+            daysDiv.className = 'stage-days';
+            daysDiv.textContent = days + '天' + (stage.max === Infinity ? '+' : '~'+stage.max+'天');
+            card.appendChild(daysDiv);
+            container.appendChild(card);
+        });
+        openModal('modalStagePreview');
+    }
+
     // ---- 动画循环 ----
     function startPlantAnimation(){
         if(animFrameId) return;
@@ -942,7 +980,7 @@
                 const dates = data.transactions.map(t => t.date);
                 const uniqueDates = new Set(dates);
                 const totalDays = uniqueDates.size;
-                drawPlant(ctx, size, size, totalDays, animTime);
+                drawPlantCore(ctx, size, size, totalDays, animTime);
             }
             animFrameId = requestAnimationFrame(frame);
         }
@@ -1377,7 +1415,6 @@
         }
     }
 
-    // 保存记账：保存后自动触发浇水动画并跳转激励页
     function saveJournalEntry(e){
         e.preventDefault();
         const accId=document.getElementById('journalAccount').value;
@@ -1410,7 +1447,6 @@
         renderAll();
         showToast('✅ 记录已保存');
 
-        // 触发浇水动画并跳转激励页
         setTimeout(() => {
             triggerWaterAnimation();
             switchTab('inspire');
