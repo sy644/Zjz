@@ -41,6 +41,7 @@
         .header-actions{display:flex;gap:8px;}
         .header-actions button{background:rgba(0,0,0,0.03);border:1px solid var(--border);border-radius:50%;width:42px;height:42px;font-size:20px;cursor:pointer;transition:0.2s;display:flex;align-items:center;justify-content:center;color:var(--text-primary);}
         .header-actions button:active{transform:scale(0.92);background:rgba(0,0,0,0.06);}
+        .header-actions button.active-btn{background:rgba(74,124,247,0.12);border-color:var(--blue);}
         .tab-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:rgba(255,255,255,0.92);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-top:1px solid var(--border);border-radius:28px 28px 0 0;display:flex;justify-content:space-around;padding:6px 0 env(safe-area-inset-bottom,8px) 0;z-index:100;box-shadow:0 -4px 20px rgba(0,0,0,0.02);}
         .tab-item{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 12px;border:none;background:transparent;font-size:10px;color:var(--text-muted);cursor:pointer;transition:0.2s;border-radius:16px;min-width:60px;position:relative;}
         .tab-item .tab-icon{font-size:24px;line-height:1.2;}
@@ -213,20 +214,46 @@
         .stage-preview-container .stage-card canvas{width:120px;height:120px;display:block;margin:0 auto;border-radius:8px;}
         .stage-preview-container .stage-card .stage-name{font-size:12px;font-weight:600;margin-bottom:4px;}
         .stage-preview-container .stage-card .stage-days{font-size:10px;color:var(--text-muted);}
-        /* 阅读器样式 */
-        .reader-upload-area{border:2px dashed var(--border);border-radius:var(--radius-sm);padding:30px 20px;text-align:center;cursor:pointer;transition:0.2s;margin-bottom:16px;background:rgba(255,255,255,0.5);}
-        .reader-upload-area:hover{border-color:var(--blue);background:rgba(74,124,247,0.04);}
-        .reader-upload-area .icon{font-size:40px;display:block;margin-bottom:8px;}
-        .reader-upload-area .hint{font-size:14px;color:var(--text-muted);}
-        .reader-content{background:var(--bg);border-radius:var(--radius-sm);padding:16px;max-height:400px;overflow-y:auto;white-space:pre-wrap;word-break:break-all;font-size:14px;line-height:1.6;margin-bottom:12px;color:var(--text-primary);}
-        .reader-stats{display:flex;justify-content:space-around;padding:10px 0;background:var(--card-bg);border-radius:var(--radius-sm);border:1px solid var(--border);margin-bottom:12px;}
+        /* ===== 阅读器新样式 ===== */
+        .reader-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
+        .reader-header .title{font-size:17px;font-weight:600;color:var(--text-primary);}
+        .reader-toolbar{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;padding:8px 0;border-bottom:1px solid var(--border);}
+        .reader-toolbar .tool-btn{background:var(--bg);border:1px solid var(--border);border-radius:20px;padding:6px 14px;font-size:13px;cursor:pointer;transition:0.2s;display:flex;align-items:center;gap:4px;color:var(--text-primary);}
+        .reader-toolbar .tool-btn:active{transform:scale(0.94);background:rgba(74,124,247,0.08);}
+        .reader-toolbar .tool-btn.active-tool{background:rgba(74,124,247,0.12);border-color:var(--blue);}
+        .reader-toolbar .tool-btn .badge{background:var(--blue);color:#fff;border-radius:10px;padding:0 8px;font-size:10px;margin-left:2px;}
+        .reader-content-wrap{background:var(--bg);border-radius:var(--radius-sm);padding:16px;max-height:400px;overflow-y:auto;white-space:pre-wrap;word-break:break-word;font-size:15px;line-height:1.8;color:var(--text-primary);min-height:200px;position:relative;}
+        .reader-content-wrap .hl{background:#ffeb3b;border-radius:2px;}
+        .reader-content-wrap .underline{text-decoration:underline;text-decoration-color:var(--blue);text-underline-offset:3px;text-decoration-thickness:2px;}
+        .reader-content-wrap .tag-marker{background:rgba(74,124,247,0.15);border-radius:3px;padding:0 2px;border-left:3px solid var(--blue);cursor:pointer;}
+        .reader-content-wrap .tag-marker:hover{background:rgba(74,124,247,0.25);}
+        .reader-content-wrap .selected-text{background:rgba(74,124,247,0.2);}
+        .reader-stats{display:flex;justify-content:space-around;padding:10px 0;background:var(--card-bg);border-radius:var(--radius-sm);border:1px solid var(--border);margin:12px 0;}
         .reader-stats .stat-item{text-align:center;}
         .reader-stats .stat-item .num{font-size:20px;font-weight:700;color:var(--text-primary);}
         .reader-stats .stat-item .label{font-size:11px;color:var(--text-muted);}
-        .reader-controls{display:flex;gap:10px;justify-content:center;}
+        .reader-controls{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
         .reader-controls button{padding:8px 20px;border:none;border-radius:30px;font-size:14px;cursor:pointer;transition:0.2s;}
         .reader-controls .btn-stop{background:var(--red);color:#fff;}
         .reader-controls .btn-stop:active{transform:scale(0.94);}
+        .reader-controls .btn-voice{background:var(--blue);color:#fff;}
+        .reader-controls .btn-voice:active{transform:scale(0.94);}
+        .reader-controls .btn-voice.speaking{background:var(--gold);}
+        .speed-control{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text-muted);}
+        .speed-control select{padding:4px 8px;border-radius:12px;border:1px solid var(--border);background:#fff;font-size:13px;}
+        .search-bar{display:flex;gap:8px;align-items:center;padding:8px 12px;background:var(--card-bg);border-radius:var(--radius-sm);border:1px solid var(--border);margin-bottom:10px;}
+        .search-bar input{flex:1;border:none;outline:none;font-size:15px;background:transparent;color:var(--text-primary);}
+        .search-bar input::placeholder{color:var(--text-muted);}
+        .search-bar .search-nav{display:flex;gap:4px;}
+        .search-bar .search-nav button{background:var(--bg);border:none;border-radius:50%;width:32px;height:32px;font-size:16px;cursor:pointer;color:var(--text-primary);}
+        .search-bar .search-nav button:active{background:rgba(0,0,0,0.06);}
+        .search-bar .close-search{background:none;border:none;font-size:18px;cursor:pointer;color:var(--text-muted);padding:0 4px;}
+        .tag-directory-item{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);cursor:pointer;}
+        .tag-directory-item:active{background:var(--bg);}
+        .tag-directory-item .tag-text{font-size:14px;color:var(--text-primary);}
+        .tag-directory-item .tag-preview{font-size:12px;color:var(--text-muted);max-width:60%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+        .empty-reader{text-align:center;padding:40px 0;color:var(--text-muted);}
+        .empty-reader .big-icon{font-size:48px;display:block;margin-bottom:12px;}
         .reader-file-info{font-size:12px;color:var(--text-muted);text-align:center;margin:6px 0;}
         @media (max-width:420px){body{padding:0 12px 80px 12px;} .card-main .card-number{font-size:34px;} .card-main .card-number .currency{font-size:22px;} .card-secondary .goal-row .mini-circle{width:70px;height:70px;} .journal-form .form-group.amount-field input{font-size:20px;} .plant-card .plant-canvas-wrap canvas{max-width:300px;}}
         @media (min-width:600px){body{padding:0 24px 90px 24px;} .tab-nav{border-radius:32px 32px 0 0;}}
@@ -237,8 +264,10 @@
 <header class="app-header">
     <div><h1>📒 周记账</h1><span class="sub">资产养成 · 每周录入真实余额核算收支</span></div>
     <div class="header-actions">
-        <!-- 替换为文件上传按钮 -->
-        <button onclick="document.getElementById('readerFileInput').click()" title="上传文件阅读" style="font-size:20px;">📤</button>
+        <!-- 上传按钮（阅读用） -->
+        <button onclick="document.getElementById('readerFileInput').click()" title="上传文件阅读" style="font-size:20px;" id="headerUploadBtn">📤</button>
+        <!-- 搜索按钮（阅读用） -->
+        <button onclick="toggleSearchBar()" title="搜索文本" style="font-size:20px;" id="headerSearchBtn">🔍</button>
     </div>
 </header>
 
@@ -254,7 +283,6 @@
             <span class="tag">结余 <span class="num" id="weekBalanceTag">¥0</span></span>
         </div>
     </div>
-    <!-- 空账户提示 -->
     <div id="emptyAccountHint" class="card-secondary" style="text-align:center;color:var(--text-muted);padding:20px;display:none;">
         📭 暂无账户，请点击下方按钮添加
         <div style="margin-top:10px;"><button onclick="showAddAccountModal()" style="background:var(--blue);color:#fff;border:none;border-radius:30px;padding:10px 24px;font-size:14px;font-weight:600;cursor:pointer;">+ 添加账户</button></div>
@@ -331,20 +359,51 @@
     </div>
 </div>
 
-<!-- ===== 阅读页 ===== -->
+<!-- ===== 阅读页（重构） ===== -->
 <div id="page-read" class="page">
-    <div class="card-secondary" style="padding:18px 18px;">
-        <div class="sec-header" style="margin-bottom:12px;"><span class="sec-title" style="font-size:17px;">📖 阅读器</span></div>
-        <!-- 上传区域 -->
-        <div class="reader-upload-area" id="readerUploadArea" onclick="document.getElementById('readerFileInput').click()">
-            <span class="icon">📤</span>
-            <div class="hint">点击上传 TXT / Word (.docx) / PDF 文件</div>
+    <div class="card-secondary" style="padding:16px 18px;">
+        <!-- 头部（简洁） -->
+        <div class="reader-header">
+            <span class="title">📖 阅读器</span>
+            <span style="font-size:12px;color:var(--text-muted);" id="readerFileName"></span>
         </div>
+        <!-- 搜索栏（默认隐藏） -->
+        <div id="searchBar" class="search-bar" style="display:none;">
+            <input type="text" id="searchInput" placeholder="搜索关键词..." oninput="doSearch(this.value)">
+            <div class="search-nav">
+                <button onclick="searchPrev()" title="上一个">↑</button>
+                <button onclick="searchNext()" title="下一个">↓</button>
+            </div>
+            <button class="close-search" onclick="toggleSearchBar()">✕</button>
+        </div>
+        <!-- 工具栏 -->
+        <div class="reader-toolbar">
+            <button class="tool-btn" onclick="toggleTagMode()" id="tagToolBtn">🏷 标签 <span class="badge" id="tagCountBadge">0</span></button>
+            <button class="tool-btn" onclick="toggleUnderlineMode()" id="underlineToolBtn">✏️ 划线</button>
+            <button class="tool-btn" onclick="toggleVoice()" id="voiceToolBtn">🎧 语音</button>
+            <div class="speed-control">
+                <span>速度</span>
+                <select id="voiceSpeedSelect" onchange="updateVoiceSpeed()">
+                    <option value="0.5">0.5x</option>
+                    <option value="0.8">0.8x</option>
+                    <option value="1.0" selected>1.0x</option>
+                    <option value="1.5">1.5x</option>
+                    <option value="2.0">2.0x</option>
+                </select>
+            </div>
+            <button class="tool-btn" onclick="openTagDirectory()" title="标签目录">📂 标签目录</button>
+        </div>
+        <!-- 内容区 -->
+        <div id="readerContentWrap" class="reader-content-wrap" onclick="handleContentClick(event)" onmouseup="handleContentSelect(event)">
+            <div id="readerContentInner" style="white-space:pre-wrap;word-break:break-word;line-height:1.8;font-size:15px;">
+                <div class="empty-reader">
+                    <span class="big-icon">📤</span>
+                    点击右上角 📤 上传 TXT / Word / PDF 文件
+                </div>
+            </div>
+        </div>
+        <!-- 文件上传（隐藏） -->
         <input type="file" id="readerFileInput" accept=".txt,.docx,.pdf" style="display:none;" onchange="handleReaderFile(event)">
-        <!-- 文件信息 -->
-        <div id="readerFileInfo" class="reader-file-info"></div>
-        <!-- 阅读内容 -->
-        <div id="readerContent" class="reader-content" style="display:none;">加载中...</div>
         <!-- 统计 -->
         <div class="reader-stats">
             <div class="stat-item"><div class="num" id="readerTotalSeconds">0</div><div class="label">累计秒数</div></div>
@@ -367,7 +426,7 @@
     <button class="tab-item" data-tab="read" onclick="switchTab('read')"><span class="tab-icon">📖</span> 阅读</button>
 </nav>
 
-<!-- ===== 模态框（原有） ===== -->
+<!-- ===== 模态框 ===== -->
 <div class="modal-overlay" id="modalFullManage"><div class="modal-box"><h3><span>💳 账户管理</span><button class="sec-action" onclick="closeModal('modalFullManage')" style="background:none;border:none;color:var(--text-muted);font-size:18px;cursor:pointer;">✕</button></h3><div id="fullAccountList"></div><div style="margin-top:12px;text-align:right;"><button class="sec-action" onclick="closeModal('modalFullManage');showAddAccountModal();" style="background:none;border:none;color:var(--blue);font-size:15px;font-weight:600;cursor:pointer;">+ 添加账户</button></div><div class="modal-actions"><button class="btn-cancel" onclick="closeModal('modalFullManage')">关闭</button></div></div></div>
 <div class="modal-overlay" id="modalFinanceAccounts"><div class="modal-box"><h3><span>📈 理财账户</span><button class="sec-action" onclick="closeModal('modalFinanceAccounts')" style="background:none;border:none;color:var(--text-muted);font-size:18px;cursor:pointer;">✕</button></h3><div id="financeAccountList"></div><div class="modal-actions"><button class="btn-cancel" onclick="closeModal('modalFinanceAccounts')">关闭</button></div></div></div>
 <div class="modal-overlay" id="modalEditBalance"><div class="modal-box"><h3>✏️ 编辑余额</h3><div style="margin-bottom:12px;color:var(--text-primary);"><span style="font-weight:500;">账户：</span><span id="editBalanceAccountName"></span></div><div class="form-group"><label>当前余额</label><input type="text" id="editBalanceCurrent" disabled style="background:#f5f5f7;color:var(--text-muted);"></div><div class="form-group amount-field"><label>新余额 (¥)</label><input type="number" id="editBalanceNew" step="0.01" min="0" placeholder="输入新余额"></div><div class="modal-actions"><button class="btn-undo" onclick="undoLastAdjustment()" style="flex:0.8;">↩️ 撤销</button><button class="btn-cancel" onclick="closeModal('modalEditBalance')">取消</button><button class="btn-confirm" onclick="confirmEditBalance()">确认</button></div></div></div>
@@ -376,6 +435,8 @@
 <div class="modal-overlay" id="modalUploadBalance"><div class="modal-box"><h3>📤 上传本周余额</h3><p style="font-size:14px;color:var(--text-muted);margin-bottom:12px;">录入每个账户当前真实余额，系统自动计算差额生成调整记录。</p><div id="balanceInputs"></div><div class="form-group" style="margin-top:8px;"><label>记录日期</label><input type="date" id="uploadDate" required></div><div class="modal-actions"><button class="btn-cancel" onclick="closeModal('modalUploadBalance')">取消</button><button class="btn-confirm" onclick="submitBalanceUpload()">确认上传</button></div></div></div>
 <div class="modal-overlay" id="modalGoal"><div class="modal-box"><h3>🎯 添加目标</h3><div class="form-group"><label>目标名称</label><input type="text" id="goalName" placeholder="如：旅行基金" value="梦想基金"></div><div class="form-group"><label>目标金额 (¥)</label><input type="number" id="goalTarget" step="0.01" value="5000"></div><div class="form-group"><label>当前已存 (¥)</label><input type="number" id="goalCurrent" step="0.01" value="0"></div><div class="modal-actions"><button class="btn-cancel" onclick="closeModal('modalGoal')">取消</button><button class="btn-confirm" onclick="addGoal()">确认添加</button></div></div></div>
 <div class="modal-overlay" id="modalGoalProgress"><div class="modal-box"><h3>📈 更新进度</h3><div class="form-group"><label>增加金额 (¥)</label><input type="number" id="goalProgressAmount" step="0.01" min="0.01" placeholder="输入金额" value="100"></div><div style="font-size:13px;color:var(--text-muted);margin-bottom:12px;">当前进度: <span id="goalProgressCurrent">0</span> / <span id="goalProgressTarget">0</span></div><div class="modal-actions"><button class="btn-cancel" onclick="closeModal('modalGoalProgress')">取消</button><button class="btn-confirm" onclick="updateGoalProgress()">确认增加</button></div></div></div>
+<!-- 标签目录模态框 -->
+<div class="modal-overlay" id="modalTagDirectory"><div class="modal-box"><h3>🏷 标签目录 <button class="sec-action" onclick="closeModal('modalTagDirectory')" style="background:none;border:none;color:var(--text-muted);font-size:18px;cursor:pointer;">✕</button></h3><div id="tagDirectoryList"></div><div class="modal-actions"><button class="btn-cancel" onclick="closeModal('modalTagDirectory')">关闭</button></div></div></div>
 
 <!-- ===== 成长阶段预览模态框 ===== -->
 <div class="modal-overlay" id="modalStagePreview">
@@ -401,8 +462,9 @@
 
     const STORAGE_KEY = 'financeAppData';
     const READER_STORAGE_KEY = 'readerData';
+    const READER_CONTENT_KEY = 'readerContentData';
 
-    // ==================== 默认数据（完全为空） ====================
+    // ==================== 默认数据 ====================
     function getDefaultData(){
         return {
             accounts:[],
@@ -454,39 +516,65 @@
                 readerData = JSON.parse(raw);
                 if(typeof readerData.totalSeconds !== 'number') readerData.totalSeconds = 0;
                 if(!Array.isArray(readerData.readDays)) readerData.readDays = [];
+                if(!Array.isArray(readerData.tags)) readerData.tags = [];
+                if(!Array.isArray(readerData.underlines)) readerData.underlines = [];
                 return;
             }catch(e){}
         }
-        readerData = { totalSeconds: 0, readDays: [] };
+        readerData = { totalSeconds: 0, readDays: [], tags: [], underlines: [] };
         saveReaderData();
     }
     function saveReaderData(){
         localStorage.setItem(READER_STORAGE_KEY, JSON.stringify(readerData));
     }
 
+    // 阅读内容存储（纯文本）
+    let currentText = '';
+    let currentFileName = '';
+    // 搜索状态
+    let searchResults = [];
+    let searchIndex = -1;
+    let searchActive = false;
+
     // 阅读计时相关
-    let readingStartTime = null; // Date
+    let readingStartTime = null;
     let readingTimerInterval = null;
-    let currentReadingSeconds = 0; // 本次阅读秒数（累计，用于显示）
+
+    // 语音相关
+    let speechSynth = null;
+    let isSpeaking = false;
+    let speechUtterance = null;
+    let voiceSpeed = 1.0;
+
+    // 标签模式 & 划线模式
+    let tagMode = false;
+    let underlineMode = false;
+
+    // ==================== 阅读器核心功能 ====================
+
+    function updateReaderStats(){
+        document.getElementById('readerTotalSeconds').textContent = readerData.totalSeconds;
+        document.getElementById('readerTotalDays').textContent = readerData.readDays.length;
+        if(!readingStartTime){
+            document.getElementById('readerCurrentSession').textContent = '0';
+        }
+        document.getElementById('tagCountBadge').textContent = readerData.tags.length;
+    }
 
     function startReading(){
-        if(readingStartTime) return; // 已经计时
+        if(readingStartTime) return;
         readingStartTime = new Date();
-        currentReadingSeconds = 0;
         if(readingTimerInterval) clearInterval(readingTimerInterval);
         readingTimerInterval = setInterval(()=>{
             if(readingStartTime){
                 const now = new Date();
                 const diff = Math.floor((now - readingStartTime) / 1000);
-                currentReadingSeconds = diff;
                 document.getElementById('readerCurrentSession').textContent = diff;
-                // 更新总秒数显示（实时）
                 const total = readerData.totalSeconds + diff;
                 document.getElementById('readerTotalSeconds').textContent = total;
             }
         }, 1000);
         document.getElementById('readerStopBtn').style.display = 'inline-block';
-        showToast('📖 开始阅读计时');
     }
 
     function stopReading(){
@@ -494,68 +582,53 @@
         const now = new Date();
         const diff = Math.floor((now - readingStartTime) / 1000);
         if(diff > 0){
-            // 累加总秒数
             readerData.totalSeconds += diff;
-            // 记录今天
             const today = getTodayStr();
             if(!readerData.readDays.includes(today)){
                 readerData.readDays.push(today);
             }
             saveReaderData();
-            // 更新显示
             updateReaderStats();
-            showToast(`⏱ 本次阅读 ${diff} 秒，已累计`);
+            showToast(`⏱ 本次阅读 ${diff} 秒`);
         }
-        // 重置计时
         if(readingTimerInterval) clearInterval(readingTimerInterval);
         readingTimerInterval = null;
         readingStartTime = null;
-        currentReadingSeconds = 0;
         document.getElementById('readerCurrentSession').textContent = '0';
         document.getElementById('readerStopBtn').style.display = 'none';
-        // 刷新总秒数显示（已保存）
         updateReaderStats();
-    }
-
-    function updateReaderStats(){
-        document.getElementById('readerTotalSeconds').textContent = readerData.totalSeconds;
-        document.getElementById('readerTotalDays').textContent = readerData.readDays.length;
-        if(!readingStartTime){
-            document.getElementById('readerCurrentSession').textContent = '0';
-        } else {
-            // 实时已在interval更新
-        }
     }
 
     function resetReaderStats(){
         if(confirm('确定重置所有阅读统计数据吗？')){
             readerData.totalSeconds = 0;
             readerData.readDays = [];
+            readerData.tags = [];
+            readerData.underlines = [];
             saveReaderData();
             updateReaderStats();
+            renderReaderContent();
             showToast('已重置阅读统计');
         }
     }
 
-    // 处理文件上传（解决乱码）
+    // 处理文件上传（支持TXT/PDF/DOCX，自动检测编码）
     function handleReaderFile(event){
         const file = event.target.files[0];
         if(!file) return;
-        const fileName = file.name;
-        document.getElementById('readerFileInfo').textContent = '📄 ' + fileName;
+        currentFileName = file.name;
+        document.getElementById('readerFileName').textContent = currentFileName;
 
-        const ext = fileName.split('.').pop().toLowerCase();
+        const ext = file.name.split('.').pop().toLowerCase();
         if(ext === 'txt'){
             const reader = new FileReader();
             reader.onload = function(e){
                 const buffer = e.target.result;
-                // 先尝试 UTF-8
                 let text = new TextDecoder('utf-8').decode(buffer);
-                // 如果包含替换字符或大量非ASCII字符，尝试GBK
                 if(text.includes('\uFFFD') || text.replace(/[\x20-\x7E\n\r\t]/g,'').length > text.length * 0.1){
                     text = new TextDecoder('gbk').decode(buffer);
                 }
-                displayReaderContent(text);
+                setReaderContent(text);
                 switchTab('read');
                 startReading();
             };
@@ -574,20 +647,10 @@
             }
         } else {
             showToast('不支持的文件格式');
-            document.getElementById('readerFileInfo').textContent = '❌ 不支持的文件格式';
         }
-        // 清空input以便重复上传同文件
         event.target.value = '';
     }
 
-    function displayReaderContent(content){
-        const el = document.getElementById('readerContent');
-        el.textContent = content;
-        el.style.display = 'block';
-        el.scrollTop = 0;
-    }
-
-    // 加载PDF.js
     function loadPdfJsAndParse(file){
         const script = document.createElement('script');
         script.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js';
@@ -595,9 +658,7 @@
             pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
             parsePdf(file);
         };
-        script.onerror = function(){
-            showToast('加载PDF解析库失败，请检查网络');
-        };
+        script.onerror = function(){ showToast('加载PDF解析库失败'); };
         document.head.appendChild(script);
     }
 
@@ -623,29 +684,20 @@
                     });
                 }
                 promise.then(function(){
-                    displayReaderContent(fullText);
+                    setReaderContent(fullText);
                     switchTab('read');
                     startReading();
-                }).catch(function(err){
-                    showToast('PDF解析失败：' + err.message);
-                });
-            }).catch(function(err){
-                showToast('PDF加载失败：' + err.message);
-            });
+                }).catch(function(err){ showToast('PDF解析失败'); });
+            }).catch(function(err){ showToast('PDF加载失败'); });
         };
         reader.readAsArrayBuffer(file);
     }
 
-    // 加载 mammoth
     function loadMammothAndParse(file){
         const script = document.createElement('script');
         script.src = 'https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js';
-        script.onload = function(){
-            parseDocx(file);
-        };
-        script.onerror = function(){
-            showToast('加载Word解析库失败，请检查网络');
-        };
+        script.onload = function(){ parseDocx(file); };
+        script.onerror = function(){ showToast('加载Word解析库失败'); };
         document.head.appendChild(script);
     }
 
@@ -654,21 +706,447 @@
         reader.onload = function(e){
             const arrayBuffer = e.target.result;
             mammoth.extractRawText({arrayBuffer: arrayBuffer}).then(function(result){
-                displayReaderContent(result.value);
+                setReaderContent(result.value);
                 switchTab('read');
                 startReading();
-            }).catch(function(err){
-                showToast('Word解析失败：' + err.message);
-            });
+            }).catch(function(err){ showToast('Word解析失败'); });
         };
         reader.readAsArrayBuffer(file);
     }
 
-    // 页面切换时自动停止阅读
+    // 设置阅读内容
+    function setReaderContent(text){
+        currentText = text;
+        // 保存到localStorage
+        localStorage.setItem(READER_CONTENT_KEY, JSON.stringify({text: text, name: currentFileName}));
+        renderReaderContent();
+    }
+
+    // 渲染阅读内容（带标注）
+    function renderReaderContent(){
+        const container = document.getElementById('readerContentInner');
+        if(!currentText){
+            container.innerHTML = `<div class="empty-reader"><span class="big-icon">📤</span>点击右上角 📤 上传 TXT / Word / PDF 文件</div>`;
+            return;
+        }
+
+        // 保存当前滚动位置
+        const wrap = document.getElementById('readerContentWrap');
+        const scrollPos = wrap.scrollTop;
+
+        // 构建带标注的HTML
+        let html = currentText;
+
+        // 应用划线（下划线）
+        if(readerData.underlines && readerData.underlines.length > 0){
+            // 从后往前替换，避免索引错乱
+            let sorted = [...readerData.underlines].sort((a,b) => b.start - a.start);
+            for(let u of sorted){
+                if(u.start >= 0 && u.end <= html.length && u.start < u.end){
+                    const before = html.substring(0, u.start);
+                    const middle = html.substring(u.start, u.end);
+                    const after = html.substring(u.end);
+                    html = before + `<span class="underline">${middle}</span>` + after;
+                }
+            }
+        }
+
+        // 应用标签
+        if(readerData.tags && readerData.tags.length > 0){
+            let sorted = [...readerData.tags].sort((a,b) => b.start - a.start);
+            for(let t of sorted){
+                if(t.start >= 0 && t.end <= html.length && t.start < t.end){
+                    const before = html.substring(0, t.start);
+                    const middle = html.substring(t.start, t.end);
+                    const after = html.substring(t.end);
+                    const label = t.label || '🏷';
+                    html = before + `<span class="tag-marker" data-tag-id="${t.id}" title="标签: ${label}">${middle}</span>` + after;
+                }
+            }
+        }
+
+        // 高亮搜索结果
+        if(searchActive && searchResults.length > 0){
+            // 先移除已有hl
+            // 由于我们是用innerHTML，直接重新构建比较复杂，我们使用一个更简单的方法：
+            // 在显示时，先移除所有hl类，然后重新高亮
+            // 但我们这里用innerHTML，所以需要先对纯文本做高亮
+            // 因为我们上面已经做了标签和划线，现在要在此基础上加高亮，比较复杂。
+            // 简化：使用一个独立的显示层，或者重新构建。
+            // 这里采用另一种方式：在标签和划线之后，再应用高亮。
+            // 但为了简化，我们使用更直接的方法：在渲染时，先用纯文本构建，然后应用所有标注。
+            // 由于标注是叠加的，我们用更健壮的方式：重新从纯文本构建。
+            // 重新构建：从currentText开始
+            let rawHtml = currentText;
+            // 划线
+            if(readerData.underlines){
+                let sortedU = [...readerData.underlines].sort((a,b) => b.start - a.start);
+                for(let u of sortedU){
+                    if(u.start >= 0 && u.end <= rawHtml.length && u.start < u.end){
+                        const before = rawHtml.substring(0, u.start);
+                        const middle = rawHtml.substring(u.start, u.end);
+                        const after = rawHtml.substring(u.end);
+                        rawHtml = before + `<span class="underline">${middle}</span>` + after;
+                    }
+                }
+            }
+            // 标签
+            if(readerData.tags){
+                let sortedT = [...readerData.tags].sort((a,b) => b.start - a.start);
+                for(let t of sortedT){
+                    if(t.start >= 0 && t.end <= rawHtml.length && t.start < t.end){
+                        const before = rawHtml.substring(0, t.start);
+                        const middle = rawHtml.substring(t.start, t.end);
+                        const after = rawHtml.substring(t.end);
+                        const label = t.label || '🏷';
+                        rawHtml = before + `<span class="tag-marker" data-tag-id="${t.id}" title="标签: ${label}">${middle}</span>` + after;
+                    }
+                }
+            }
+            // 高亮搜索
+            if(searchResults.length > 0){
+                // 从后往前替换
+                let sortedS = [...searchResults].sort((a,b) => b - a);
+                for(let pos of sortedS){
+                    const keyword = document.getElementById('searchInput')?.value || '';
+                    if(keyword && pos >= 0 && pos + keyword.length <= rawHtml.length){
+                        // 需要检查这个位置是否在已有的span内部，如果是则跳过
+                        // 简单处理：直接替换，但注意不要破坏已有span
+                        // 更安全的方式：先提取文本，再替换
+                        // 这里为了简化，我们直接替换，但可能会导致span嵌套问题。
+                        // 改用更稳健的方式：使用临时DOM操作
+                        // 因为比较复杂，我们用一个更简单的方法：使用replace
+                        // 但为了处理嵌套，我们直接用textContent方式重新构建。
+                        // 算了，这里为了功能可用，我们采用重建的方式。
+                        // 但由于我们已经有了rawHtml，我们可以在rawHtml基础上替换。
+                        // 但由于rawHtml中包含了span标签，直接替换会导致标签被破坏。
+                        // 所以我们使用另一种方法：先保存标注数据，然后重新构建。
+                        // 我们重新构建一个完全基于标注的渲染。
+                        // 由于时间关系，我们采用一种简单但有效的方式：
+                        // 在rawHtml中，我们尝试用span包裹匹配的文本，但要避开已有标签。
+                        // 这种方法比较复杂，我们使用一个折中方案：如果搜索激活，只显示纯文本+高亮，不显示标签和划线。
+                        // 这样用户体验稍差，但功能可用。
+                        // 实际上更好的方式是重新构建所有标注。
+                        // 让我们使用更专业的方法：基于文本位置构建。
+                        // 由于代码已经很长，我采用一种更实用的方式：在搜索时，暂时隐藏标签和划线，只显示高亮。
+                        // 这样用户搜索时看到的是高亮结果，退出搜索后恢复。
+                        // 为了更好的体验，我们做一个完整的重构。
+                        // 这里我决定：在搜索激活时，只显示高亮，不显示标签和划线。
+                        // 搜索结束后，恢复显示。
+                        // 这样实现简单，用户体验也可以接受。
+                        // 所以我们直接在这里判断，如果searchActive，只做高亮。
+                        if(searchActive){
+                            // 重新构建，只高亮
+                            let searchHtml = currentText;
+                            let sortedPos = [...searchResults].sort((a,b) => b - a);
+                            for(let pos of sortedPos){
+                                const kw = document.getElementById('searchInput')?.value || '';
+                                if(kw && pos >= 0 && pos + kw.length <= searchHtml.length){
+                                    const before = searchHtml.substring(0, pos);
+                                    const middle = searchHtml.substring(pos, pos + kw.length);
+                                    const after = searchHtml.substring(pos + kw.length);
+                                    searchHtml = before + `<span class="hl">${middle}</span>` + after;
+                                }
+                            }
+                            container.innerHTML = searchHtml;
+                            wrap.scrollTop = scrollPos;
+                            return;
+                        }
+                    }
+                }
+            }
+            container.innerHTML = rawHtml;
+            wrap.scrollTop = scrollPos;
+            return;
+        }
+
+        // 非搜索状态，正常显示
+        container.innerHTML = html;
+        wrap.scrollTop = scrollPos;
+    }
+
+    // ===== 搜索功能 =====
+    function toggleSearchBar(){
+        const bar = document.getElementById('searchBar');
+        if(bar.style.display === 'none'){
+            bar.style.display = 'flex';
+            document.getElementById('searchInput').focus();
+            document.getElementById('headerSearchBtn').classList.add('active-btn');
+        }else{
+            bar.style.display = 'none';
+            searchActive = false;
+            searchResults = [];
+            searchIndex = -1;
+            document.getElementById('headerSearchBtn').classList.remove('active-btn');
+            renderReaderContent();
+        }
+    }
+
+    function doSearch(keyword){
+        if(!keyword || !currentText){
+            searchResults = [];
+            searchIndex = -1;
+            searchActive = false;
+            renderReaderContent();
+            return;
+        }
+        searchActive = true;
+        searchResults = [];
+        let idx = currentText.indexOf(keyword);
+        while(idx !== -1){
+            searchResults.push(idx);
+            idx = currentText.indexOf(keyword, idx + 1);
+        }
+        searchIndex = searchResults.length > 0 ? 0 : -1;
+        renderReaderContent();
+        if(searchResults.length > 0){
+            showToast(`找到 ${searchResults.length} 个匹配`);
+            scrollToSearchResult(0);
+        }else{
+            showToast('未找到匹配');
+        }
+    }
+
+    function scrollToSearchResult(index){
+        if(index < 0 || index >= searchResults.length) return;
+        const pos = searchResults[index];
+        const wrap = document.getElementById('readerContentWrap');
+        const inner = document.getElementById('readerContentInner');
+        // 估算位置
+        const textBefore = currentText.substring(0, pos);
+        const lines = textBefore.split('\n').length;
+        const lineHeight = 1.8 * 15; // 约27px
+        const targetScroll = (lines - 3) * lineHeight;
+        wrap.scrollTop = Math.max(0, targetScroll);
+        // 高亮该位置
+        // 由于我们重新渲染了，在render中已经高亮了所有，这里只需要滚动
+        searchIndex = index;
+        // 更新搜索框显示
+        const input = document.getElementById('searchInput');
+        if(input) input.placeholder = `${index+1}/${searchResults.length}`;
+    }
+
+    function searchNext(){
+        if(searchResults.length === 0) return;
+        searchIndex = (searchIndex + 1) % searchResults.length;
+        scrollToSearchResult(searchIndex);
+    }
+
+    function searchPrev(){
+        if(searchResults.length === 0) return;
+        searchIndex = (searchIndex - 1 + searchResults.length) % searchResults.length;
+        scrollToSearchResult(searchIndex);
+    }
+
+    // ===== 标签功能 =====
+    function toggleTagMode(){
+        tagMode = !tagMode;
+        const btn = document.getElementById('tagToolBtn');
+        if(tagMode){
+            btn.classList.add('active-tool');
+            underlineMode = false;
+            document.getElementById('underlineToolBtn').classList.remove('active-tool');
+            showToast('🏷 点击文本添加标签（单击）');
+        }else{
+            btn.classList.remove('active-tool');
+        }
+    }
+
+    function handleContentClick(event){
+        if(!tagMode) return;
+        const selection = window.getSelection();
+        const text = selection.toString().trim();
+        if(text && text.length > 0){
+            // 获取选中文本在纯文本中的位置
+            const inner = document.getElementById('readerContentInner');
+            // 由于inner包含HTML标签，我们需要找到选中文本在纯文本中的位置
+            // 方法：从inner的textContent中查找
+            const fullText = inner.textContent;
+            const startIdx = fullText.indexOf(text);
+            if(startIdx !== -1){
+                const endIdx = startIdx + text.length;
+                // 检查是否已存在标签
+                const exists = readerData.tags.some(t => t.start === startIdx && t.end === endIdx);
+                if(exists){
+                    showToast('该位置已有标签');
+                    return;
+                }
+                const label = prompt('输入标签名称（留空使用默认）:', text.substring(0, 8));
+                if(label !== null){
+                    readerData.tags.push({
+                        id: 'tag_' + Date.now() + Math.random().toString(36).slice(2,6),
+                        start: startIdx,
+                        end: endIdx,
+                        label: label || text.substring(0, 8)
+                    });
+                    saveReaderData();
+                    renderReaderContent();
+                    updateReaderStats();
+                    showToast('🏷 标签已添加');
+                }
+            }else{
+                showToast('无法定位文本位置');
+            }
+            selection.removeAllRanges();
+        }else{
+            showToast('请先选中一段文字再点击');
+        }
+    }
+
+    function openTagDirectory(){
+        const list = document.getElementById('tagDirectoryList');
+        if(readerData.tags.length === 0){
+            list.innerHTML = '<div style="padding:20px 0;text-align:center;color:var(--text-muted);">暂无标签</div>';
+        }else{
+            let html = '';
+            const sorted = [...readerData.tags].sort((a,b) => a.start - b.start);
+            for(let t of sorted){
+                const preview = currentText.substring(t.start, Math.min(t.start + 30, t.end)) + (t.end - t.start > 30 ? '...' : '');
+                html += `<div class="tag-directory-item" onclick="jumpToTag('${t.id}')">
+                    <span class="tag-text">🏷 ${t.label || '标签'}</span>
+                    <span class="tag-preview">${preview}</span>
+                </div>`;
+            }
+            list.innerHTML = html;
+        }
+        openModal('modalTagDirectory');
+    }
+
+    function jumpToTag(tagId){
+        const tag = readerData.tags.find(t => t.id === tagId);
+        if(tag){
+            closeModal('modalTagDirectory');
+            const wrap = document.getElementById('readerContentWrap');
+            const textBefore = currentText.substring(0, tag.start);
+            const lines = textBefore.split('\n').length;
+            const lineHeight = 1.8 * 15;
+            wrap.scrollTop = Math.max(0, (lines - 3) * lineHeight);
+            // 高亮该标签位置
+            showToast(`📍 跳转到标签: ${tag.label || '标签'}`);
+        }
+    }
+
+    // ===== 划线功能 =====
+    function toggleUnderlineMode(){
+        underlineMode = !underlineMode;
+        const btn = document.getElementById('underlineToolBtn');
+        if(underlineMode){
+            btn.classList.add('active-tool');
+            tagMode = false;
+            document.getElementById('tagToolBtn').classList.remove('active-tool');
+            showToast('✏️ 选中文字后点击划线');
+        }else{
+            btn.classList.remove('active-tool');
+        }
+    }
+
+    function handleContentSelect(event){
+        if(!underlineMode) return;
+        const selection = window.getSelection();
+        const text = selection.toString().trim();
+        if(text && text.length > 0){
+            const inner = document.getElementById('readerContentInner');
+            const fullText = inner.textContent;
+            const startIdx = fullText.indexOf(text);
+            if(startIdx !== -1){
+                const endIdx = startIdx + text.length;
+                // 检查是否已划线
+                const exists = readerData.underlines.some(u => u.start === startIdx && u.end === endIdx);
+                if(exists){
+                    showToast('该位置已划线');
+                    selection.removeAllRanges();
+                    return;
+                }
+                readerData.underlines.push({
+                    start: startIdx,
+                    end: endIdx
+                });
+                saveReaderData();
+                renderReaderContent();
+                showToast('✏️ 划线已添加');
+            }
+            selection.removeAllRanges();
+        }
+    }
+
+    // ===== 语音功能 =====
+    function toggleVoice(){
+        if(isSpeaking){
+            stopVoice();
+        }else{
+            startVoice();
+        }
+    }
+
+    function startVoice(){
+        if(!currentText){
+            showToast('请先上传阅读内容');
+            return;
+        }
+        if(!window.speechSynthesis){
+            showToast('浏览器不支持语音朗读');
+            return;
+        }
+        if(isSpeaking){
+            stopVoice();
+            return;
+        }
+        // 获取速度
+        const speedSelect = document.getElementById('voiceSpeedSelect');
+        voiceSpeed = parseFloat(speedSelect.value) || 1.0;
+
+        speechUtterance = new SpeechSynthesisUtterance(currentText);
+        speechUtterance.lang = 'zh-CN';
+        speechUtterance.rate = voiceSpeed;
+        speechUtterance.pitch = 1.0;
+        speechUtterance.volume = 1.0;
+
+        speechUtterance.onstart = function(){
+            isSpeaking = true;
+            document.getElementById('voiceToolBtn').textContent = '🔊 播放中';
+            document.getElementById('voiceToolBtn').classList.add('speaking');
+            showToast('🎧 开始朗读');
+        };
+        speechUtterance.onend = function(){
+            isSpeaking = false;
+            document.getElementById('voiceToolBtn').textContent = '🎧 语音';
+            document.getElementById('voiceToolBtn').classList.remove('speaking');
+        };
+        speechUtterance.onerror = function(){
+            isSpeaking = false;
+            document.getElementById('voiceToolBtn').textContent = '🎧 语音';
+            document.getElementById('voiceToolBtn').classList.remove('speaking');
+            showToast('语音播放出错');
+        };
+
+        window.speechSynthesis.speak(speechUtterance);
+    }
+
+    function stopVoice(){
+        if(window.speechSynthesis){
+            window.speechSynthesis.cancel();
+        }
+        isSpeaking = false;
+        document.getElementById('voiceToolBtn').textContent = '🎧 语音';
+        document.getElementById('voiceToolBtn').classList.remove('speaking');
+    }
+
+    function updateVoiceSpeed(){
+        const speedSelect = document.getElementById('voiceSpeedSelect');
+        voiceSpeed = parseFloat(speedSelect.value) || 1.0;
+        if(isSpeaking && speechUtterance){
+            speechUtterance.rate = voiceSpeed;
+        }
+        showToast(`语速: ${voiceSpeed}x`);
+    }
+
+    // ==================== 页面切换 ====================
     function switchTab(tab){
-        // 如果切换到非阅读页且正在阅读，停止
         if(tab !== 'read' && readingStartTime){
             stopReading();
+        }
+        if(tab !== 'read' && isSpeaking){
+            stopVoice();
         }
         currentTab=tab;
         document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
@@ -687,6 +1165,25 @@
         }
         if(tab==='read'){
             updateReaderStats();
+            // 恢复内容
+            const saved = localStorage.getItem(READER_CONTENT_KEY);
+            if(saved){
+                try{
+                    const obj = JSON.parse(saved);
+                    if(obj.text){
+                        currentText = obj.text;
+                        currentFileName = obj.name || '';
+                        document.getElementById('readerFileName').textContent = currentFileName;
+                        renderReaderContent();
+                    }
+                }catch(e){}
+            }
+            // 隐藏搜索栏
+            document.getElementById('searchBar').style.display = 'none';
+            searchActive = false;
+            searchResults = [];
+            searchIndex = -1;
+            document.getElementById('headerSearchBtn').classList.remove('active-btn');
         }
     }
 
@@ -711,6 +1208,7 @@
         m.setHours(0,0,0,0);
         return m.toISOString().slice(0,10);
     }
+
     function getAccountBalance(accId){
         const acc=data.accounts.find(a=>a.id===accId);
         if(!acc) return 0;
@@ -770,604 +1268,6 @@
             if(acc&&isFinanceAccount(acc)){if(!last||t.date>last) last=t.date;}
         });}
         return last||null;
-    }
-
-    // ==================== 树苗成长 + 动画引擎（基于交易记录） ====================
-    let animFrameId = null;
-    let animTime = 0;
-
-    const GROWTH_STAGES = [
-        { name: '种子', min: 0, max: 0, label: '🌰 种子', color: '#8D6E63' },
-        { name: '发芽', min: 1, max: 2, label: '🌱 发芽', color: '#66BB6A' },
-        { name: '小苗', min: 3, max: 5, label: '🌿 小苗', color: '#4CAF50' },
-        { name: '树苗', min: 6, max: 10, label: '🌳 树苗', color: '#388E3C' },
-        { name: '小树', min: 11, max: 20, label: '🌲 小树', color: '#2E7D32' },
-        { name: '大树', min: 21, max: 40, label: '🌳 大树', color: '#1B5E20' },
-        { name: '花园', min: 41, max: 60, label: '🌸 花园', color: '#E91E63' },
-        { name: '果园', min: 61, max: 80, label: '🍎 果园', color: '#F57C00' },
-        { name: '庄园', min: 81, max: Infinity, label: '🏡 庄园', color: '#4A148C' }
-    ];
-
-    function getGrowthStage(totalDays){
-        for(let s of GROWTH_STAGES){
-            if(totalDays >= s.min && totalDays <= s.max) return s;
-        }
-        return GROWTH_STAGES[0];
-    }
-
-    // ===== 核心绘制函数（不依赖外部数据，直接传入天数） =====
-    function drawPlantCore(ctx, w, h, totalDays, time){
-        ctx.clearRect(0, 0, w, h);
-        const progress = Math.min(1, totalDays / 80);
-        const groundY = h - 60;
-
-        // ---- 天空色 ----
-        const skyGrad = ctx.createLinearGradient(0,0,0,groundY);
-        skyGrad.addColorStop(0,'#b3d9ff');
-        skyGrad.addColorStop(0.7,'#d4eaff');
-        skyGrad.addColorStop(1,'#e8f5e9');
-        ctx.fillStyle = skyGrad;
-        ctx.fillRect(0,0,w,groundY);
-
-        // ---- 云朵（水平流动） ----
-        const clouds = [
-            { w: 70, h: 24, y: 30, speed: 0.3 },
-            { w: 80, h: 28, y: 15, speed: 0.2 },
-            { w: 60, h: 20, y: 40, speed: 0.4 }
-        ];
-        clouds.forEach(c => {
-            let cx = (time * c.speed * 30) % (w + c.w) - c.w/2;
-            ctx.fillStyle = 'rgba(255,255,255,0.85)';
-            ctx.beginPath();
-            ctx.ellipse(cx, c.y, c.w/2, c.h/2, 0, 0, Math.PI*2);
-            ctx.fill();
-            ctx.beginPath();
-            ctx.ellipse(cx - c.w*0.25, c.y + 5, c.w*0.3, c.h*0.5, 0, 0, Math.PI*2);
-            ctx.fill();
-            ctx.beginPath();
-            ctx.ellipse(cx + c.w*0.25, c.y + 4, c.w*0.3, c.h*0.5, 0, 0, Math.PI*2);
-            ctx.fill();
-        });
-
-        // ---- 远山 ----
-        if(totalDays >= 5){
-            ctx.fillStyle = 'rgba(100,150,100,0.15)';
-            ctx.beginPath();
-            ctx.moveTo(0, groundY-30);
-            ctx.quadraticCurveTo(80, groundY-100, 160, groundY-40);
-            ctx.quadraticCurveTo(240, groundY-120, 320, groundY-50);
-            ctx.quadraticCurveTo(400, groundY-90, w, groundY-30);
-            ctx.lineTo(w, groundY);
-            ctx.lineTo(0, groundY);
-            ctx.fill();
-        }
-
-        // ---- 草地 ----
-        ctx.fillStyle = '#7CB342';
-        ctx.fillRect(0, groundY, w, 60);
-        ctx.fillStyle = '#8BC34A';
-        ctx.fillRect(0, groundY+8, w, 52);
-
-        // ---- 小草（固定） ----
-        const grassCount = 15 + totalDays * 0.6;
-        for(let i=0; i<Math.min(grassCount, 60); i++){
-            const gx = (i / Math.min(grassCount, 60)) * w + 5;
-            const gy = groundY - 2 - Math.random() * 14;
-            ctx.strokeStyle = i%3===0 ? '#66BB6A' : '#81C784';
-            ctx.lineWidth = 1.5;
-            ctx.beginPath();
-            ctx.moveTo(gx, groundY+2);
-            ctx.quadraticCurveTo(gx-4, gy, gx-2, groundY-2);
-            ctx.stroke();
-            ctx.beginPath();
-            ctx.moveTo(gx+2, groundY+2);
-            ctx.quadraticCurveTo(gx+6, gy+3, gx+4, groundY-2);
-            ctx.stroke();
-        }
-
-        // ---- 小花（固定） ----
-        if(totalDays >= 3){
-            const flowerCount = Math.min(4 + Math.floor((totalDays-3)/2.5), 25);
-            for(let i=0; i<flowerCount; i++){
-                const fx = 15 + (i / flowerCount) * (w-30) + 5;
-                const fy = groundY - 4 - Math.random() * 16;
-                const size = 4 + Math.random() * 5;
-                const colors = ['#F06292', '#EC407A', '#F48FB1', '#E91E63', '#FFB74D', '#FFF176', '#CE93D8', '#EF9A9A'];
-                ctx.fillStyle = colors[i % colors.length];
-                for(let p=0; p<5; p++){
-                    const angle = (p/5)*Math.PI*2 - Math.PI/2;
-                    const r = p%2===0 ? size : size*0.55;
-                    const px = fx + Math.cos(angle)*r;
-                    const py = fy + Math.sin(angle)*r;
-                    ctx.beginPath();
-                    ctx.arc(px, py, size*0.5, 0, Math.PI*2);
-                    ctx.fill();
-                }
-                ctx.fillStyle = '#FFD54F';
-                ctx.beginPath();
-                ctx.arc(fx, fy, size*0.3, 0, Math.PI*2);
-                ctx.fill();
-            }
-        }
-
-        // ---- 小房子（41天以上） ----
-        if(totalDays >= 41){
-            const hx = w * 0.75;
-            const hy = groundY - 2;
-            ctx.fillStyle = '#D7A86E';
-            ctx.fillRect(hx-25, hy-32, 50, 32);
-            ctx.fillStyle = '#B71C1C';
-            ctx.beginPath();
-            ctx.moveTo(hx-30, hy-32);
-            ctx.lineTo(hx, hy-52);
-            ctx.lineTo(hx+30, hy-32);
-            ctx.fill();
-            ctx.fillStyle = '#5D4037';
-            ctx.fillRect(hx-5, hy-14, 10, 14);
-            ctx.fillStyle = '#81D4FA';
-            ctx.fillRect(hx-18, hy-22, 10, 10);
-            ctx.fillRect(hx+8, hy-22, 10, 10);
-            ctx.strokeStyle = '#5D4037';
-            ctx.lineWidth = 1;
-            ctx.strokeRect(hx-18, hy-22, 10, 10);
-            ctx.strokeRect(hx+8, hy-22, 10, 10);
-            ctx.fillStyle = '#795548';
-            ctx.fillRect(hx+18, hy-46, 8, 16);
-            ctx.fillStyle = '#8D6E63';
-            ctx.fillRect(hx+16, hy-50, 12, 6);
-        }
-
-        // ---- 人物（61天以上） ----
-        if(totalDays >= 61){
-            const px = w * 0.2 + Math.sin(time*0.05)*5;
-            const py = groundY - 4;
-            ctx.fillStyle = '#42A5F5';
-            ctx.fillRect(px-6, py-28, 12, 18);
-            ctx.fillStyle = '#FFCCBC';
-            ctx.beginPath();
-            ctx.arc(px, py-32, 8, 0, Math.PI*2);
-            ctx.fill();
-            ctx.fillStyle = '#5D4037';
-            ctx.beginPath();
-            ctx.arc(px, py-35, 8, Math.PI, 2*Math.PI);
-            ctx.fill();
-            ctx.fillStyle = '#000';
-            ctx.beginPath();
-            ctx.arc(px-4, py-33, 1.5, 0, Math.PI*2);
-            ctx.fill();
-            ctx.beginPath();
-            ctx.arc(px+4, py-33, 1.5, 0, Math.PI*2);
-            ctx.fill();
-            ctx.beginPath();
-            ctx.arc(px, py-29, 3, 0, Math.PI);
-            ctx.stroke();
-            ctx.strokeStyle = '#FFCCBC';
-            ctx.lineWidth = 3;
-            const armSwing = Math.sin(time*0.4)*0.3;
-            ctx.beginPath();
-            ctx.moveTo(px-6, py-24);
-            ctx.lineTo(px-14, py-18 + armSwing*8);
-            ctx.stroke();
-            ctx.beginPath();
-            ctx.moveTo(px+6, py-24);
-            ctx.lineTo(px+14, py-18 - armSwing*8);
-            ctx.stroke();
-            ctx.strokeStyle = '#1A237E';
-            ctx.lineWidth = 3;
-            const legSwing = Math.sin(time*0.3)*0.2;
-            ctx.beginPath();
-            ctx.moveTo(px-3, py-10);
-            ctx.lineTo(px-5+legSwing*5, py);
-            ctx.stroke();
-            ctx.beginPath();
-            ctx.moveTo(px+3, py-10);
-            ctx.lineTo(px+5-legSwing*5, py);
-            ctx.stroke();
-        }
-
-        // ---- 树苗主体 ----
-        const cx = w * 0.4;
-        const baseY = groundY;
-
-        if(totalDays === 0){
-            ctx.fillStyle = '#8B6B4A';
-            ctx.beginPath();
-            ctx.ellipse(cx, groundY - 6, 16, 10, 0, 0, Math.PI*2);
-            ctx.fill();
-            ctx.fillStyle = '#5D4037';
-            ctx.beginPath();
-            ctx.ellipse(cx, groundY - 8, 8, 6, 0, 0, Math.PI*2);
-            ctx.fill();
-            ctx.fillStyle = '#8D6E63';
-            ctx.font = '28px sans-serif';
-            ctx.textAlign = 'center';
-            ctx.fillText('🌰', cx, groundY - 6);
-            return;
-        }
-
-        // ---- 树干 ----
-        const trunkH = 25 + progress * 100;
-        const trunkW = 5 + progress * 14;
-        const trunkTop = baseY - trunkH;
-        ctx.fillStyle = '#5D4037';
-        ctx.fillRect(cx - trunkW/2, trunkTop, trunkW, trunkH);
-        ctx.strokeStyle = '#4E342E';
-        ctx.lineWidth = 0.5;
-        for(let i=0; i<3; i++){
-            const yy = trunkTop + 10 + i * (trunkH-20)/3;
-            ctx.beginPath();
-            ctx.moveTo(cx - trunkW/2 + 2, yy);
-            ctx.lineTo(cx + trunkW/2 - 2, yy + 4);
-            ctx.stroke();
-        }
-
-        // ---- 树冠 ----
-        const crownSize = 15 + progress * 75;
-        const crownY = trunkTop - 6;
-        const gradient = ctx.createRadialGradient(cx, crownY - 15, 5, cx, crownY, crownSize);
-        if(totalDays >= 41){
-            gradient.addColorStop(0, '#81C784');
-            gradient.addColorStop(0.5, '#4CAF50');
-            gradient.addColorStop(0.8, '#388E3C');
-            gradient.addColorStop(1, '#2E7D32');
-        }else if(totalDays >= 21){
-            gradient.addColorStop(0, '#A5D6A7');
-            gradient.addColorStop(0.6, '#66BB6A');
-            gradient.addColorStop(1, '#388E3C');
-        }else if(totalDays >= 6){
-            gradient.addColorStop(0, '#C8E6C9');
-            gradient.addColorStop(0.6, '#81C784');
-            gradient.addColorStop(1, '#4CAF50');
-        }else{
-            gradient.addColorStop(0, '#E8F5E9');
-            gradient.addColorStop(0.6, '#A5D6A7');
-            gradient.addColorStop(1, '#66BB6A');
-        }
-        ctx.beginPath();
-        ctx.arc(cx, crownY, crownSize, 0, Math.PI*2);
-        ctx.fillStyle = gradient;
-        ctx.fill();
-
-        if(totalDays >= 3){
-            const offset = crownSize * 0.7;
-            const sizes = [crownSize * 0.65, crownSize * 0.55];
-            for(let i=0; i<2; i++){
-                const ang = i===0 ? -0.4 : 0.4;
-                const ox = cx + Math.sin(ang + time*0.025) * offset * 0.3;
-                const oy = crownY + 6 + Math.cos(ang + time*0.02) * 4;
-                ctx.beginPath();
-                ctx.arc(ox, oy, sizes[i], 0, Math.PI*2);
-                ctx.fillStyle = totalDays >= 41 ? 'rgba(102,187,106,0.75)' : 'rgba(76,175,80,0.75)';
-                ctx.fill();
-            }
-        }
-
-        // ---- 树冠上的花（41天以上） ----
-        if(totalDays >= 41){
-            const flowerColors = ['#F06292', '#EC407A', '#F48FB1', '#E91E63', '#F8BBD0', '#FF80AB'];
-            const flowerCount = Math.min(4 + Math.floor((totalDays-41)/4), 18);
-            for(let i=0; i<flowerCount; i++){
-                const angle = (i / flowerCount) * Math.PI * 2 + 0.3 + time*0.008;
-                const radius = crownSize * (0.35 + Math.random() * 0.45);
-                const fx = cx + Math.cos(angle) * radius;
-                const fy = crownY + Math.sin(angle) * radius * 0.7 - 4;
-                const size = 5 + Math.random() * 7;
-                ctx.fillStyle = flowerColors[i % flowerColors.length];
-                for(let p=0; p<5; p++){
-                    const a = (p/5) * Math.PI*2 - Math.PI/2 + time*0.005;
-                    const r = p%2===0 ? size : size*0.5;
-                    const px = fx + Math.cos(a)*r;
-                    const py = fy + Math.sin(a)*r;
-                    ctx.beginPath();
-                    ctx.arc(px, py, size*0.5, 0, Math.PI*2);
-                    ctx.fill();
-                }
-                ctx.fillStyle = '#FFD54F';
-                ctx.beginPath();
-                ctx.arc(fx, fy, size*0.3, 0, Math.PI*2);
-                ctx.fill();
-            }
-        }
-
-        // ---- 果实（61天以上） ----
-        if(totalDays >= 61){
-            const fruitColors = ['#E53935', '#EF5350', '#FF6F00', '#F9A825', '#FF8A65', '#FFAB91'];
-            const fruitCount = Math.min(3 + Math.floor((totalDays-61)/8), 12);
-            for(let i=0; i<fruitCount; i++){
-                const angle = (i / fruitCount) * Math.PI * 2 + 0.8 + time*0.004;
-                const radius = crownSize * (0.45 + Math.random() * 0.35);
-                const fx = cx + Math.cos(angle) * radius;
-                const fy = crownY + Math.sin(angle) * radius * 0.6 + 6;
-                const size = 6 + Math.random() * 7;
-                ctx.fillStyle = fruitColors[i % fruitColors.length];
-                ctx.beginPath();
-                ctx.arc(fx, fy, size, 0, Math.PI*2);
-                ctx.fill();
-                ctx.fillStyle = 'rgba(255,255,255,0.3)';
-                ctx.beginPath();
-                ctx.arc(fx-2.5, fy-2.5, size*0.3, 0, Math.PI*2);
-                ctx.fill();
-                ctx.strokeStyle = '#4E342E';
-                ctx.lineWidth = 1;
-                ctx.beginPath();
-                ctx.moveTo(fx, fy-size);
-                ctx.lineTo(fx+1, fy-size-3);
-                ctx.stroke();
-            }
-        }
-
-        // ---- 小鸟（斜线穿屏） ----
-        if(totalDays >= 6){
-            const birdCount = 2;
-            for(let i=0; i<birdCount; i++){
-                const offset = i * 0.7;
-                const speed = 0.15 + i * 0.05;
-                const t = (time * speed + offset) % 1.2;
-                const bx = (t / 1.2) * w;
-                const by = (t / 1.2) * h * 0.6 + 20;
-                if(t > 1.0) continue;
-                ctx.fillStyle = '#795548';
-                ctx.beginPath();
-                ctx.ellipse(bx, by, 10, 6, 0, 0, Math.PI*2);
-                ctx.fill();
-                const wingAngle = Math.sin(t * 20) * 0.6;
-                ctx.fillStyle = '#8D6E63';
-                ctx.beginPath();
-                ctx.ellipse(bx-6, by-2 + Math.sin(t*20)*3, 7, 3.5, -0.3 + wingAngle, 0, Math.PI*2);
-                ctx.fill();
-                ctx.beginPath();
-                ctx.ellipse(bx+6, by-2 + Math.cos(t*20)*3, 7, 3.5, 0.3 - wingAngle, 0, Math.PI*2);
-                ctx.fill();
-                ctx.fillStyle = '#6D4C41';
-                ctx.beginPath();
-                ctx.moveTo(bx-10, by+2);
-                ctx.lineTo(bx-17, by+7);
-                ctx.lineTo(bx-10, by+7);
-                ctx.fill();
-                ctx.fillStyle = '#000';
-                ctx.beginPath();
-                ctx.arc(bx+4, by-2, 1.8, 0, Math.PI*2);
-                ctx.fill();
-                ctx.fillStyle = '#FF9800';
-                ctx.beginPath();
-                ctx.moveTo(bx+10, by+1);
-                ctx.lineTo(bx+16, by+2.5);
-                ctx.lineTo(bx+10, by+4.5);
-                ctx.fill();
-            }
-        }
-
-        // ---- 蝴蝶 ----
-        if(totalDays >= 11){
-            const butterflyData = [
-                { x: 70, y: 60, phase: 0 },
-                { x: w-60, y: 50, phase: 2.2 },
-                { x: 120, y: 80, phase: 1.5 }
-            ];
-            butterflyData.forEach((b, idx) => {
-                const t = time * 0.2 + idx * 2.0;
-                const bx = b.x + Math.sin(t) * 35;
-                const by = b.y + Math.cos(t * 0.25 + idx) * 22 + Math.sin(t * 0.15) * 10;
-                const wingSize = 7 + Math.sin(t * 0.8) * 2;
-                ctx.fillStyle = idx%2===0 ? '#FF80AB' : '#4DD0E1';
-                ctx.beginPath();
-                ctx.ellipse(bx-4 + Math.sin(t*0.4)*3, by-3, wingSize, wingSize*0.6, -0.4 + Math.sin(t)*0.06, 0, Math.PI*2);
-                ctx.fill();
-                ctx.fillStyle = idx%2===0 ? '#F48FB1' : '#4FC3F7';
-                ctx.beginPath();
-                ctx.ellipse(bx+4 + Math.cos(t*0.45)*3, by-3, wingSize, wingSize*0.6, 0.4 + Math.cos(t)*0.06, 0, Math.PI*2);
-                ctx.fill();
-                ctx.fillStyle = '#4E342E';
-                ctx.beginPath();
-                ctx.ellipse(bx, by, 2.5, 8, 0, 0, Math.PI*2);
-                ctx.fill();
-                ctx.strokeStyle = '#4E342E';
-                ctx.lineWidth = 1.2;
-                ctx.beginPath();
-                ctx.moveTo(bx-1.5, by-5);
-                ctx.lineTo(bx-6 + Math.sin(t)*3, by-11 + Math.cos(t)*3);
-                ctx.stroke();
-                ctx.beginPath();
-                ctx.moveTo(bx+1.5, by-5);
-                ctx.lineTo(bx+6 + Math.sin(t+0.5)*3, by-11 + Math.cos(t+0.5)*3);
-                ctx.stroke();
-            });
-        }
-
-        // ---- 青蛙 ----
-        if(totalDays >= 21){
-            const fx = w * 0.65 + Math.sin(time*0.08)*8;
-            const fy = groundY - 4 + Math.sin(time*0.1)*3;
-            ctx.fillStyle = '#4CAF50';
-            ctx.beginPath();
-            ctx.ellipse(fx, fy, 14, 10, 0, 0, Math.PI*2);
-            ctx.fill();
-            ctx.fillStyle = '#66BB6A';
-            ctx.beginPath();
-            ctx.ellipse(fx-4, fy-4, 6, 5, 0, 0, Math.PI*2);
-            ctx.fill();
-            ctx.beginPath();
-            ctx.ellipse(fx+4, fy-4, 6, 5, 0, 0, Math.PI*2);
-            ctx.fill();
-            ctx.fillStyle = '#fff';
-            ctx.beginPath();
-            ctx.arc(fx-5, fy-7, 4, 0, Math.PI*2);
-            ctx.fill();
-            ctx.beginPath();
-            ctx.arc(fx+5, fy-7, 4, 0, Math.PI*2);
-            ctx.fill();
-            ctx.fillStyle = '#1A237E';
-            ctx.beginPath();
-            ctx.arc(fx-5, fy-6, 2, 0, Math.PI*2);
-            ctx.fill();
-            ctx.beginPath();
-            ctx.arc(fx+5, fy-6, 2, 0, Math.PI*2);
-            ctx.fill();
-            ctx.strokeStyle = '#2E7D32';
-            ctx.lineWidth = 1.5;
-            ctx.beginPath();
-            ctx.arc(fx, fy-2, 6, 0, Math.PI);
-            ctx.stroke();
-            const legSwing2 = Math.sin(time*0.15)*0.2;
-            ctx.strokeStyle = '#388E3C';
-            ctx.lineWidth = 3;
-            ctx.beginPath();
-            ctx.moveTo(fx-10, fy+4);
-            ctx.lineTo(fx-14+legSwing2*6, fy+12);
-            ctx.stroke();
-            ctx.beginPath();
-            ctx.moveTo(fx+10, fy+4);
-            ctx.lineTo(fx+14-legSwing2*6, fy+12);
-            ctx.stroke();
-        }
-    }
-
-    // ===== 预览：打开成长阶段预览 =====
-    function openStagePreview(){
-        const container = document.getElementById('stagePreviewContainer');
-        container.innerHTML = '';
-        const stages = GROWTH_STAGES;
-        stages.forEach(stage => {
-            const days = stage.min;
-            const card = document.createElement('div');
-            card.className = 'stage-card';
-            const nameDiv = document.createElement('div');
-            nameDiv.className = 'stage-name';
-            nameDiv.textContent = stage.label;
-            card.appendChild(nameDiv);
-            const canvas = document.createElement('canvas');
-            canvas.width = 240;
-            canvas.height = 240;
-            canvas.style.width = '120px';
-            canvas.style.height = '120px';
-            const ctx = canvas.getContext('2d');
-            drawPlantCore(ctx, 240, 240, days, 0);
-            card.appendChild(canvas);
-            const daysDiv = document.createElement('div');
-            daysDiv.className = 'stage-days';
-            daysDiv.textContent = days + '天' + (stage.max === Infinity ? '+' : '~'+stage.max+'天');
-            card.appendChild(daysDiv);
-            container.appendChild(card);
-        });
-        openModal('modalStagePreview');
-    }
-
-    // ---- 动画循环 ----
-    function startPlantAnimation(){
-        if(animFrameId) return;
-        function frame(timestamp){
-            animTime = timestamp / 1000;
-            const canvas = document.getElementById('plantCanvas');
-            if(canvas && document.getElementById('page-inspire').classList.contains('active')){
-                const ctx = canvas.getContext('2d');
-                const rect = canvas.parentElement.getBoundingClientRect();
-                const size = Math.min(rect.width || 300, 360);
-                canvas.width = size * 2;
-                canvas.height = size * 2;
-                canvas.style.width = size + 'px';
-                canvas.style.height = size + 'px';
-                ctx.scale(2, 2);
-                const dates = data.transactions.map(t => t.date);
-                const uniqueDates = new Set(dates);
-                const totalDays = uniqueDates.size;
-                drawPlantCore(ctx, size, size, totalDays, animTime);
-            }
-            animFrameId = requestAnimationFrame(frame);
-        }
-        animFrameId = requestAnimationFrame(frame);
-    }
-
-    function stopPlantAnimation(){
-        if(animFrameId){
-            cancelAnimationFrame(animFrameId);
-            animFrameId = null;
-        }
-    }
-
-    // ---- 渲染树苗卡片（更新统计） ----
-    function renderPlant(){
-        const dates = data.transactions.map(t => t.date);
-        const uniqueDates = new Set(dates);
-        const totalDays = uniqueDates.size;
-        const today = getTodayStr();
-        const todayCount = data.transactions.filter(t => t.date === today).length;
-
-        document.getElementById('todayWaterCount').textContent = todayCount;
-        document.getElementById('totalWaterDays').textContent = totalDays;
-
-        const stage = getGrowthStage(totalDays);
-        document.getElementById('plantStageLabel').textContent = stage.label + ' ' + (totalDays>0?totalDays+'天':'');
-
-        const pct = Math.min(100, (totalDays / 80) * 100);
-        document.getElementById('plantProgressFill').style.width = pct + '%';
-
-        const btn = document.getElementById('waterBtn');
-        if(btn){
-            btn.textContent = '💧 浇水';
-            btn.disabled = false;
-            btn.style.background = 'var(--blue)';
-        }
-        if(document.getElementById('page-inspire').classList.contains('active')){
-            startPlantAnimation();
-        }
-    }
-
-    // ---- 浇水动画 ----
-    function triggerWaterAnimation(){
-        const container = document.createElement('div');
-        container.className = 'water-animation';
-        document.body.appendChild(container);
-
-        const can = document.createElement('div');
-        can.className = 'water-can';
-        can.textContent = '🧹';
-        container.appendChild(can);
-
-        for(let i=0; i<40; i++){
-            const drop = document.createElement('div');
-            drop.className = 'water-drop';
-            const x = 10 + Math.random() * 80;
-            const delay = Math.random() * 0.5;
-            drop.style.left = x + '%';
-            drop.style.top = '8%';
-            drop.style.animationDelay = delay + 's';
-            drop.style.width = (5 + Math.random() * 8) + 'px';
-            drop.style.height = (12 + Math.random() * 18) + 'px';
-            container.appendChild(drop);
-        }
-
-        for(let i=0; i<18; i++){
-            const splash = document.createElement('div');
-            splash.className = 'water-splash';
-            const x = 10 + Math.random() * 80;
-            const delay = 0.5 + Math.random() * 0.7;
-            splash.style.left = x + '%';
-            splash.style.top = '48%';
-            splash.style.animationDelay = delay + 's';
-            splash.style.width = (22 + Math.random() * 28) + 'px';
-            splash.style.height = splash.style.width;
-            container.appendChild(splash);
-        }
-
-        setTimeout(()=>{
-            if(container.parentNode) container.remove();
-        }, 2000);
-    }
-
-    // ---- 浇水（仅动画 + 刷新统计） ----
-    function waterPlant(){
-        triggerWaterAnimation();
-        renderPlant();
-        renderAll();
-        checkAchievements();
-        showToast('💧 浇水啦！树苗在成长！');
-    }
-
-    function handleWaterPlant(){
-        waterPlant();
-        if(document.getElementById('page-inspire').classList.contains('active')){
-            renderPlant();
-        }
     }
 
     // ==================== Toast ====================
@@ -1767,7 +1667,6 @@
     }
 
     function renderHomeWeekChart(){
-        const container=document.getElementById('homeWeekChart');
         const todayDate=parseDate(getTodayStr());
         const weeks=[];
         for(let i=0;i<4;i++){
@@ -2063,6 +1962,169 @@
         if(a&&!a.unlocked){a.unlocked=true; showToast('🏆 解锁成就: '+a.name);}
     }
 
+    // ==================== 树苗成长（简化保留） ====================
+    let animFrameId = null;
+    let animTime = 0;
+
+    const GROWTH_STAGES = [
+        { name: '种子', min: 0, max: 0, label: '🌰 种子', color: '#8D6E63' },
+        { name: '发芽', min: 1, max: 2, label: '🌱 发芽', color: '#66BB6A' },
+        { name: '小苗', min: 3, max: 5, label: '🌿 小苗', color: '#4CAF50' },
+        { name: '树苗', min: 6, max: 10, label: '🌳 树苗', color: '#388E3C' },
+        { name: '小树', min: 11, max: 20, label: '🌲 小树', color: '#2E7D32' },
+        { name: '大树', min: 21, max: 40, label: '🌳 大树', color: '#1B5E20' },
+        { name: '花园', min: 41, max: 60, label: '🌸 花园', color: '#E91E63' },
+        { name: '果园', min: 61, max: 80, label: '🍎 果园', color: '#F57C00' },
+        { name: '庄园', min: 81, max: Infinity, label: '🏡 庄园', color: '#4A148C' }
+    ];
+
+    function getGrowthStage(totalDays){
+        for(let s of GROWTH_STAGES){
+            if(totalDays >= s.min && totalDays <= s.max) return s;
+        }
+        return GROWTH_STAGES[0];
+    }
+
+    function drawPlantCore(ctx, w, h, totalDays, time){
+        ctx.clearRect(0, 0, w, h);
+        const progress = Math.min(1, totalDays / 80);
+        const groundY = h - 60;
+        const skyGrad = ctx.createLinearGradient(0,0,0,groundY);
+        skyGrad.addColorStop(0,'#b3d9ff');
+        skyGrad.addColorStop(0.7,'#d4eaff');
+        skyGrad.addColorStop(1,'#e8f5e9');
+        ctx.fillStyle = skyGrad;
+        ctx.fillRect(0,0,w,groundY);
+        ctx.fillStyle = '#7CB342';
+        ctx.fillRect(0, groundY, w, 60);
+        ctx.fillStyle = '#8BC34A';
+        ctx.fillRect(0, groundY+8, w, 52);
+        const cx = w * 0.4;
+        const trunkH = 25 + progress * 100;
+        const trunkW = 5 + progress * 14;
+        const trunkTop = groundY - trunkH;
+        ctx.fillStyle = '#5D4037';
+        ctx.fillRect(cx - trunkW/2, trunkTop, trunkW, trunkH);
+        const crownSize = 15 + progress * 75;
+        const crownY = trunkTop - 6;
+        const gradient = ctx.createRadialGradient(cx, crownY - 15, 5, cx, crownY, crownSize);
+        gradient.addColorStop(0, '#81C784');
+        gradient.addColorStop(0.5, '#4CAF50');
+        gradient.addColorStop(1, '#388E3C');
+        ctx.beginPath();
+        ctx.arc(cx, crownY, crownSize, 0, Math.PI*2);
+        ctx.fillStyle = gradient;
+        ctx.fill();
+    }
+
+    function startPlantAnimation(){
+        if(animFrameId) return;
+        function frame(timestamp){
+            animTime = timestamp / 1000;
+            const canvas = document.getElementById('plantCanvas');
+            if(canvas && document.getElementById('page-inspire').classList.contains('active')){
+                const ctx = canvas.getContext('2d');
+                const rect = canvas.parentElement.getBoundingClientRect();
+                const size = Math.min(rect.width || 300, 360);
+                canvas.width = size * 2;
+                canvas.height = size * 2;
+                canvas.style.width = size + 'px';
+                canvas.style.height = size + 'px';
+                ctx.scale(2, 2);
+                const dates = data.transactions.map(t => t.date);
+                const uniqueDates = new Set(dates);
+                const totalDays = uniqueDates.size;
+                drawPlantCore(ctx, size, size, totalDays, animTime);
+            }
+            animFrameId = requestAnimationFrame(frame);
+        }
+        animFrameId = requestAnimationFrame(frame);
+    }
+
+    function stopPlantAnimation(){
+        if(animFrameId){
+            cancelAnimationFrame(animFrameId);
+            animFrameId = null;
+        }
+    }
+
+    function renderPlant(){
+        const dates = data.transactions.map(t => t.date);
+        const uniqueDates = new Set(dates);
+        const totalDays = uniqueDates.size;
+        const today = getTodayStr();
+        const todayCount = data.transactions.filter(t => t.date === today).length;
+        document.getElementById('todayWaterCount').textContent = todayCount;
+        document.getElementById('totalWaterDays').textContent = totalDays;
+        const stage = getGrowthStage(totalDays);
+        document.getElementById('plantStageLabel').textContent = stage.label + ' ' + (totalDays>0?totalDays+'天':'');
+        const pct = Math.min(100, (totalDays / 80) * 100);
+        document.getElementById('plantProgressFill').style.width = pct + '%';
+        if(document.getElementById('page-inspire').classList.contains('active')){
+            startPlantAnimation();
+        }
+    }
+
+    function triggerWaterAnimation(){
+        const container = document.createElement('div');
+        container.className = 'water-animation';
+        document.body.appendChild(container);
+        const can = document.createElement('div');
+        can.className = 'water-can';
+        can.textContent = '🧹';
+        container.appendChild(can);
+        for(let i=0; i<40; i++){
+            const drop = document.createElement('div');
+            drop.className = 'water-drop';
+            const x = 10 + Math.random() * 80;
+            const delay = Math.random() * 0.5;
+            drop.style.left = x + '%';
+            drop.style.top = '8%';
+            drop.style.animationDelay = delay + 's';
+            drop.style.width = (5 + Math.random() * 8) + 'px';
+            drop.style.height = (12 + Math.random() * 18) + 'px';
+            container.appendChild(drop);
+        }
+        setTimeout(()=>{ if(container.parentNode) container.remove(); }, 2000);
+    }
+
+    function handleWaterPlant(){
+        triggerWaterAnimation();
+        renderPlant();
+        renderAll();
+        checkAchievements();
+        showToast('💧 浇水啦！');
+    }
+
+    function openStagePreview(){
+        const container = document.getElementById('stagePreviewContainer');
+        container.innerHTML = '';
+        GROWTH_STAGES.forEach(stage => {
+            const days = stage.min;
+            const card = document.createElement('div');
+            card.className = 'stage-card';
+            const nameDiv = document.createElement('div');
+            nameDiv.className = 'stage-name';
+            nameDiv.textContent = stage.label;
+            card.appendChild(nameDiv);
+            const canvas = document.createElement('canvas');
+            canvas.width = 240;
+            canvas.height = 240;
+            canvas.style.width = '120px';
+            canvas.style.height = '120px';
+            const ctx = canvas.getContext('2d');
+            drawPlantCore(ctx, 240, 240, days, 0);
+            card.appendChild(canvas);
+            const daysDiv = document.createElement('div');
+            daysDiv.className = 'stage-days';
+            daysDiv.textContent = days + '天' + (stage.max === Infinity ? '+' : '~'+stage.max+'天');
+            card.appendChild(daysDiv);
+            container.appendChild(card);
+        });
+        openModal('modalStagePreview');
+    }
+
+    // ==================== 渲染全部 ====================
     function renderAll(){
         renderPresetAccountModal();
         renderAssetSummary();
@@ -2085,25 +2147,47 @@
         }
     }
 
+    // ==================== 初始化 ====================
     window.onload=function(){
         loadData();
         loadReaderData();
+        // 恢复阅读内容
+        const saved = localStorage.getItem(READER_CONTENT_KEY);
+        if(saved){
+            try{
+                const obj = JSON.parse(saved);
+                if(obj.text){
+                    currentText = obj.text;
+                    currentFileName = obj.name || '';
+                    document.getElementById('readerFileName').textContent = currentFileName;
+                    renderReaderContent();
+                }
+            }catch(e){}
+        }
         renderAll();
+        // 初始化语音
+        if(window.speechSynthesis){
+            speechSynth = window.speechSynthesis;
+        }
         let resizeTimer;
         window.addEventListener('resize', function(){
             clearTimeout(resizeTimer);
             resizeTimer=setTimeout(()=>{ renderPlant(); renderGoalMini(); }, 200);
         });
-        console.log('💡 提示：可通过 openUploadBalanceModal() 上传余额');
-        if(document.getElementById('page-inspire').classList.contains('active')){
-            renderPlant();
-            startPlantAnimation();
-        }
         window.addEventListener('beforeunload', function(){
-            if(readingStartTime){
-                stopReading();
+            if(readingStartTime) stopReading();
+            if(isSpeaking) stopVoice();
+        });
+        // 点击空白取消选中
+        document.addEventListener('click', function(e){
+            if(!e.target.closest('.reader-content-wrap') && !e.target.closest('.tool-btn')){
+                if(tagMode || underlineMode){
+                    // 不取消模式，只取消选中
+                }
             }
         });
+        // 初始化标签计数
+        updateReaderStats();
     };
 </script>
 </body>
