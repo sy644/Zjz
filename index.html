@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>周记账 · 资产养成 + 阅读</title>
+    <title>周记账 · 资产养成</title>
     <style>
         *{margin:0;padding:0;box-sizing:border-box;}
         :root{
@@ -21,7 +21,6 @@
             --red:#e74c3c;
             --gold:#f39c12;
             --card-blue-bg:#eef2fa;
-            --highlight:#fff9c4;
         }
         body{
             font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
@@ -42,7 +41,6 @@
         .header-actions{display:flex;gap:8px;}
         .header-actions button{background:rgba(0,0,0,0.03);border:1px solid var(--border);border-radius:50%;width:42px;height:42px;font-size:20px;cursor:pointer;transition:0.2s;display:flex;align-items:center;justify-content:center;color:var(--text-primary);}
         .header-actions button:active{transform:scale(0.92);background:rgba(0,0,0,0.06);}
-        .header-actions button.active-btn{background:rgba(74,124,247,0.12);border-color:var(--blue);}
         .tab-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:rgba(255,255,255,0.92);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-top:1px solid var(--border);border-radius:28px 28px 0 0;display:flex;justify-content:space-around;padding:6px 0 env(safe-area-inset-bottom,8px) 0;z-index:100;box-shadow:0 -4px 20px rgba(0,0,0,0.02);}
         .tab-item{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 12px;border:none;background:transparent;font-size:10px;color:var(--text-muted);cursor:pointer;transition:0.2s;border-radius:16px;min-width:60px;position:relative;}
         .tab-item .tab-icon{font-size:24px;line-height:1.2;}
@@ -187,74 +185,9 @@
         .achievement-item .ach-icon{font-size:30px;display:block;margin-bottom:4px;}
         .achievement-item .ach-name{font-size:12px;font-weight:500;color:var(--text-muted);}
         .achievement-item.unlocked .ach-name{color:var(--text-primary);}
-        .plant-card .plant-canvas-wrap{display:flex;justify-content:center;align-items:center;padding:2px 0;position:relative;width:100%;}
-        .plant-card .plant-canvas-wrap canvas{width:100%;height:auto;max-width:360px;aspect-ratio:1/1;display:block;}
-        .plant-card .plant-stats{display:flex;justify-content:center;gap:24px;margin:6px 0 10px 0;}
-        .plant-card .plant-stats .stat-item{text-align:center;}
-        .plant-card .plant-stats .stat-item .stat-num{font-size:22px;font-weight:700;color:var(--text-primary);}
-        .plant-card .plant-stats .stat-item .stat-label{font-size:11px;color:var(--text-muted);}
-        .plant-card .plant-stats .stat-item .stat-num.green{color:var(--green);}
-        .plant-card .plant-stats .stat-item .stat-num.gold{color:var(--gold);}
-        .plant-card .plant-stage-label{text-align:center;font-size:14px;font-weight:500;color:var(--text-secondary);margin-bottom:4px;}
-        .plant-card .water-btn{display:block;margin:6px auto 0 auto;padding:10px 32px;border:none;border-radius:30px;font-size:15px;font-weight:600;cursor:pointer;transition:0.2s;background:var(--blue);color:#fff;box-shadow:0 4px 12px rgba(74,124,247,0.2);}
-        .plant-card .water-btn:active{transform:scale(0.94);}
-        .plant-card .water-btn:disabled{opacity:0.4;pointer-events:none;}
-        .water-animation{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:150;}
-        .water-drop{position:absolute;border-radius:50% 50% 50% 50% / 60% 60% 40% 40%;background:radial-gradient(circle at 30% 30%, rgba(100,200,255,0.9), rgba(30,144,255,0.3));box-shadow:0 0 8px rgba(30,144,255,0.2);animation:dropFall 1s ease-in forwards;}
-        @keyframes dropFall{0%{transform:translateY(0) scale(1) rotate(0deg);opacity:1;}100%{transform:translateY(220px) scale(0.2) rotate(30deg);opacity:0;}}
-        .water-splash{position:absolute;border-radius:50%;background:radial-gradient(circle, rgba(30,144,255,0.25), rgba(30,144,255,0.02));animation:splashExpand 0.7s ease-out forwards;}
-        @keyframes splashExpand{0%{transform:scale(0);opacity:1;}100%{transform:scale(4);opacity:0;}}
-        .water-can{position:absolute;left:50%;top:8%;transform:translateX(-50%);font-size:56px;animation:waterCan 1.2s ease forwards;}
-        @keyframes waterCan{0%{transform:translateX(-50%) rotate(0deg) scale(1);}30%{transform:translateX(-50%) rotate(-18deg) scale(1.1);}60%{transform:translateX(-50%) rotate(12deg) scale(1.05);}100%{transform:translateX(-50%) rotate(0deg) scale(1);}}
-        .plant-progress{height:4px;background:var(--border);border-radius:4px;margin-top:8px;overflow:hidden;}
-        .plant-progress .plant-progress-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--green),var(--blue));transition:width 0.6s ease;}
         .no-account-tip{text-align:center;padding:20px 0;color:var(--text-muted);}
         .no-account-tip button{background:var(--blue);color:#fff;border:none;border-radius:30px;padding:10px 24px;font-size:14px;font-weight:600;cursor:pointer;margin-top:8px;box-shadow:0 4px 12px rgba(74,124,247,0.2);}
-        .stage-preview-container{display:flex;gap:12px;overflow-x:auto;padding:8px 4px;flex-wrap:nowrap;max-height:70vh;align-items:flex-start;}
-        .stage-preview-container .stage-card{flex:0 0 auto;width:120px;background:var(--bg);border-radius:12px;padding:8px;text-align:center;}
-        .stage-preview-container .stage-card canvas{width:120px;height:120px;display:block;margin:0 auto;border-radius:8px;}
-        .stage-preview-container .stage-card .stage-name{font-size:12px;font-weight:600;margin-bottom:4px;}
-        .stage-preview-container .stage-card .stage-days{font-size:10px;color:var(--text-muted);}
-        /* ===== 阅读器样式 ===== */
-        .reader-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
-        .reader-header .title{font-size:17px;font-weight:600;color:var(--text-primary);}
-        .reader-toolbar{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;padding:8px 0;border-bottom:1px solid var(--border);}
-        .reader-toolbar .tool-btn{background:var(--bg);border:1px solid var(--border);border-radius:20px;padding:6px 14px;font-size:13px;cursor:pointer;transition:0.2s;display:flex;align-items:center;gap:4px;color:var(--text-primary);}
-        .reader-toolbar .tool-btn:active{transform:scale(0.94);background:rgba(74,124,247,0.08);}
-        .reader-toolbar .tool-btn.active-tool{background:rgba(74,124,247,0.15);border-color:var(--blue);}
-        .reader-toolbar .tool-btn .badge{background:var(--blue);color:#fff;border-radius:10px;padding:0 8px;font-size:10px;margin-left:2px;}
-        .reader-toolbar .tool-btn.speaking{background:var(--gold);border-color:var(--gold);color:#fff;}
-        .reader-content-wrap{background:var(--bg);border-radius:var(--radius-sm);padding:16px;max-height:400px;overflow-y:auto;white-space:pre-wrap;word-break:break-word;font-size:15px;line-height:1.8;color:var(--text-primary);min-height:200px;position:relative;}
-        .reader-content-wrap .hl{background:#ffeb3b;border-radius:2px;}
-        .reader-content-wrap .highlight{background:var(--highlight);border-radius:2px;padding:0 1px;}
-        .reader-content-wrap .tag-marker{background:rgba(74,124,247,0.15);border-radius:3px;padding:0 2px;border-left:3px solid var(--blue);cursor:pointer;}
-        .reader-content-wrap .tag-marker:hover{background:rgba(74,124,247,0.25);}
-        .reader-content-wrap .selected-text{background:rgba(74,124,247,0.2);}
-        .reader-stats{display:flex;justify-content:space-around;padding:10px 0;background:var(--card-bg);border-radius:var(--radius-sm);border:1px solid var(--border);margin:12px 0;}
-        .reader-stats .stat-item{text-align:center;}
-        .reader-stats .stat-item .num{font-size:20px;font-weight:700;color:var(--text-primary);}
-        .reader-stats .stat-item .label{font-size:11px;color:var(--text-muted);}
-        .reader-controls{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
-        .reader-controls button{padding:8px 20px;border:none;border-radius:30px;font-size:14px;cursor:pointer;transition:0.2s;}
-        .reader-controls .btn-stop{background:var(--red);color:#fff;}
-        .reader-controls .btn-stop:active{transform:scale(0.94);}
-        .speed-control{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text-muted);}
-        .speed-control select{padding:4px 8px;border-radius:12px;border:1px solid var(--border);background:#fff;font-size:13px;}
-        .search-bar{display:flex;gap:8px;align-items:center;padding:8px 12px;background:var(--card-bg);border-radius:var(--radius-sm);border:1px solid var(--border);margin-bottom:10px;}
-        .search-bar input{flex:1;border:none;outline:none;font-size:15px;background:transparent;color:var(--text-primary);}
-        .search-bar input::placeholder{color:var(--text-muted);}
-        .search-bar .search-nav{display:flex;gap:4px;}
-        .search-bar .search-nav button{background:var(--bg);border:none;border-radius:50%;width:32px;height:32px;font-size:16px;cursor:pointer;color:var(--text-primary);}
-        .search-bar .search-nav button:active{background:rgba(0,0,0,0.06);}
-        .search-bar .close-search{background:none;border:none;font-size:18px;cursor:pointer;color:var(--text-muted);padding:0 4px;}
-        .tag-directory-item{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);cursor:pointer;}
-        .tag-directory-item:active{background:var(--bg);}
-        .tag-directory-item .tag-text{font-size:14px;color:var(--text-primary);}
-        .tag-directory-item .tag-preview{font-size:12px;color:var(--text-muted);max-width:60%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-        .empty-reader{text-align:center;padding:40px 0;color:var(--text-muted);}
-        .empty-reader .big-icon{font-size:48px;display:block;margin-bottom:12px;}
-        .reader-file-info{font-size:12px;color:var(--text-muted);text-align:center;margin:6px 0;}
-        @media (max-width:420px){body{padding:0 12px 80px 12px;} .card-main .card-number{font-size:34px;} .card-main .card-number .currency{font-size:22px;} .card-secondary .goal-row .mini-circle{width:70px;height:70px;} .journal-form .form-group.amount-field input{font-size:20px;} .plant-card .plant-canvas-wrap canvas{max-width:300px;}}
+        @media (max-width:420px){body{padding:0 12px 80px 12px;} .card-main .card-number{font-size:34px;} .card-main .card-number .currency{font-size:22px;} .card-secondary .goal-row .mini-circle{width:70px;height:70px;} .journal-form .form-group.amount-field input{font-size:20px;}}
         @media (min-width:600px){body{padding:0 24px 90px 24px;} .tab-nav{border-radius:32px 32px 0 0;}}
     </style>
 </head>
@@ -262,12 +195,8 @@
 <div id="toast" class="toast"></div>
 <header class="app-header">
     <div><h1>📒 周记账</h1><span class="sub">资产养成 · 每周录入真实余额核算收支</span></div>
-    <div class="header-actions" id="headerActions">
-        <!-- 默认显示数据同步按钮（非阅读页） -->
-        <button onclick="openSyncModal()" title="导入/导出账本数据" style="font-size:20px;" id="syncBtn">📂</button>
-        <!-- 阅读页专用按钮（默认隐藏） -->
-        <button onclick="document.getElementById('readerFileInput').click()" title="上传文件阅读" style="font-size:20px;display:none;" id="uploadBtn">📤</button>
-        <button onclick="toggleSearchBar()" title="搜索文本" style="font-size:20px;display:none;" id="searchBtn">🔍</button>
+    <div class="header-actions">
+        <button onclick="openSyncModal()" title="导入/导出账本数据" style="font-size:20px;">📂</button>
     </div>
 </header>
 
@@ -332,23 +261,8 @@
     </div>
 </div>
 
-<!-- ===== 激励页（树苗成长） ===== -->
+<!-- ===== 激励页（仅目标与成就） ===== -->
 <div id="page-inspire" class="page">
-    <div class="card-secondary plant-card">
-        <div class="sec-header" onclick="openStagePreview()">
-            <span class="sec-title">🌱 树苗成长</span>
-            <span class="sec-action" id="plantStageLabel" style="font-weight:600;color:var(--blue);">种子</span>
-        </div>
-        <div class="plant-canvas-wrap">
-            <canvas id="plantCanvas" width="640" height="640"></canvas>
-        </div>
-        <div class="plant-stats">
-            <div class="stat-item"><div class="stat-num green" id="todayWaterCount">0</div><div class="stat-label">今日浇水</div></div>
-            <div class="stat-item"><div class="stat-num gold" id="totalWaterDays">0</div><div class="stat-label">累计天数</div></div>
-        </div>
-        <div class="plant-progress"><div class="plant-progress-fill" id="plantProgressFill" style="width:0%;"></div></div>
-        <button class="water-btn" id="waterBtn" onclick="handleWaterPlant()">💧 浇水</button>
-    </div>
     <div class="card-secondary" style="padding:18px 18px;">
         <div class="sec-header"><span>🎯 储蓄目标</span><button class="sec-action" onclick="showAddGoalModal()" style="background:none;border:none;color:var(--blue);font-size:14px;cursor:pointer;">+ 添加</button></div>
         <div id="goalList"></div>
@@ -359,71 +273,11 @@
     </div>
 </div>
 
-<!-- ===== 阅读页（重构） ===== -->
-<div id="page-read" class="page">
-    <div class="card-secondary" style="padding:16px 18px;">
-        <!-- 头部 -->
-        <div class="reader-header">
-            <span class="title">📖 阅读器</span>
-            <span style="font-size:12px;color:var(--text-muted);" id="readerFileName"></span>
-        </div>
-        <!-- 搜索栏（默认隐藏） -->
-        <div id="searchBar" class="search-bar" style="display:none;">
-            <input type="text" id="searchInput" placeholder="搜索关键词..." oninput="doSearch(this.value)">
-            <div class="search-nav">
-                <button onclick="searchPrev()" title="上一个">↑</button>
-                <button onclick="searchNext()" title="下一个">↓</button>
-            </div>
-            <button class="close-search" onclick="toggleSearchBar()">✕</button>
-        </div>
-        <!-- 工具栏 -->
-        <div class="reader-toolbar">
-            <button class="tool-btn" id="tagToolBtn" onclick="handleTagToolClick()">🏷 标签 <span class="badge" id="tagCountBadge">0</span></button>
-            <button class="tool-btn" id="underlineToolBtn" onclick="handleUnderlineToolClick()">✏️ 划线</button>
-            <button class="tool-btn" id="voiceToolBtn" onclick="toggleVoice()">🎧 语音</button>
-            <div class="speed-control">
-                <span>速度</span>
-                <select id="voiceSpeedSelect" onchange="updateVoiceSpeed()">
-                    <option value="0.5">0.5x</option>
-                    <option value="0.8">0.8x</option>
-                    <option value="1.0" selected>1.0x</option>
-                    <option value="1.5">1.5x</option>
-                    <option value="2.0">2.0x</option>
-                </select>
-            </div>
-            <button class="tool-btn" onclick="openTagDirectory()">📂 标签目录</button>
-        </div>
-        <!-- 内容区 -->
-        <div id="readerContentWrap" class="reader-content-wrap" onclick="handleContentClick(event)" onmouseup="handleContentSelect(event)">
-            <div id="readerContentInner" style="white-space:pre-wrap;word-break:break-word;line-height:1.8;font-size:15px;">
-                <div class="empty-reader">
-                    <span class="big-icon">📤</span>
-                    点击右上角 📤 上传 TXT / Word / PDF 文件
-                </div>
-            </div>
-        </div>
-        <!-- 文件上传（隐藏） -->
-        <input type="file" id="readerFileInput" accept=".txt,.docx,.pdf" style="display:none;" onchange="handleReaderFile(event)">
-        <!-- 统计 -->
-        <div class="reader-stats">
-            <div class="stat-item"><div class="num" id="readerTotalSeconds">0</div><div class="label">累计秒数</div></div>
-            <div class="stat-item"><div class="num" id="readerTotalDays">0</div><div class="label">阅读天数</div></div>
-            <div class="stat-item"><div class="num" id="readerCurrentSession">0</div><div class="label">本次(秒)</div></div>
-        </div>
-        <!-- 控制 -->
-        <div class="reader-controls">
-            <button class="btn-stop" id="readerStopBtn" onclick="stopReading()" style="display:none;">⏹ 停止阅读</button>
-            <button onclick="resetReaderStats()" style="background:var(--bg);color:var(--text-muted);">重置统计</button>
-        </div>
-    </div>
-</div>
-
-<!-- ===== 导航栏 ===== -->
+<!-- ===== 导航栏（三个标签） ===== -->
 <nav class="tab-nav">
     <button class="tab-item active" data-tab="home" onclick="switchTab('home')"><span class="tab-icon">🏠</span> 首页</button>
     <button class="tab-item" data-tab="journal" onclick="switchTab('journal')"><span class="tab-icon">📝</span> 记账</button>
     <button class="tab-item" data-tab="inspire" onclick="switchTab('inspire')"><span class="tab-icon">🌟</span> 激励</button>
-    <button class="tab-item" data-tab="read" onclick="switchTab('read')"><span class="tab-icon">📖</span> 阅读</button>
 </nav>
 
 <!-- ===== 模态框 ===== -->
@@ -435,22 +289,9 @@
 <div class="modal-overlay" id="modalUploadBalance"><div class="modal-box"><h3>📤 上传本周余额</h3><p style="font-size:14px;color:var(--text-muted);margin-bottom:12px;">录入每个账户当前真实余额，系统自动计算差额生成调整记录。</p><div id="balanceInputs"></div><div class="form-group" style="margin-top:8px;"><label>记录日期</label><input type="date" id="uploadDate" required></div><div class="modal-actions"><button class="btn-cancel" onclick="closeModal('modalUploadBalance')">取消</button><button class="btn-confirm" onclick="submitBalanceUpload()">确认上传</button></div></div></div>
 <div class="modal-overlay" id="modalGoal"><div class="modal-box"><h3>🎯 添加目标</h3><div class="form-group"><label>目标名称</label><input type="text" id="goalName" placeholder="如：旅行基金" value="梦想基金"></div><div class="form-group"><label>目标金额 (¥)</label><input type="number" id="goalTarget" step="0.01" value="5000"></div><div class="form-group"><label>当前已存 (¥)</label><input type="number" id="goalCurrent" step="0.01" value="0"></div><div class="modal-actions"><button class="btn-cancel" onclick="closeModal('modalGoal')">取消</button><button class="btn-confirm" onclick="addGoal()">确认添加</button></div></div></div>
 <div class="modal-overlay" id="modalGoalProgress"><div class="modal-box"><h3>📈 更新进度</h3><div class="form-group"><label>增加金额 (¥)</label><input type="number" id="goalProgressAmount" step="0.01" min="0.01" placeholder="输入金额" value="100"></div><div style="font-size:13px;color:var(--text-muted);margin-bottom:12px;">当前进度: <span id="goalProgressCurrent">0</span> / <span id="goalProgressTarget">0</span></div><div class="modal-actions"><button class="btn-cancel" onclick="closeModal('modalGoalProgress')">取消</button><button class="btn-confirm" onclick="updateGoalProgress()">确认增加</button></div></div></div>
-<!-- 标签目录模态框 -->
-<div class="modal-overlay" id="modalTagDirectory"><div class="modal-box"><h3>🏷 标签目录 <button class="sec-action" onclick="closeModal('modalTagDirectory')" style="background:none;border:none;color:var(--text-muted);font-size:18px;cursor:pointer;">✕</button></h3><div id="tagDirectoryList"></div><div class="modal-actions"><button class="btn-cancel" onclick="closeModal('modalTagDirectory')">关闭</button></div></div></div>
 
 <!-- ===== 同步模态框 ===== -->
 <div class="modal-overlay" id="modalSync"><div class="modal-box"><h3>📂 数据同步</h3><div style="display:flex;flex-direction:column;gap:12px;"><button class="btn-primary" onclick="exportData()" style="background:var(--green);color:#fff;">📤 导出账本</button><div><label for="importFileInput" style="display:block;text-align:center;padding:12px;border:1px dashed var(--border);border-radius:14px;cursor:pointer;background:var(--bg);color:var(--text-muted);">📥 点击选择文件导入</label><input type="file" id="importFileInput" accept=".json" style="display:none;" onchange="importData(event)"></div><button class="btn-cancel" onclick="closeModal('modalSync')">关闭</button></div><div class="text-muted" style="margin-top:12px;font-size:12px;text-align:center;">导入将覆盖当前所有数据，请谨慎操作</div></div></div>
-
-<!-- ===== 成长阶段预览模态框 ===== -->
-<div class="modal-overlay" id="modalStagePreview">
-    <div class="modal-box" style="max-width:100%;">
-        <h3>
-            <span>🌱 成长阶段预览</span>
-            <button class="sec-action" onclick="closeModal('modalStagePreview')" style="background:none;border:none;color:var(--text-muted);font-size:18px;cursor:pointer;">✕</button>
-        </h3>
-        <div id="stagePreviewContainer" class="stage-preview-container"></div>
-    </div>
-</div>
 
 <script>
     // ==================== 预设账户 ====================
@@ -464,8 +305,6 @@
     ];
 
     const STORAGE_KEY = 'financeAppData';
-    const READER_STORAGE_KEY = 'readerData';
-    const READER_CONTENT_KEY = 'readerContentData';
 
     // ==================== 默认数据 ====================
     function getDefaultData(){
@@ -510,641 +349,6 @@
         localStorage.setItem(STORAGE_KEY,JSON.stringify(data));
     }
 
-    // ==================== 阅读器数据 ====================
-    let readerData = null;
-    function loadReaderData(){
-        const raw = localStorage.getItem(READER_STORAGE_KEY);
-        if(raw){
-            try{
-                readerData = JSON.parse(raw);
-                if(typeof readerData.totalSeconds !== 'number') readerData.totalSeconds = 0;
-                if(!Array.isArray(readerData.readDays)) readerData.readDays = [];
-                if(!Array.isArray(readerData.tags)) readerData.tags = [];
-                if(!Array.isArray(readerData.highlights)) readerData.highlights = [];
-                return;
-            }catch(e){}
-        }
-        readerData = { totalSeconds: 0, readDays: [], tags: [], highlights: [] };
-        saveReaderData();
-    }
-    function saveReaderData(){
-        localStorage.setItem(READER_STORAGE_KEY, JSON.stringify(readerData));
-    }
-
-    // 阅读内容存储（纯文本）
-    let currentText = '';
-    let currentFileName = '';
-    // 搜索状态
-    let searchResults = [];
-    let searchIndex = -1;
-    let searchActive = false;
-
-    // 阅读计时相关
-    let readingStartTime = null;
-    let readingTimerInterval = null;
-
-    // 语音相关
-    let isSpeaking = false;
-    let speechUtterance = null;
-    let voiceSpeed = 1.0;
-
-    // 标签模式 & 高亮模式
-    let tagMode = false;
-    let highlightMode = false;
-
-    // ==================== 阅读器核心功能 ====================
-
-    function updateReaderStats(){
-        document.getElementById('readerTotalSeconds').textContent = readerData.totalSeconds;
-        document.getElementById('readerTotalDays').textContent = readerData.readDays.length;
-        if(!readingStartTime){
-            document.getElementById('readerCurrentSession').textContent = '0';
-        }
-        document.getElementById('tagCountBadge').textContent = readerData.tags.length;
-    }
-
-    function startReading(){
-        if(readingStartTime) return;
-        readingStartTime = new Date();
-        if(readingTimerInterval) clearInterval(readingTimerInterval);
-        readingTimerInterval = setInterval(()=>{
-            if(readingStartTime){
-                const now = new Date();
-                const diff = Math.floor((now - readingStartTime) / 1000);
-                document.getElementById('readerCurrentSession').textContent = diff;
-                const total = readerData.totalSeconds + diff;
-                document.getElementById('readerTotalSeconds').textContent = total;
-            }
-        }, 1000);
-        document.getElementById('readerStopBtn').style.display = 'inline-block';
-    }
-
-    function stopReading(){
-        if(!readingStartTime) return;
-        const now = new Date();
-        const diff = Math.floor((now - readingStartTime) / 1000);
-        if(diff > 0){
-            readerData.totalSeconds += diff;
-            const today = getTodayStr();
-            if(!readerData.readDays.includes(today)){
-                readerData.readDays.push(today);
-            }
-            saveReaderData();
-            updateReaderStats();
-            showToast(`⏱ 本次阅读 ${diff} 秒`);
-        }
-        if(readingTimerInterval) clearInterval(readingTimerInterval);
-        readingTimerInterval = null;
-        readingStartTime = null;
-        document.getElementById('readerCurrentSession').textContent = '0';
-        document.getElementById('readerStopBtn').style.display = 'none';
-        updateReaderStats();
-    }
-
-    function resetReaderStats(){
-        if(confirm('确定重置所有阅读统计数据吗？')){
-            readerData.totalSeconds = 0;
-            readerData.readDays = [];
-            readerData.tags = [];
-            readerData.highlights = [];
-            saveReaderData();
-            updateReaderStats();
-            renderReaderContent();
-            showToast('已重置阅读统计');
-        }
-    }
-
-    // 处理文件上传（支持TXT/PDF/DOCX，自动检测编码）
-    function handleReaderFile(event){
-        const file = event.target.files[0];
-        if(!file) return;
-        currentFileName = file.name;
-        document.getElementById('readerFileName').textContent = currentFileName;
-
-        const ext = file.name.split('.').pop().toLowerCase();
-        if(ext === 'txt'){
-            const reader = new FileReader();
-            reader.onload = function(e){
-                const buffer = e.target.result;
-                let text = new TextDecoder('utf-8').decode(buffer);
-                if(text.includes('\uFFFD') || text.replace(/[\x20-\x7E\n\r\t]/g,'').length > text.length * 0.1){
-                    text = new TextDecoder('gbk').decode(buffer);
-                }
-                setReaderContent(text);
-                switchTab('read');
-                startReading();
-            };
-            reader.readAsArrayBuffer(file);
-        } else if(ext === 'pdf'){
-            if(typeof pdfjsLib === 'undefined'){
-                loadPdfJsAndParse(file);
-            } else {
-                parsePdf(file);
-            }
-        } else if(ext === 'docx'){
-            if(typeof mammoth === 'undefined'){
-                loadMammothAndParse(file);
-            } else {
-                parseDocx(file);
-            }
-        } else {
-            showToast('不支持的文件格式');
-        }
-        event.target.value = '';
-    }
-
-    function loadPdfJsAndParse(file){
-        const script = document.createElement('script');
-        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js';
-        script.onload = function(){
-            pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
-            parsePdf(file);
-        };
-        script.onerror = function(){ showToast('加载PDF解析库失败'); };
-        document.head.appendChild(script);
-    }
-
-    function parsePdf(file){
-        const reader = new FileReader();
-        reader.onload = function(e){
-            const arrayBuffer = e.target.result;
-            pdfjsLib.getDocument({data: arrayBuffer}).promise.then(function(pdf){
-                let fullText = '';
-                let pages = pdf.numPages;
-                let promise = Promise.resolve();
-                for(let i=1; i<=pages; i++){
-                    promise = promise.then(function(){
-                        return pdf.getPage(i).then(function(page){
-                            return page.getTextContent().then(function(textContent){
-                                let pageText = '';
-                                textContent.items.forEach(function(item){
-                                    pageText += item.str + ' ';
-                                });
-                                fullText += pageText + '\n\n';
-                            });
-                        });
-                    });
-                }
-                promise.then(function(){
-                    setReaderContent(fullText);
-                    switchTab('read');
-                    startReading();
-                }).catch(function(err){ showToast('PDF解析失败'); });
-            }).catch(function(err){ showToast('PDF加载失败'); });
-        };
-        reader.readAsArrayBuffer(file);
-    }
-
-    function loadMammothAndParse(file){
-        const script = document.createElement('script');
-        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js';
-        script.onload = function(){ parseDocx(file); };
-        script.onerror = function(){ showToast('加载Word解析库失败'); };
-        document.head.appendChild(script);
-    }
-
-    function parseDocx(file){
-        const reader = new FileReader();
-        reader.onload = function(e){
-            const arrayBuffer = e.target.result;
-            mammoth.extractRawText({arrayBuffer: arrayBuffer}).then(function(result){
-                setReaderContent(result.value);
-                switchTab('read');
-                startReading();
-            }).catch(function(err){ showToast('Word解析失败'); });
-        };
-        reader.readAsArrayBuffer(file);
-    }
-
-    // 设置阅读内容
-    function setReaderContent(text){
-        currentText = text;
-        localStorage.setItem(READER_CONTENT_KEY, JSON.stringify({text: text, name: currentFileName}));
-        renderReaderContent();
-    }
-
-    // 渲染阅读内容（带标注）
-    function renderReaderContent(){
-        const container = document.getElementById('readerContentInner');
-        if(!currentText){
-            container.innerHTML = `<div class="empty-reader"><span class="big-icon">📤</span>点击右上角 📤 上传 TXT / Word / PDF 文件</div>`;
-            return;
-        }
-
-        const wrap = document.getElementById('readerContentWrap');
-        const scrollPos = wrap.scrollTop;
-
-        let html = currentText;
-
-        // 应用高亮（背景色）
-        if(readerData.highlights && readerData.highlights.length > 0){
-            let sorted = [...readerData.highlights].sort((a,b) => b.start - a.start);
-            for(let h of sorted){
-                if(h.start >= 0 && h.end <= html.length && h.start < h.end){
-                    const before = html.substring(0, h.start);
-                    const middle = html.substring(h.start, h.end);
-                    const after = html.substring(h.end);
-                    html = before + `<span class="highlight">${middle}</span>` + after;
-                }
-            }
-        }
-
-        // 应用标签
-        if(readerData.tags && readerData.tags.length > 0){
-            let sorted = [...readerData.tags].sort((a,b) => b.start - a.start);
-            for(let t of sorted){
-                if(t.start >= 0 && t.end <= html.length && t.start < t.end){
-                    const before = html.substring(0, t.start);
-                    const middle = html.substring(t.start, t.end);
-                    const after = html.substring(t.end);
-                    const label = t.label || '🏷';
-                    html = before + `<span class="tag-marker" data-tag-id="${t.id}" title="标签: ${label}">${middle}</span>` + after;
-                }
-            }
-        }
-
-        // 高亮搜索
-        if(searchActive && searchResults.length > 0){
-            // 重新构建，只高亮
-            let searchHtml = currentText;
-            let sortedPos = [...searchResults].sort((a,b) => b - a);
-            for(let pos of sortedPos){
-                const kw = document.getElementById('searchInput')?.value || '';
-                if(kw && pos >= 0 && pos + kw.length <= searchHtml.length){
-                    const before = searchHtml.substring(0, pos);
-                    const middle = searchHtml.substring(pos, pos + kw.length);
-                    const after = searchHtml.substring(pos + kw.length);
-                    searchHtml = before + `<span class="hl">${middle}</span>` + after;
-                }
-            }
-            // 但需要保留标签和高亮吗？在搜索时我们希望看到所有标注，但为了简化，我们在搜索时只显示高亮，保留标签和高亮背景。
-            // 更合理：在搜索时，先构建标注，再套搜索高亮。
-            // 我们选择保留所有标注，再额外添加搜索高亮。
-            // 但为了不破坏已有标注，我们需要在标注之上再添加高亮，但标注已经用span包裹，替换会破坏结构。
-            // 所以搜索高亮时，我们重新构建：先构建标注（已做），然后针对纯文本位置做高亮，但会与现有span冲突。
-            // 因此，搜索时我们采用简单方式：只显示高亮，不显示其他标注。
-            // 但用户可能希望看到标签和划线，所以我们改为：保留标注，但搜索高亮用另一种方式：用js滚动定位，但不修改html。
-            // 为了快速实现，我们采用搜索高亮显示在标注之上的方式，但技术复杂，我们采用折中方案：
-            // 当搜索激活时，我们重新渲染，只显示高亮，不显示标签和划线。
-            // 退出搜索后恢复。
-            if(searchActive){
-                container.innerHTML = searchHtml;
-                wrap.scrollTop = scrollPos;
-                return;
-            }
-        }
-
-        container.innerHTML = html;
-        wrap.scrollTop = scrollPos;
-    }
-
-    // ===== 搜索功能 =====
-    function toggleSearchBar(){
-        const bar = document.getElementById('searchBar');
-        if(bar.style.display === 'none'){
-            bar.style.display = 'flex';
-            document.getElementById('searchInput').focus();
-            document.getElementById('searchBtn').classList.add('active-btn');
-        }else{
-            bar.style.display = 'none';
-            searchActive = false;
-            searchResults = [];
-            searchIndex = -1;
-            document.getElementById('searchBtn').classList.remove('active-btn');
-            renderReaderContent();
-        }
-    }
-
-    function doSearch(keyword){
-        if(!keyword || !currentText){
-            searchResults = [];
-            searchIndex = -1;
-            searchActive = false;
-            renderReaderContent();
-            return;
-        }
-        searchActive = true;
-        searchResults = [];
-        let idx = currentText.indexOf(keyword);
-        while(idx !== -1){
-            searchResults.push(idx);
-            idx = currentText.indexOf(keyword, idx + 1);
-        }
-        searchIndex = searchResults.length > 0 ? 0 : -1;
-        renderReaderContent();
-        if(searchResults.length > 0){
-            showToast(`找到 ${searchResults.length} 个匹配`);
-            scrollToSearchResult(0);
-        }else{
-            showToast('未找到匹配');
-        }
-    }
-
-    function scrollToSearchResult(index){
-        if(index < 0 || index >= searchResults.length) return;
-        const pos = searchResults[index];
-        const wrap = document.getElementById('readerContentWrap');
-        const textBefore = currentText.substring(0, pos);
-        const lines = textBefore.split('\n').length;
-        const lineHeight = 1.8 * 15;
-        const targetScroll = Math.max(0, (lines - 3) * lineHeight);
-        wrap.scrollTop = targetScroll;
-        searchIndex = index;
-        const input = document.getElementById('searchInput');
-        if(input) input.placeholder = `${index+1}/${searchResults.length}`;
-    }
-
-    function searchNext(){
-        if(searchResults.length === 0) return;
-        searchIndex = (searchIndex + 1) % searchResults.length;
-        scrollToSearchResult(searchIndex);
-    }
-
-    function searchPrev(){
-        if(searchResults.length === 0) return;
-        searchIndex = (searchIndex - 1 + searchResults.length) % searchResults.length;
-        scrollToSearchResult(searchIndex);
-    }
-
-    // ===== 标签功能（单击添加，双击进入目录） =====
-    function handleTagToolClick(e){
-        // 检测双击
-        if(e && e.detail === 2){
-            // 双击：打开标签目录
-            openTagDirectory();
-            return;
-        }
-        // 单击：切换标签模式
-        tagMode = !tagMode;
-        const btn = document.getElementById('tagToolBtn');
-        if(tagMode){
-            btn.classList.add('active-tool');
-            highlightMode = false;
-            document.getElementById('underlineToolBtn').classList.remove('active-tool');
-            showToast('🏷 标签模式：选中文本后单击添加标签');
-        }else{
-            btn.classList.remove('active-tool');
-        }
-    }
-
-    // 为了支持双击，需要绑定dblclick事件
-    document.addEventListener('DOMContentLoaded', function(){
-        const tagBtn = document.getElementById('tagToolBtn');
-        tagBtn.addEventListener('click', handleTagToolClick);
-        tagBtn.addEventListener('dblclick', function(e){
-            e.preventDefault(); // 阻止再次触发单击
-            openTagDirectory();
-        });
-    });
-
-    function handleContentClick(event){
-        if(!tagMode && !highlightMode) return;
-        const selection = window.getSelection();
-        const text = selection.toString().trim();
-        if(text && text.length > 0){
-            const inner = document.getElementById('readerContentInner');
-            const fullText = inner.textContent;
-            const startIdx = fullText.indexOf(text);
-            if(startIdx !== -1){
-                const endIdx = startIdx + text.length;
-                if(tagMode){
-                    // 检查是否已存在标签
-                    const exists = readerData.tags.some(t => t.start === startIdx && t.end === endIdx);
-                    if(exists){
-                        showToast('该位置已有标签');
-                        selection.removeAllRanges();
-                        return;
-                    }
-                    const label = prompt('输入标签名称（留空使用默认）:', text.substring(0, 8));
-                    if(label !== null){
-                        readerData.tags.push({
-                            id: 'tag_' + Date.now() + Math.random().toString(36).slice(2,6),
-                            start: startIdx,
-                            end: endIdx,
-                            label: label || text.substring(0, 8)
-                        });
-                        saveReaderData();
-                        renderReaderContent();
-                        updateReaderStats();
-                        showToast('🏷 标签已添加');
-                    }
-                } else if(highlightMode){
-                    // 高亮（画线）
-                    const exists = readerData.highlights.some(h => h.start === startIdx && h.end === endIdx);
-                    if(exists){
-                        showToast('该位置已高亮');
-                        selection.removeAllRanges();
-                        return;
-                    }
-                    readerData.highlights.push({
-                        start: startIdx,
-                        end: endIdx
-                    });
-                    saveReaderData();
-                    renderReaderContent();
-                    showToast('✏️ 高亮已添加');
-                }
-            }else{
-                showToast('无法定位文本位置');
-            }
-            selection.removeAllRanges();
-        }else{
-            if(tagMode) showToast('请先选中一段文字再单击');
-            else if(highlightMode) showToast('请先选中一段文字再单击');
-        }
-    }
-
-    // ===== 划线（高亮）功能 =====
-    function handleUnderlineToolClick(){
-        highlightMode = !highlightMode;
-        const btn = document.getElementById('underlineToolBtn');
-        if(highlightMode){
-            btn.classList.add('active-tool');
-            tagMode = false;
-            document.getElementById('tagToolBtn').classList.remove('active-tool');
-            showToast('✏️ 高亮模式：选中文字后单击添加高亮背景');
-        }else{
-            btn.classList.remove('active-tool');
-        }
-    }
-
-    // 备用：鼠标释放时也能触发（但已用click统一处理）
-    function handleContentSelect(event){
-        // 仅用于辅助，主要逻辑在handleContentClick
-    }
-
-    // ===== 标签目录 =====
-    function openTagDirectory(){
-        const list = document.getElementById('tagDirectoryList');
-        if(readerData.tags.length === 0){
-            list.innerHTML = '<div style="padding:20px 0;text-align:center;color:var(--text-muted);">暂无标签</div>';
-        }else{
-            let html = '';
-            const sorted = [...readerData.tags].sort((a,b) => a.start - b.start);
-            for(let t of sorted){
-                const preview = currentText.substring(t.start, Math.min(t.start + 30, t.end)) + (t.end - t.start > 30 ? '...' : '');
-                html += `<div class="tag-directory-item" onclick="jumpToTag('${t.id}')">
-                    <span class="tag-text">🏷 ${t.label || '标签'}</span>
-                    <span class="tag-preview">${preview}</span>
-                </div>`;
-            }
-            list.innerHTML = html;
-        }
-        openModal('modalTagDirectory');
-    }
-
-    function jumpToTag(tagId){
-        const tag = readerData.tags.find(t => t.id === tagId);
-        if(tag){
-            closeModal('modalTagDirectory');
-            const wrap = document.getElementById('readerContentWrap');
-            const textBefore = currentText.substring(0, tag.start);
-            const lines = textBefore.split('\n').length;
-            const lineHeight = 1.8 * 15;
-            wrap.scrollTop = Math.max(0, (lines - 3) * lineHeight);
-            showToast(`📍 跳转到标签: ${tag.label || '标签'}`);
-        }
-    }
-
-    // ===== 语音功能 =====
-    function toggleVoice(){
-        if(isSpeaking){
-            stopVoice();
-        }else{
-            startVoice();
-        }
-    }
-
-    function startVoice(){
-        if(!currentText){
-            showToast('请先上传阅读内容');
-            return;
-        }
-        if(!window.speechSynthesis){
-            showToast('浏览器不支持语音朗读');
-            return;
-        }
-        if(isSpeaking){
-            stopVoice();
-            return;
-        }
-        const speedSelect = document.getElementById('voiceSpeedSelect');
-        voiceSpeed = parseFloat(speedSelect.value) || 1.0;
-
-        speechUtterance = new SpeechSynthesisUtterance(currentText);
-        speechUtterance.lang = 'zh-CN';
-        speechUtterance.rate = voiceSpeed;
-        speechUtterance.pitch = 1.0;
-        speechUtterance.volume = 1.0;
-
-        speechUtterance.onstart = function(){
-            isSpeaking = true;
-            document.getElementById('voiceToolBtn').textContent = '🔊 播放中';
-            document.getElementById('voiceToolBtn').classList.add('speaking');
-            showToast('🎧 开始朗读');
-        };
-        speechUtterance.onend = function(){
-            isSpeaking = false;
-            document.getElementById('voiceToolBtn').textContent = '🎧 语音';
-            document.getElementById('voiceToolBtn').classList.remove('speaking');
-        };
-        speechUtterance.onerror = function(){
-            isSpeaking = false;
-            document.getElementById('voiceToolBtn').textContent = '🎧 语音';
-            document.getElementById('voiceToolBtn').classList.remove('speaking');
-            showToast('语音播放出错');
-        };
-
-        window.speechSynthesis.speak(speechUtterance);
-    }
-
-    function stopVoice(){
-        if(window.speechSynthesis){
-            window.speechSynthesis.cancel();
-        }
-        isSpeaking = false;
-        document.getElementById('voiceToolBtn').textContent = '🎧 语音';
-        document.getElementById('voiceToolBtn').classList.remove('speaking');
-    }
-
-    function updateVoiceSpeed(){
-        const speedSelect = document.getElementById('voiceSpeedSelect');
-        voiceSpeed = parseFloat(speedSelect.value) || 1.0;
-        if(isSpeaking && speechUtterance){
-            speechUtterance.rate = voiceSpeed;
-        }
-        showToast(`语速: ${voiceSpeed}x`);
-    }
-
-    // ==================== 页面切换与按钮管理 ====================
-    function switchTab(tab){
-        if(tab !== 'read' && readingStartTime){
-            stopReading();
-        }
-        if(tab !== 'read' && isSpeaking){
-            stopVoice();
-        }
-        // 重置工具模式
-        if(tab !== 'read'){
-            tagMode = false;
-            highlightMode = false;
-            document.getElementById('tagToolBtn').classList.remove('active-tool');
-            document.getElementById('underlineToolBtn').classList.remove('active-tool');
-            // 隐藏搜索栏
-            document.getElementById('searchBar').style.display = 'none';
-            searchActive = false;
-            searchResults = [];
-            searchIndex = -1;
-            document.getElementById('searchBtn').classList.remove('active-btn');
-        }
-
-        currentTab=tab;
-        document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-        document.getElementById('page-'+tab).classList.add('active');
-        document.querySelectorAll('.tab-item').forEach(t=>t.classList.remove('active'));
-        document.querySelector(`.tab-item[data-tab="${tab}"]`).classList.add('active');
-
-        // 切换头部按钮
-        const syncBtn = document.getElementById('syncBtn');
-        const uploadBtn = document.getElementById('uploadBtn');
-        const searchBtn = document.getElementById('searchBtn');
-        if(tab === 'read'){
-            syncBtn.style.display = 'none';
-            uploadBtn.style.display = 'flex';
-            searchBtn.style.display = 'flex';
-        }else{
-            syncBtn.style.display = 'flex';
-            uploadBtn.style.display = 'none';
-            searchBtn.style.display = 'none';
-        }
-
-        renderAll();
-        if(tab==='journal') renderJournalPage();
-        if(tab==='inspire'){
-            renderPlant();
-            renderGoals();
-            renderAchievements();
-            startPlantAnimation();
-        }else{
-            stopPlantAnimation();
-        }
-        if(tab==='read'){
-            updateReaderStats();
-            const saved = localStorage.getItem(READER_CONTENT_KEY);
-            if(saved){
-                try{
-                    const obj = JSON.parse(saved);
-                    if(obj.text){
-                        currentText = obj.text;
-                        currentFileName = obj.name || '';
-                        document.getElementById('readerFileName').textContent = currentFileName;
-                        renderReaderContent();
-                    }
-                }catch(e){}
-            }
-        }
-    }
-
     // ==================== 工具函数 ====================
     function getTodayStr(){
         const now = new Date();
@@ -1166,7 +370,6 @@
         m.setHours(0,0,0,0);
         return m.toISOString().slice(0,10);
     }
-
     function getAccountBalance(accId){
         const acc=data.accounts.find(a=>a.id===accId);
         if(!acc) return 0;
@@ -1245,6 +448,19 @@
     });
 
     let currentTab='home';
+    function switchTab(tab){
+        currentTab=tab;
+        document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+        document.getElementById('page-'+tab).classList.add('active');
+        document.querySelectorAll('.tab-item').forEach(t=>t.classList.remove('active'));
+        document.querySelector(`.tab-item[data-tab="${tab}"]`).classList.add('active');
+        renderAll();
+        if(tab==='journal') renderJournalPage();
+        if(tab==='inspire'){
+            renderGoals();
+            renderAchievements();
+        }
+    }
 
     // ==================== 账户管理 ====================
     let editingAccountId=null;
@@ -1577,13 +793,6 @@
         renderJournalTxnList();
         renderAll();
         showToast('✅ 记录已保存');
-
-        setTimeout(() => {
-            triggerWaterAnimation();
-            switchTab('inspire');
-            setTimeout(() => { renderPlant(); renderGoals(); renderAchievements(); }, 100);
-        }, 300);
-
         checkAchievements();
     }
 
@@ -1920,7 +1129,7 @@
         if(a&&!a.unlocked){a.unlocked=true; showToast('🏆 解锁成就: '+a.name);}
     }
 
-    // 数据同步功能（导出/导入）
+    // 数据同步功能
     function openSyncModal(){openModal('modalSync');}
     function exportData(){
         const json=JSON.stringify(data,null,2);
@@ -1964,168 +1173,6 @@
         event.target.value='';
     }
 
-    // ==================== 树苗成长（简化保留） ====================
-    let animFrameId = null;
-    let animTime = 0;
-
-    const GROWTH_STAGES = [
-        { name: '种子', min: 0, max: 0, label: '🌰 种子', color: '#8D6E63' },
-        { name: '发芽', min: 1, max: 2, label: '🌱 发芽', color: '#66BB6A' },
-        { name: '小苗', min: 3, max: 5, label: '🌿 小苗', color: '#4CAF50' },
-        { name: '树苗', min: 6, max: 10, label: '🌳 树苗', color: '#388E3C' },
-        { name: '小树', min: 11, max: 20, label: '🌲 小树', color: '#2E7D32' },
-        { name: '大树', min: 21, max: 40, label: '🌳 大树', color: '#1B5E20' },
-        { name: '花园', min: 41, max: 60, label: '🌸 花园', color: '#E91E63' },
-        { name: '果园', min: 61, max: 80, label: '🍎 果园', color: '#F57C00' },
-        { name: '庄园', min: 81, max: Infinity, label: '🏡 庄园', color: '#4A148C' }
-    ];
-
-    function getGrowthStage(totalDays){
-        for(let s of GROWTH_STAGES){
-            if(totalDays >= s.min && totalDays <= s.max) return s;
-        }
-        return GROWTH_STAGES[0];
-    }
-
-    function drawPlantCore(ctx, w, h, totalDays, time){
-        ctx.clearRect(0, 0, w, h);
-        const progress = Math.min(1, totalDays / 80);
-        const groundY = h - 60;
-        const skyGrad = ctx.createLinearGradient(0,0,0,groundY);
-        skyGrad.addColorStop(0,'#b3d9ff');
-        skyGrad.addColorStop(0.7,'#d4eaff');
-        skyGrad.addColorStop(1,'#e8f5e9');
-        ctx.fillStyle = skyGrad;
-        ctx.fillRect(0,0,w,groundY);
-        ctx.fillStyle = '#7CB342';
-        ctx.fillRect(0, groundY, w, 60);
-        ctx.fillStyle = '#8BC34A';
-        ctx.fillRect(0, groundY+8, w, 52);
-        const cx = w * 0.4;
-        const trunkH = 25 + progress * 100;
-        const trunkW = 5 + progress * 14;
-        const trunkTop = groundY - trunkH;
-        ctx.fillStyle = '#5D4037';
-        ctx.fillRect(cx - trunkW/2, trunkTop, trunkW, trunkH);
-        const crownSize = 15 + progress * 75;
-        const crownY = trunkTop - 6;
-        const gradient = ctx.createRadialGradient(cx, crownY - 15, 5, cx, crownY, crownSize);
-        gradient.addColorStop(0, '#81C784');
-        gradient.addColorStop(0.5, '#4CAF50');
-        gradient.addColorStop(1, '#388E3C');
-        ctx.beginPath();
-        ctx.arc(cx, crownY, crownSize, 0, Math.PI*2);
-        ctx.fillStyle = gradient;
-        ctx.fill();
-    }
-
-    function startPlantAnimation(){
-        if(animFrameId) return;
-        function frame(timestamp){
-            animTime = timestamp / 1000;
-            const canvas = document.getElementById('plantCanvas');
-            if(canvas && document.getElementById('page-inspire').classList.contains('active')){
-                const ctx = canvas.getContext('2d');
-                const rect = canvas.parentElement.getBoundingClientRect();
-                const size = Math.min(rect.width || 300, 360);
-                canvas.width = size * 2;
-                canvas.height = size * 2;
-                canvas.style.width = size + 'px';
-                canvas.style.height = size + 'px';
-                ctx.scale(2, 2);
-                const dates = data.transactions.map(t => t.date);
-                const uniqueDates = new Set(dates);
-                const totalDays = uniqueDates.size;
-                drawPlantCore(ctx, size, size, totalDays, animTime);
-            }
-            animFrameId = requestAnimationFrame(frame);
-        }
-        animFrameId = requestAnimationFrame(frame);
-    }
-
-    function stopPlantAnimation(){
-        if(animFrameId){
-            cancelAnimationFrame(animFrameId);
-            animFrameId = null;
-        }
-    }
-
-    function renderPlant(){
-        const dates = data.transactions.map(t => t.date);
-        const uniqueDates = new Set(dates);
-        const totalDays = uniqueDates.size;
-        const today = getTodayStr();
-        const todayCount = data.transactions.filter(t => t.date === today).length;
-        document.getElementById('todayWaterCount').textContent = todayCount;
-        document.getElementById('totalWaterDays').textContent = totalDays;
-        const stage = getGrowthStage(totalDays);
-        document.getElementById('plantStageLabel').textContent = stage.label + ' ' + (totalDays>0?totalDays+'天':'');
-        const pct = Math.min(100, (totalDays / 80) * 100);
-        document.getElementById('plantProgressFill').style.width = pct + '%';
-        if(document.getElementById('page-inspire').classList.contains('active')){
-            startPlantAnimation();
-        }
-    }
-
-    function triggerWaterAnimation(){
-        const container = document.createElement('div');
-        container.className = 'water-animation';
-        document.body.appendChild(container);
-        const can = document.createElement('div');
-        can.className = 'water-can';
-        can.textContent = '🧹';
-        container.appendChild(can);
-        for(let i=0; i<40; i++){
-            const drop = document.createElement('div');
-            drop.className = 'water-drop';
-            const x = 10 + Math.random() * 80;
-            const delay = Math.random() * 0.5;
-            drop.style.left = x + '%';
-            drop.style.top = '8%';
-            drop.style.animationDelay = delay + 's';
-            drop.style.width = (5 + Math.random() * 8) + 'px';
-            drop.style.height = (12 + Math.random() * 18) + 'px';
-            container.appendChild(drop);
-        }
-        setTimeout(()=>{ if(container.parentNode) container.remove(); }, 2000);
-    }
-
-    function handleWaterPlant(){
-        triggerWaterAnimation();
-        renderPlant();
-        renderAll();
-        checkAchievements();
-        showToast('💧 浇水啦！');
-    }
-
-    function openStagePreview(){
-        const container = document.getElementById('stagePreviewContainer');
-        container.innerHTML = '';
-        GROWTH_STAGES.forEach(stage => {
-            const days = stage.min;
-            const card = document.createElement('div');
-            card.className = 'stage-card';
-            const nameDiv = document.createElement('div');
-            nameDiv.className = 'stage-name';
-            nameDiv.textContent = stage.label;
-            card.appendChild(nameDiv);
-            const canvas = document.createElement('canvas');
-            canvas.width = 240;
-            canvas.height = 240;
-            canvas.style.width = '120px';
-            canvas.style.height = '120px';
-            const ctx = canvas.getContext('2d');
-            drawPlantCore(ctx, 240, 240, days, 0);
-            card.appendChild(canvas);
-            const daysDiv = document.createElement('div');
-            daysDiv.className = 'stage-days';
-            daysDiv.textContent = days + '天' + (stage.max === Infinity ? '+' : '~'+stage.max+'天');
-            card.appendChild(daysDiv);
-            container.appendChild(card);
-        });
-        openModal('modalStagePreview');
-    }
-
     // ==================== 渲染全部 ====================
     function renderAll(){
         renderPresetAccountModal();
@@ -2135,57 +1182,20 @@
         renderHomeWeekChart();
         renderGoals();
         renderAchievements();
-        if(document.getElementById('page-inspire').classList.contains('active')){
-            renderPlant();
-            startPlantAnimation();
-        }else{
-            stopPlantAnimation();
-        }
         if(document.getElementById('page-journal').classList.contains('active')) renderJournalPage();
         if(document.getElementById('modalFullManage').classList.contains('show')) renderFullAccountList();
         if(document.getElementById('modalFinanceAccounts').classList.contains('show')) showFinanceAccounts();
-        if(document.getElementById('page-read').classList.contains('active')){
-            updateReaderStats();
-        }
     }
 
     // ==================== 初始化 ====================
     window.onload=function(){
         loadData();
-        loadReaderData();
-        // 恢复阅读内容
-        const saved = localStorage.getItem(READER_CONTENT_KEY);
-        if(saved){
-            try{
-                const obj = JSON.parse(saved);
-                if(obj.text){
-                    currentText = obj.text;
-                    currentFileName = obj.name || '';
-                    document.getElementById('readerFileName').textContent = currentFileName;
-                    renderReaderContent();
-                }
-            }catch(e){}
-        }
-        // 默认显示同步按钮
-        document.getElementById('syncBtn').style.display = 'flex';
-        document.getElementById('uploadBtn').style.display = 'none';
-        document.getElementById('searchBtn').style.display = 'none';
         renderAll();
-        // 初始化语音
-        if(window.speechSynthesis){
-            // 预加载
-        }
         let resizeTimer;
         window.addEventListener('resize', function(){
             clearTimeout(resizeTimer);
-            resizeTimer=setTimeout(()=>{ renderPlant(); renderGoalMini(); }, 200);
+            resizeTimer=setTimeout(()=>{ renderGoalMini(); }, 200);
         });
-        window.addEventListener('beforeunload', function(){
-            if(readingStartTime) stopReading();
-            if(isSpeaking) stopVoice();
-        });
-        // 双击标签按钮已通过addEventListener绑定
-        updateReaderStats();
         // 默认显示首页
         switchTab('home');
     };
