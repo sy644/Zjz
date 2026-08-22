@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>周记账 · 资产养成</title>
+    <title>周记账 · 资产养成 + 阅读</title>
     <style>
         *{margin:0;padding:0;box-sizing:border-box;}
         :root{
@@ -213,6 +213,21 @@
         .stage-preview-container .stage-card canvas{width:120px;height:120px;display:block;margin:0 auto;border-radius:8px;}
         .stage-preview-container .stage-card .stage-name{font-size:12px;font-weight:600;margin-bottom:4px;}
         .stage-preview-container .stage-card .stage-days{font-size:10px;color:var(--text-muted);}
+        /* 阅读器样式 */
+        .reader-upload-area{border:2px dashed var(--border);border-radius:var(--radius-sm);padding:30px 20px;text-align:center;cursor:pointer;transition:0.2s;margin-bottom:16px;background:rgba(255,255,255,0.5);}
+        .reader-upload-area:hover{border-color:var(--blue);background:rgba(74,124,247,0.04);}
+        .reader-upload-area .icon{font-size:40px;display:block;margin-bottom:8px;}
+        .reader-upload-area .hint{font-size:14px;color:var(--text-muted);}
+        .reader-content{background:var(--bg);border-radius:var(--radius-sm);padding:16px;max-height:400px;overflow-y:auto;white-space:pre-wrap;word-break:break-all;font-size:14px;line-height:1.6;margin-bottom:12px;color:var(--text-primary);}
+        .reader-stats{display:flex;justify-content:space-around;padding:10px 0;background:var(--card-bg);border-radius:var(--radius-sm);border:1px solid var(--border);margin-bottom:12px;}
+        .reader-stats .stat-item{text-align:center;}
+        .reader-stats .stat-item .num{font-size:20px;font-weight:700;color:var(--text-primary);}
+        .reader-stats .stat-item .label{font-size:11px;color:var(--text-muted);}
+        .reader-controls{display:flex;gap:10px;justify-content:center;}
+        .reader-controls button{padding:8px 20px;border:none;border-radius:30px;font-size:14px;cursor:pointer;transition:0.2s;}
+        .reader-controls .btn-stop{background:var(--red);color:#fff;}
+        .reader-controls .btn-stop:active{transform:scale(0.94);}
+        .reader-file-info{font-size:12px;color:var(--text-muted);text-align:center;margin:6px 0;}
         @media (max-width:420px){body{padding:0 12px 80px 12px;} .card-main .card-number{font-size:34px;} .card-main .card-number .currency{font-size:22px;} .card-secondary .goal-row .mini-circle{width:70px;height:70px;} .journal-form .form-group.amount-field input{font-size:20px;} .plant-card .plant-canvas-wrap canvas{max-width:300px;}}
         @media (min-width:600px){body{padding:0 24px 90px 24px;} .tab-nav{border-radius:32px 32px 0 0;}}
     </style>
@@ -237,6 +252,11 @@
             <span class="tag" id="weekExpenseTagWrap">本周支出 <span class="num red" id="weekExpenseTag">-¥0</span></span>
             <span class="tag">结余 <span class="num" id="weekBalanceTag">¥0</span></span>
         </div>
+    </div>
+    <!-- 空账户提示 -->
+    <div id="emptyAccountHint" class="card-secondary" style="text-align:center;color:var(--text-muted);padding:20px;display:none;">
+        📭 暂无账户，请点击下方按钮添加
+        <div style="margin-top:10px;"><button onclick="showAddAccountModal()" style="background:var(--blue);color:#fff;border:none;border-radius:30px;padding:10px 24px;font-size:14px;font-weight:600;cursor:pointer;">+ 添加账户</button></div>
     </div>
     <div class="card-main card-blue" id="financeCard" onclick="showFinanceAccounts()">
         <div class="card-label">📈 理财资产</div>
@@ -310,19 +330,48 @@
     </div>
 </div>
 
+<!-- ===== 阅读页 ===== -->
+<div id="page-read" class="page">
+    <div class="card-secondary" style="padding:18px 18px;">
+        <div class="sec-header" style="margin-bottom:12px;"><span class="sec-title" style="font-size:17px;">📖 阅读器</span></div>
+        <!-- 上传区域 -->
+        <div class="reader-upload-area" id="readerUploadArea" onclick="document.getElementById('readerFileInput').click()">
+            <span class="icon">📤</span>
+            <div class="hint">点击上传 TXT / Word (.docx) / PDF 文件</div>
+        </div>
+        <input type="file" id="readerFileInput" accept=".txt,.docx,.pdf" style="display:none;" onchange="handleReaderFile(event)">
+        <!-- 文件信息 -->
+        <div id="readerFileInfo" class="reader-file-info"></div>
+        <!-- 阅读内容 -->
+        <div id="readerContent" class="reader-content" style="display:none;">加载中...</div>
+        <!-- 统计 -->
+        <div class="reader-stats">
+            <div class="stat-item"><div class="num" id="readerTotalSeconds">0</div><div class="label">累计秒数</div></div>
+            <div class="stat-item"><div class="num" id="readerTotalDays">0</div><div class="label">阅读天数</div></div>
+            <div class="stat-item"><div class="num" id="readerCurrentSession">0</div><div class="label">本次(秒)</div></div>
+        </div>
+        <!-- 控制 -->
+        <div class="reader-controls">
+            <button class="btn-stop" id="readerStopBtn" onclick="stopReading()" style="display:none;">⏹ 停止阅读</button>
+            <button onclick="resetReaderStats()" style="background:var(--bg);color:var(--text-muted);">重置统计</button>
+        </div>
+    </div>
+</div>
+
 <!-- ===== 导航栏 ===== -->
 <nav class="tab-nav">
     <button class="tab-item active" data-tab="home" onclick="switchTab('home')"><span class="tab-icon">🏠</span> 首页</button>
     <button class="tab-item" data-tab="journal" onclick="switchTab('journal')"><span class="tab-icon">📝</span> 记账</button>
     <button class="tab-item" data-tab="inspire" onclick="switchTab('inspire')"><span class="tab-icon">🌟</span> 激励</button>
+    <button class="tab-item" data-tab="read" onclick="switchTab('read')"><span class="tab-icon">📖</span> 阅读</button>
 </nav>
 
-<!-- ===== 模态框 ===== -->
+<!-- ===== 模态框（原有） ===== -->
 <div class="modal-overlay" id="modalFullManage"><div class="modal-box"><h3><span>💳 账户管理</span><button class="sec-action" onclick="closeModal('modalFullManage')" style="background:none;border:none;color:var(--text-muted);font-size:18px;cursor:pointer;">✕</button></h3><div id="fullAccountList"></div><div style="margin-top:12px;text-align:right;"><button class="sec-action" onclick="closeModal('modalFullManage');showAddAccountModal();" style="background:none;border:none;color:var(--blue);font-size:15px;font-weight:600;cursor:pointer;">+ 添加账户</button></div><div class="modal-actions"><button class="btn-cancel" onclick="closeModal('modalFullManage')">关闭</button></div></div></div>
 <div class="modal-overlay" id="modalFinanceAccounts"><div class="modal-box"><h3><span>📈 理财账户</span><button class="sec-action" onclick="closeModal('modalFinanceAccounts')" style="background:none;border:none;color:var(--text-muted);font-size:18px;cursor:pointer;">✕</button></h3><div id="financeAccountList"></div><div class="modal-actions"><button class="btn-cancel" onclick="closeModal('modalFinanceAccounts')">关闭</button></div></div></div>
 <div class="modal-overlay" id="modalEditBalance"><div class="modal-box"><h3>✏️ 编辑余额</h3><div style="margin-bottom:12px;color:var(--text-primary);"><span style="font-weight:500;">账户：</span><span id="editBalanceAccountName"></span></div><div class="form-group"><label>当前余额</label><input type="text" id="editBalanceCurrent" disabled style="background:#f5f5f7;color:var(--text-muted);"></div><div class="form-group amount-field"><label>新余额 (¥)</label><input type="number" id="editBalanceNew" step="0.01" min="0" placeholder="输入新余额"></div><div class="modal-actions"><button class="btn-undo" onclick="undoLastAdjustment()" style="flex:0.8;">↩️ 撤销</button><button class="btn-cancel" onclick="closeModal('modalEditBalance')">取消</button><button class="btn-confirm" onclick="confirmEditBalance()">确认</button></div></div></div>
 <div class="modal-overlay" id="modalWeekDetail"><div class="modal-box"><h3 id="weekDetailTitle">本周收入明细</h3><div id="weekDetailListModal"></div><div class="modal-actions"><button class="btn-cancel" onclick="closeModal('modalWeekDetail')">关闭</button></div></div></div>
-<div class="modal-overlay" id="modalAccount"><div class="modal-box"><h3>➕ 添加账户</h3><div class="text-muted mb-8">快速选择预设账户，也可以自定义填写</div><div class="preset-account-wrap" id="presetAccountWrap"></div><div class="form-group"><label>账户名称</label><input type="text" id="accName" placeholder="如：招商银行" value=""></div><div class="form-group"><label>图标 (emoji)</label><input type="text" id="accIcon" placeholder="🏦" value="" maxlength="2"></div><div class="form-group"><label>分类 (自定义分支)</label><select id="accCategory"><option value="日常">日常</option><option value="理财">理财</option><option value="投资">投资</option><option value="负债">负债</option><option value="其他">其他</option></select><input type="text" id="accCategoryCustom" placeholder="或自定义分类" style="margin-top:4px;padding:8px 12px;font-size:14px;"></div><div class="form-group amount-field"><label>初始余额 (¥)</label><input type="number" id="accBalance" step="0.01" min="0" value="0.00"></div><div class="form-group"><label>余额日期</label><input type="date" id="accBalanceDate" required></div><div class="modal-actions"><button class="btn-cancel" onclick="closeModal('modalAccount')">取消</button><button class="btn-confirm" onclick="addAccount()">确认添加</button></div></div></div>
+<div class="modal-overlay" id="modalAccount"><div class="modal-box"><h3>➕ 添加账户</h3><div class="text-muted mb-8">快速选择预设账户，也可以自定义填写</div><div class="preset-account-wrap" id="presetAccountWrap"></div><div class="form-group"><label>账户名称</label><input type="text" id="accName" placeholder="如：招商银行" value=""></div><div class="form-group"><label>图标 (emoji)</label><input type="text" id="accIcon" placeholder="🏦" value="" maxlength="2"></div><div class="form-group"><label>分类 (自定义分支)</label><select id="accCategory"><option value="日常">日常</option><option value="理财">理财</option><option value="基金">基金</option><option value="股票">股票</option><option value="投资">投资</option><option value="负债">负债</option><option value="其他">其他</option></select><input type="text" id="accCategoryCustom" placeholder="或自定义分类" style="margin-top:4px;padding:8px 12px;font-size:14px;"></div><div class="form-group amount-field"><label>初始余额 (¥)</label><input type="number" id="accBalance" step="0.01" min="0" value="0.00"></div><div class="form-group"><label>余额日期</label><input type="date" id="accBalanceDate" required></div><div class="modal-actions"><button class="btn-cancel" onclick="closeModal('modalAccount')">取消</button><button class="btn-confirm" onclick="addAccount()">确认添加</button></div></div></div>
 <div class="modal-overlay" id="modalSync"><div class="modal-box"><h3>📂 数据同步</h3><div style="display:flex;flex-direction:column;gap:12px;"><button class="btn-primary" onclick="exportData()" style="background:var(--green);color:#fff;">📤 导出账本</button><div><label for="importFileInput" style="display:block;text-align:center;padding:12px;border:1px dashed var(--border);border-radius:14px;cursor:pointer;background:var(--bg);color:var(--text-muted);">📥 点击选择文件导入</label><input type="file" id="importFileInput" accept=".json" style="display:none;" onchange="importData(event)"></div><button class="btn-cancel" onclick="closeModal('modalSync')">关闭</button></div><div class="text-muted" style="margin-top:12px;font-size:12px;text-align:center;">导入将覆盖当前所有数据，请谨慎操作</div></div></div>
 <div class="modal-overlay" id="modalUploadBalance"><div class="modal-box"><h3>📤 上传本周余额</h3><p style="font-size:14px;color:var(--text-muted);margin-bottom:12px;">录入每个账户当前真实余额，系统自动计算差额生成调整记录。</p><div id="balanceInputs"></div><div class="form-group" style="margin-top:8px;"><label>记录日期</label><input type="date" id="uploadDate" required></div><div class="modal-actions"><button class="btn-cancel" onclick="closeModal('modalUploadBalance')">取消</button><button class="btn-confirm" onclick="submitBalanceUpload()">确认上传</button></div></div></div>
 <div class="modal-overlay" id="modalGoal"><div class="modal-box"><h3>🎯 添加目标</h3><div class="form-group"><label>目标名称</label><input type="text" id="goalName" placeholder="如：旅行基金" value="梦想基金"></div><div class="form-group"><label>目标金额 (¥)</label><input type="number" id="goalTarget" step="0.01" value="5000"></div><div class="form-group"><label>当前已存 (¥)</label><input type="number" id="goalCurrent" step="0.01" value="0"></div><div class="modal-actions"><button class="btn-cancel" onclick="closeModal('modalGoal')">取消</button><button class="btn-confirm" onclick="addGoal()">确认添加</button></div></div></div>
@@ -335,9 +384,7 @@
             <span>🌱 成长阶段预览</span>
             <button class="sec-action" onclick="closeModal('modalStagePreview')" style="background:none;border:none;color:var(--text-muted);font-size:18px;cursor:pointer;">✕</button>
         </h3>
-        <div id="stagePreviewContainer" class="stage-preview-container">
-            <!-- 由JS动态生成 -->
-        </div>
+        <div id="stagePreviewContainer" class="stage-preview-container"></div>
     </div>
 </div>
 
@@ -353,6 +400,7 @@
     ];
 
     const STORAGE_KEY = 'financeAppData';
+    const READER_STORAGE_KEY = 'readerData';
 
     // ==================== 默认数据（完全为空） ====================
     function getDefaultData(){
@@ -397,6 +445,247 @@
         localStorage.setItem(STORAGE_KEY,JSON.stringify(data));
     }
 
+    // ==================== 阅读器数据 ====================
+    let readerData = null;
+    function loadReaderData(){
+        const raw = localStorage.getItem(READER_STORAGE_KEY);
+        if(raw){
+            try{
+                readerData = JSON.parse(raw);
+                if(typeof readerData.totalSeconds !== 'number') readerData.totalSeconds = 0;
+                if(!Array.isArray(readerData.readDays)) readerData.readDays = [];
+                return;
+            }catch(e){}
+        }
+        readerData = { totalSeconds: 0, readDays: [] };
+        saveReaderData();
+    }
+    function saveReaderData(){
+        localStorage.setItem(READER_STORAGE_KEY, JSON.stringify(readerData));
+    }
+
+    // 阅读计时相关
+    let readingStartTime = null; // Date
+    let readingTimerInterval = null;
+    let currentReadingSeconds = 0; // 本次阅读秒数（累计，用于显示）
+
+    function startReading(){
+        if(readingStartTime) return; // 已经计时
+        readingStartTime = new Date();
+        currentReadingSeconds = 0;
+        if(readingTimerInterval) clearInterval(readingTimerInterval);
+        readingTimerInterval = setInterval(()=>{
+            if(readingStartTime){
+                const now = new Date();
+                const diff = Math.floor((now - readingStartTime) / 1000);
+                currentReadingSeconds = diff;
+                document.getElementById('readerCurrentSession').textContent = diff;
+                // 更新总秒数显示（实时）
+                const total = readerData.totalSeconds + diff;
+                document.getElementById('readerTotalSeconds').textContent = total;
+            }
+        }, 1000);
+        document.getElementById('readerStopBtn').style.display = 'inline-block';
+        showToast('📖 开始阅读计时');
+    }
+
+    function stopReading(){
+        if(!readingStartTime) return;
+        const now = new Date();
+        const diff = Math.floor((now - readingStartTime) / 1000);
+        if(diff > 0){
+            // 累加总秒数
+            readerData.totalSeconds += diff;
+            // 记录今天
+            const today = getTodayStr();
+            if(!readerData.readDays.includes(today)){
+                readerData.readDays.push(today);
+            }
+            saveReaderData();
+            // 更新显示
+            updateReaderStats();
+            showToast(`⏱ 本次阅读 ${diff} 秒，已累计`);
+        }
+        // 重置计时
+        if(readingTimerInterval) clearInterval(readingTimerInterval);
+        readingTimerInterval = null;
+        readingStartTime = null;
+        currentReadingSeconds = 0;
+        document.getElementById('readerCurrentSession').textContent = '0';
+        document.getElementById('readerStopBtn').style.display = 'none';
+        // 刷新总秒数显示（已保存）
+        updateReaderStats();
+    }
+
+    function updateReaderStats(){
+        document.getElementById('readerTotalSeconds').textContent = readerData.totalSeconds;
+        document.getElementById('readerTotalDays').textContent = readerData.readDays.length;
+        if(!readingStartTime){
+            document.getElementById('readerCurrentSession').textContent = '0';
+        } else {
+            // 实时已在interval更新
+        }
+    }
+
+    function resetReaderStats(){
+        if(confirm('确定重置所有阅读统计数据吗？')){
+            readerData.totalSeconds = 0;
+            readerData.readDays = [];
+            saveReaderData();
+            updateReaderStats();
+            showToast('已重置阅读统计');
+        }
+    }
+
+    // 处理文件上传
+    function handleReaderFile(event){
+        const file = event.target.files[0];
+        if(!file) return;
+        const fileName = file.name;
+        document.getElementById('readerFileInfo').textContent = '📄 ' + fileName;
+
+        // 根据扩展名选择解析方式
+        const ext = fileName.split('.').pop().toLowerCase();
+        const reader = new FileReader();
+        if(ext === 'txt'){
+            reader.onload = function(e){
+                const content = e.target.result;
+                displayReaderContent(content);
+                startReading();
+            };
+            reader.readAsText(file, 'UTF-8');
+        } else if(ext === 'pdf'){
+            // 动态加载PDF.js
+            if(typeof pdfjsLib === 'undefined'){
+                loadPdfJsAndParse(file);
+            } else {
+                parsePdf(file);
+            }
+        } else if(ext === 'docx'){
+            // 动态加载 mammoth
+            if(typeof mammoth === 'undefined'){
+                loadMammothAndParse(file);
+            } else {
+                parseDocx(file);
+            }
+        } else {
+            showToast('不支持的文件格式');
+            document.getElementById('readerFileInfo').textContent = '❌ 不支持的文件格式';
+        }
+        // 清空input以便重复上传同文件
+        event.target.value = '';
+    }
+
+    function displayReaderContent(content){
+        const el = document.getElementById('readerContent');
+        el.textContent = content;
+        el.style.display = 'block';
+        // 自动滚动到顶部
+        el.scrollTop = 0;
+    }
+
+    // 加载PDF.js
+    function loadPdfJsAndParse(file){
+        const script = document.createElement('script');
+        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js';
+        script.onload = function(){
+            pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+            parsePdf(file);
+        };
+        script.onerror = function(){
+            showToast('加载PDF解析库失败，请检查网络');
+        };
+        document.head.appendChild(script);
+    }
+
+    function parsePdf(file){
+        const reader = new FileReader();
+        reader.onload = function(e){
+            const arrayBuffer = e.target.result;
+            pdfjsLib.getDocument({data: arrayBuffer}).promise.then(function(pdf){
+                let fullText = '';
+                let pages = pdf.numPages;
+                let promise = Promise.resolve();
+                for(let i=1; i<=pages; i++){
+                    promise = promise.then(function(){
+                        return pdf.getPage(i).then(function(page){
+                            return page.getTextContent().then(function(textContent){
+                                let pageText = '';
+                                textContent.items.forEach(function(item){
+                                    pageText += item.str + ' ';
+                                });
+                                fullText += pageText + '\n\n';
+                            });
+                        });
+                    });
+                }
+                promise.then(function(){
+                    displayReaderContent(fullText);
+                    startReading();
+                }).catch(function(err){
+                    showToast('PDF解析失败：' + err.message);
+                });
+            }).catch(function(err){
+                showToast('PDF加载失败：' + err.message);
+            });
+        };
+        reader.readAsArrayBuffer(file);
+    }
+
+    // 加载 mammoth
+    function loadMammothAndParse(file){
+        const script = document.createElement('script');
+        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js';
+        script.onload = function(){
+            parseDocx(file);
+        };
+        script.onerror = function(){
+            showToast('加载Word解析库失败，请检查网络');
+        };
+        document.head.appendChild(script);
+    }
+
+    function parseDocx(file){
+        const reader = new FileReader();
+        reader.onload = function(e){
+            const arrayBuffer = e.target.result;
+            mammoth.extractRawText({arrayBuffer: arrayBuffer}).then(function(result){
+                displayReaderContent(result.value);
+                startReading();
+            }).catch(function(err){
+                showToast('Word解析失败：' + err.message);
+            });
+        };
+        reader.readAsArrayBuffer(file);
+    }
+
+    // 页面切换时自动停止阅读
+    function switchTab(tab){
+        // 如果切换到非阅读页且正在阅读，停止
+        if(tab !== 'read' && readingStartTime){
+            stopReading();
+        }
+        currentTab=tab;
+        document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+        document.getElementById('page-'+tab).classList.add('active');
+        document.querySelectorAll('.tab-item').forEach(t=>t.classList.remove('active'));
+        document.querySelector(`.tab-item[data-tab="${tab}"]`).classList.add('active');
+        renderAll();
+        if(tab==='journal') renderJournalPage();
+        if(tab==='inspire'){
+            renderPlant();
+            renderGoals();
+            renderAchievements();
+            startPlantAnimation();
+        }else{
+            stopPlantAnimation();
+        }
+        if(tab==='read'){
+            updateReaderStats();
+            // 如果已经打开文件，但未计时，可以继续计时（但需要用户点击停止）
+        }
+    }
+
     // ==================== 工具函数 ====================
     function getTodayStr(){
         const now = new Date();
@@ -433,10 +722,11 @@
         return acc.balance+txnTotal;
     }
 
+    // 修改 isFinanceAccount 增加股票
     function isFinanceAccount(acc){
         if(!acc || !acc.category) return false;
         const cat=acc.category.trim();
-        return cat==='理财'||cat.includes('理财')||cat==='基金'||cat.includes('基金');
+        return cat==='理财' || cat==='基金' || cat==='股票' || cat.includes('理财') || cat.includes('基金');
     }
 
     function getFinanceTotal(){
@@ -1094,23 +1384,11 @@
     });
 
     let currentTab='home';
-    function switchTab(tab){
-        currentTab=tab;
-        document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-        document.getElementById('page-'+tab).classList.add('active');
-        document.querySelectorAll('.tab-item').forEach(t=>t.classList.remove('active'));
-        document.querySelector(`.tab-item[data-tab="${tab}"]`).classList.add('active');
-        renderAll();
-        if(tab==='journal') renderJournalPage();
-        if(tab==='inspire'){
-            renderPlant();
-            renderGoals();
-            renderAchievements();
-            startPlantAnimation();
-        }else{
-            stopPlantAnimation();
-        }
-    }
+    // 重写switchTab（已在上面覆盖，这里保留原声明但会被覆盖，但为了兼容，用函数声明）
+    // 上面的 switchTab 已经定义了，但会被下面的覆盖，我们保留上面那个，但需要调整。
+    // 但我们为了清晰，重新定义一次并覆盖。
+    // 但上面已经定义了 switchTab，下面我们会重新赋值，所以没问题。
+    // 我们保留上面的实现，已经包含了阅读相关。
 
     // ==================== 账户管理 ====================
     let editingAccountId=null;
@@ -1148,7 +1426,7 @@
         const financeAccounts = data.accounts.filter(acc => isFinanceAccount(acc));
         const total = financeAccounts.reduce((sum, acc) => sum + getAccountBalance(acc.id), 0);
         if(financeAccounts.length === 0){
-            container.innerHTML='<div class="account-detail-empty">暂无理财账户，请添加分类为「理财」的账户</div>';
+            container.innerHTML='<div class="account-detail-empty">暂无理财账户，请添加分类为「理财」「基金」或「股票」的账户</div>';
         }else{
             let html='';
             financeAccounts.forEach(acc=>{
@@ -1539,7 +1817,6 @@
         const weekIncome=weekTxns.filter(t=>t.type==='income'||t.type==='asset_gain').reduce((s,t)=>s+t.amount,0);
         const weekExpense=weekTxns.filter(t=>t.type==='expense'||t.type==='asset_loss').reduce((s,t)=>s+t.amount,0);
         const balance=weekIncome-weekExpense;
-        // 更新文本
         document.getElementById('weekIncomeTag').textContent='+¥'+weekIncome.toFixed(2);
         document.getElementById('weekExpenseTag').textContent='-¥'+weekExpense.toFixed(2);
         const balTag=document.getElementById('weekBalanceTag');
@@ -1548,13 +1825,20 @@
         const lastDate=getLastUpdateDate();
         document.getElementById('assetUpdateDateTag').textContent=lastDate||'--';
 
-        // 控制标签显隐
         const incomeWrap=document.getElementById('weekIncomeTagWrap');
         const expenseWrap=document.getElementById('weekExpenseTagWrap');
         if (weekIncome === 0) incomeWrap.style.display = 'none';
         else incomeWrap.style.display = 'flex';
         if (weekExpense === 0) expenseWrap.style.display = 'none';
         else expenseWrap.style.display = 'flex';
+
+        // 控制空账户提示
+        const hint = document.getElementById('emptyAccountHint');
+        if(data.accounts.length === 0){
+            hint.style.display = 'block';
+        }else{
+            hint.style.display = 'none';
+        }
     }
 
     function renderFinanceCard(){
@@ -1564,13 +1848,11 @@
 
         document.getElementById('financeTotalAmount').textContent=financeTotal.toFixed(2);
 
-        // 累计收益
         const cumTag=document.getElementById('financeCumulativeTag');
         const returnSign=cumulativeReturn>=0?'+':'';
         cumTag.textContent=`${returnSign}${formatMoney(Math.abs(cumulativeReturn))}`;
         cumTag.className='num '+(cumulativeReturn>=0?'green':'red');
 
-        // 收益率
         const rateTag=document.getElementById('financeRateTag');
         let rate = 0;
         if(cost>0){
@@ -1585,7 +1867,6 @@
         const lastDate=getFinanceLastUpdateDate();
         document.getElementById('financeUpdateDateTag').textContent=lastDate||'--';
 
-        // 控制累计收益标签和收益率标签显隐
         const cumWrap=document.getElementById('financeCumulativeTagWrap');
         const rateWrap=document.getElementById('financeRateTagWrap');
         if (Math.abs(cumulativeReturn) < 0.001) cumWrap.style.display = 'none';
@@ -1594,7 +1875,6 @@
         if (cost === 0 || Math.abs(rate) < 0.001) rateWrap.style.display = 'none';
         else rateWrap.style.display = 'flex';
 
-        // 理财卡片整体显隐（无理财账户则隐藏）
         const hasFinance = data.accounts.some(a => isFinanceAccount(a));
         const card = document.getElementById('financeCard');
         if(hasFinance){
@@ -1846,10 +2126,16 @@
         if(document.getElementById('page-journal').classList.contains('active')) renderJournalPage();
         if(document.getElementById('modalFullManage').classList.contains('show')) renderFullAccountList();
         if(document.getElementById('modalFinanceAccounts').classList.contains('show')) showFinanceAccounts();
+        // 更新阅读统计（如果阅读页可见）
+        if(document.getElementById('page-read').classList.contains('active')){
+            updateReaderStats();
+        }
     }
 
     window.onload=function(){
         loadData();
+        loadReaderData();
+        // 如果阅读页可见，更新统计
         renderAll();
         let resizeTimer;
         window.addEventListener('resize', function(){
@@ -1861,6 +2147,12 @@
             renderPlant();
             startPlantAnimation();
         }
+        // 监听页面关闭，保存阅读数据（如果正在阅读则停止）
+        window.addEventListener('beforeunload', function(){
+            if(readingStartTime){
+                stopReading();
+            }
+        });
     };
 </script>
 </body>
