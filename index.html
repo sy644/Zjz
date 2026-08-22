@@ -62,7 +62,6 @@
         .card-main .card-footer .tag .num.red{color:var(--red);}
         .card-main .card-footer .tag .num.gold{color:var(--gold);}
         .card-main .card-footer .tag .num.blue{color:var(--blue);}
-        .card-main .sub-note{font-size:11px;color:var(--text-muted);margin-top:10px;text-align:center;opacity:0.6;}
         .card-main.card-blue{background:var(--card-blue-bg);border-color:rgba(74,124,247,0.12);}
         .card-secondary .sec-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;cursor:pointer;}
         .card-secondary .sec-header .sec-title{font-size:15px;font-weight:600;color:var(--text-primary);}
@@ -234,8 +233,8 @@
         <div class="card-number"><span class="currency">¥</span><span id="totalAsset">0.00</span></div>
         <div class="card-footer">
             <span class="tag">📅 <span class="num" id="assetUpdateDateTag">--</span></span>
-            <span class="tag">本周收入 <span class="num green" id="weekIncomeTag">+¥0</span></span>
-            <span class="tag">本周支出 <span class="num red" id="weekExpenseTag">-¥0</span></span>
+            <span class="tag" id="weekIncomeTagWrap">本周收入 <span class="num green" id="weekIncomeTag">+¥0</span></span>
+            <span class="tag" id="weekExpenseTagWrap">本周支出 <span class="num red" id="weekExpenseTag">-¥0</span></span>
             <span class="tag">结余 <span class="num" id="weekBalanceTag">¥0</span></span>
         </div>
     </div>
@@ -244,10 +243,9 @@
         <div class="card-number"><span class="currency">¥</span><span id="financeTotalAmount">0.00</span></div>
         <div class="card-footer">
             <span class="tag">📅 <span class="num" id="financeUpdateDateTag">--</span></span>
-            <span class="tag">累计收益 <span class="num" id="financeCumulativeTag">¥0</span></span>
-            <span class="tag">收益率 <span class="num" id="financeRateTag">--</span></span>
+            <span class="tag" id="financeCumulativeTagWrap">累计收益 <span class="num" id="financeCumulativeTag">¥0</span></span>
+            <span class="tag" id="financeRateTagWrap">收益率 <span class="num" id="financeRateTag">--</span></span>
         </div>
-        <div class="sub-note">基于余额快照与收益交易统计</div>
     </div>
     <div class="card-secondary" id="goalCard" onclick="switchTab('inspire')">
         <div class="sec-header"><span class="sec-title">🎯 储蓄目标</span><span class="sec-action">查看全部 ›</span></div>
@@ -288,7 +286,6 @@
 <!-- ===== 激励页（树苗成长） ===== -->
 <div id="page-inspire" class="page">
     <div class="card-secondary plant-card">
-        <!-- 点击标题打开预览 -->
         <div class="sec-header" onclick="openStagePreview()">
             <span class="sec-title">🌱 树苗成长</span>
             <span class="sec-action" id="plantStageLabel" style="font-weight:600;color:var(--blue);">种子</span>
@@ -1542,6 +1539,7 @@
         const weekIncome=weekTxns.filter(t=>t.type==='income'||t.type==='asset_gain').reduce((s,t)=>s+t.amount,0);
         const weekExpense=weekTxns.filter(t=>t.type==='expense'||t.type==='asset_loss').reduce((s,t)=>s+t.amount,0);
         const balance=weekIncome-weekExpense;
+        // 更新文本
         document.getElementById('weekIncomeTag').textContent='+¥'+weekIncome.toFixed(2);
         document.getElementById('weekExpenseTag').textContent='-¥'+weekExpense.toFixed(2);
         const balTag=document.getElementById('weekBalanceTag');
@@ -1549,6 +1547,14 @@
         balTag.className='num '+(balance>=0?'green':'red');
         const lastDate=getLastUpdateDate();
         document.getElementById('assetUpdateDateTag').textContent=lastDate||'--';
+
+        // 控制标签显隐
+        const incomeWrap=document.getElementById('weekIncomeTagWrap');
+        const expenseWrap=document.getElementById('weekExpenseTagWrap');
+        if (weekIncome === 0) incomeWrap.style.display = 'none';
+        else incomeWrap.style.display = 'flex';
+        if (weekExpense === 0) expenseWrap.style.display = 'none';
+        else expenseWrap.style.display = 'flex';
     }
 
     function renderFinanceCard(){
@@ -1558,24 +1564,37 @@
 
         document.getElementById('financeTotalAmount').textContent=financeTotal.toFixed(2);
 
-        const returnEl=document.getElementById('financeCumulativeTag');
+        // 累计收益
+        const cumTag=document.getElementById('financeCumulativeTag');
         const returnSign=cumulativeReturn>=0?'+':'';
-        returnEl.textContent=`${returnSign}${formatMoney(Math.abs(cumulativeReturn))}`;
-        returnEl.className='num '+(cumulativeReturn>=0?'green':'red');
+        cumTag.textContent=`${returnSign}${formatMoney(Math.abs(cumulativeReturn))}`;
+        cumTag.className='num '+(cumulativeReturn>=0?'green':'red');
 
-        const rateEl=document.getElementById('financeRateTag');
+        // 收益率
+        const rateTag=document.getElementById('financeRateTag');
+        let rate = 0;
         if(cost>0){
-            const rate=cumulativeReturn/cost;
-            rateEl.textContent=(rate>=0?'+':'')+formatPercent(rate);
-            rateEl.className='num '+(rate>=0?'green':'red');
+            rate=cumulativeReturn/cost;
+            rateTag.textContent=(rate>=0?'+':'')+formatPercent(rate);
+            rateTag.className='num '+(rate>=0?'green':'red');
         }else{
-            rateEl.textContent='--';
-            rateEl.className='num';
+            rateTag.textContent='--';
+            rateTag.className='num';
         }
 
         const lastDate=getFinanceLastUpdateDate();
         document.getElementById('financeUpdateDateTag').textContent=lastDate||'--';
 
+        // 控制累计收益标签和收益率标签显隐
+        const cumWrap=document.getElementById('financeCumulativeTagWrap');
+        const rateWrap=document.getElementById('financeRateTagWrap');
+        if (Math.abs(cumulativeReturn) < 0.001) cumWrap.style.display = 'none';
+        else cumWrap.style.display = 'flex';
+
+        if (cost === 0 || Math.abs(rate) < 0.001) rateWrap.style.display = 'none';
+        else rateWrap.style.display = 'flex';
+
+        // 理财卡片整体显隐（无理财账户则隐藏）
         const hasFinance = data.accounts.some(a => isFinanceAccount(a));
         const card = document.getElementById('financeCard');
         if(hasFinance){
