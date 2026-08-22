@@ -21,6 +21,7 @@
             --red:#e74c3c;
             --gold:#f39c12;
             --card-blue-bg:#eef2fa;
+            --highlight:#fff9c4;
         }
         body{
             font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
@@ -214,17 +215,18 @@
         .stage-preview-container .stage-card canvas{width:120px;height:120px;display:block;margin:0 auto;border-radius:8px;}
         .stage-preview-container .stage-card .stage-name{font-size:12px;font-weight:600;margin-bottom:4px;}
         .stage-preview-container .stage-card .stage-days{font-size:10px;color:var(--text-muted);}
-        /* ===== 阅读器新样式 ===== */
+        /* ===== 阅读器样式 ===== */
         .reader-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
         .reader-header .title{font-size:17px;font-weight:600;color:var(--text-primary);}
         .reader-toolbar{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;padding:8px 0;border-bottom:1px solid var(--border);}
         .reader-toolbar .tool-btn{background:var(--bg);border:1px solid var(--border);border-radius:20px;padding:6px 14px;font-size:13px;cursor:pointer;transition:0.2s;display:flex;align-items:center;gap:4px;color:var(--text-primary);}
         .reader-toolbar .tool-btn:active{transform:scale(0.94);background:rgba(74,124,247,0.08);}
-        .reader-toolbar .tool-btn.active-tool{background:rgba(74,124,247,0.12);border-color:var(--blue);}
+        .reader-toolbar .tool-btn.active-tool{background:rgba(74,124,247,0.15);border-color:var(--blue);}
         .reader-toolbar .tool-btn .badge{background:var(--blue);color:#fff;border-radius:10px;padding:0 8px;font-size:10px;margin-left:2px;}
+        .reader-toolbar .tool-btn.speaking{background:var(--gold);border-color:var(--gold);color:#fff;}
         .reader-content-wrap{background:var(--bg);border-radius:var(--radius-sm);padding:16px;max-height:400px;overflow-y:auto;white-space:pre-wrap;word-break:break-word;font-size:15px;line-height:1.8;color:var(--text-primary);min-height:200px;position:relative;}
         .reader-content-wrap .hl{background:#ffeb3b;border-radius:2px;}
-        .reader-content-wrap .underline{text-decoration:underline;text-decoration-color:var(--blue);text-underline-offset:3px;text-decoration-thickness:2px;}
+        .reader-content-wrap .highlight{background:var(--highlight);border-radius:2px;padding:0 1px;}
         .reader-content-wrap .tag-marker{background:rgba(74,124,247,0.15);border-radius:3px;padding:0 2px;border-left:3px solid var(--blue);cursor:pointer;}
         .reader-content-wrap .tag-marker:hover{background:rgba(74,124,247,0.25);}
         .reader-content-wrap .selected-text{background:rgba(74,124,247,0.2);}
@@ -236,9 +238,6 @@
         .reader-controls button{padding:8px 20px;border:none;border-radius:30px;font-size:14px;cursor:pointer;transition:0.2s;}
         .reader-controls .btn-stop{background:var(--red);color:#fff;}
         .reader-controls .btn-stop:active{transform:scale(0.94);}
-        .reader-controls .btn-voice{background:var(--blue);color:#fff;}
-        .reader-controls .btn-voice:active{transform:scale(0.94);}
-        .reader-controls .btn-voice.speaking{background:var(--gold);}
         .speed-control{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text-muted);}
         .speed-control select{padding:4px 8px;border-radius:12px;border:1px solid var(--border);background:#fff;font-size:13px;}
         .search-bar{display:flex;gap:8px;align-items:center;padding:8px 12px;background:var(--card-bg);border-radius:var(--radius-sm);border:1px solid var(--border);margin-bottom:10px;}
@@ -263,11 +262,12 @@
 <div id="toast" class="toast"></div>
 <header class="app-header">
     <div><h1>📒 周记账</h1><span class="sub">资产养成 · 每周录入真实余额核算收支</span></div>
-    <div class="header-actions">
-        <!-- 上传按钮（阅读用） -->
-        <button onclick="document.getElementById('readerFileInput').click()" title="上传文件阅读" style="font-size:20px;" id="headerUploadBtn">📤</button>
-        <!-- 搜索按钮（阅读用） -->
-        <button onclick="toggleSearchBar()" title="搜索文本" style="font-size:20px;" id="headerSearchBtn">🔍</button>
+    <div class="header-actions" id="headerActions">
+        <!-- 默认显示数据同步按钮（非阅读页） -->
+        <button onclick="openSyncModal()" title="导入/导出账本数据" style="font-size:20px;" id="syncBtn">📂</button>
+        <!-- 阅读页专用按钮（默认隐藏） -->
+        <button onclick="document.getElementById('readerFileInput').click()" title="上传文件阅读" style="font-size:20px;display:none;" id="uploadBtn">📤</button>
+        <button onclick="toggleSearchBar()" title="搜索文本" style="font-size:20px;display:none;" id="searchBtn">🔍</button>
     </div>
 </header>
 
@@ -362,7 +362,7 @@
 <!-- ===== 阅读页（重构） ===== -->
 <div id="page-read" class="page">
     <div class="card-secondary" style="padding:16px 18px;">
-        <!-- 头部（简洁） -->
+        <!-- 头部 -->
         <div class="reader-header">
             <span class="title">📖 阅读器</span>
             <span style="font-size:12px;color:var(--text-muted);" id="readerFileName"></span>
@@ -378,9 +378,9 @@
         </div>
         <!-- 工具栏 -->
         <div class="reader-toolbar">
-            <button class="tool-btn" onclick="toggleTagMode()" id="tagToolBtn">🏷 标签 <span class="badge" id="tagCountBadge">0</span></button>
-            <button class="tool-btn" onclick="toggleUnderlineMode()" id="underlineToolBtn">✏️ 划线</button>
-            <button class="tool-btn" onclick="toggleVoice()" id="voiceToolBtn">🎧 语音</button>
+            <button class="tool-btn" id="tagToolBtn" onclick="handleTagToolClick()">🏷 标签 <span class="badge" id="tagCountBadge">0</span></button>
+            <button class="tool-btn" id="underlineToolBtn" onclick="handleUnderlineToolClick()">✏️ 划线</button>
+            <button class="tool-btn" id="voiceToolBtn" onclick="toggleVoice()">🎧 语音</button>
             <div class="speed-control">
                 <span>速度</span>
                 <select id="voiceSpeedSelect" onchange="updateVoiceSpeed()">
@@ -391,7 +391,7 @@
                     <option value="2.0">2.0x</option>
                 </select>
             </div>
-            <button class="tool-btn" onclick="openTagDirectory()" title="标签目录">📂 标签目录</button>
+            <button class="tool-btn" onclick="openTagDirectory()">📂 标签目录</button>
         </div>
         <!-- 内容区 -->
         <div id="readerContentWrap" class="reader-content-wrap" onclick="handleContentClick(event)" onmouseup="handleContentSelect(event)">
@@ -437,6 +437,9 @@
 <div class="modal-overlay" id="modalGoalProgress"><div class="modal-box"><h3>📈 更新进度</h3><div class="form-group"><label>增加金额 (¥)</label><input type="number" id="goalProgressAmount" step="0.01" min="0.01" placeholder="输入金额" value="100"></div><div style="font-size:13px;color:var(--text-muted);margin-bottom:12px;">当前进度: <span id="goalProgressCurrent">0</span> / <span id="goalProgressTarget">0</span></div><div class="modal-actions"><button class="btn-cancel" onclick="closeModal('modalGoalProgress')">取消</button><button class="btn-confirm" onclick="updateGoalProgress()">确认增加</button></div></div></div>
 <!-- 标签目录模态框 -->
 <div class="modal-overlay" id="modalTagDirectory"><div class="modal-box"><h3>🏷 标签目录 <button class="sec-action" onclick="closeModal('modalTagDirectory')" style="background:none;border:none;color:var(--text-muted);font-size:18px;cursor:pointer;">✕</button></h3><div id="tagDirectoryList"></div><div class="modal-actions"><button class="btn-cancel" onclick="closeModal('modalTagDirectory')">关闭</button></div></div></div>
+
+<!-- ===== 同步模态框 ===== -->
+<div class="modal-overlay" id="modalSync"><div class="modal-box"><h3>📂 数据同步</h3><div style="display:flex;flex-direction:column;gap:12px;"><button class="btn-primary" onclick="exportData()" style="background:var(--green);color:#fff;">📤 导出账本</button><div><label for="importFileInput" style="display:block;text-align:center;padding:12px;border:1px dashed var(--border);border-radius:14px;cursor:pointer;background:var(--bg);color:var(--text-muted);">📥 点击选择文件导入</label><input type="file" id="importFileInput" accept=".json" style="display:none;" onchange="importData(event)"></div><button class="btn-cancel" onclick="closeModal('modalSync')">关闭</button></div><div class="text-muted" style="margin-top:12px;font-size:12px;text-align:center;">导入将覆盖当前所有数据，请谨慎操作</div></div></div>
 
 <!-- ===== 成长阶段预览模态框 ===== -->
 <div class="modal-overlay" id="modalStagePreview">
@@ -517,11 +520,11 @@
                 if(typeof readerData.totalSeconds !== 'number') readerData.totalSeconds = 0;
                 if(!Array.isArray(readerData.readDays)) readerData.readDays = [];
                 if(!Array.isArray(readerData.tags)) readerData.tags = [];
-                if(!Array.isArray(readerData.underlines)) readerData.underlines = [];
+                if(!Array.isArray(readerData.highlights)) readerData.highlights = [];
                 return;
             }catch(e){}
         }
-        readerData = { totalSeconds: 0, readDays: [], tags: [], underlines: [] };
+        readerData = { totalSeconds: 0, readDays: [], tags: [], highlights: [] };
         saveReaderData();
     }
     function saveReaderData(){
@@ -541,14 +544,13 @@
     let readingTimerInterval = null;
 
     // 语音相关
-    let speechSynth = null;
     let isSpeaking = false;
     let speechUtterance = null;
     let voiceSpeed = 1.0;
 
-    // 标签模式 & 划线模式
+    // 标签模式 & 高亮模式
     let tagMode = false;
-    let underlineMode = false;
+    let highlightMode = false;
 
     // ==================== 阅读器核心功能 ====================
 
@@ -604,7 +606,7 @@
             readerData.totalSeconds = 0;
             readerData.readDays = [];
             readerData.tags = [];
-            readerData.underlines = [];
+            readerData.highlights = [];
             saveReaderData();
             updateReaderStats();
             renderReaderContent();
@@ -717,7 +719,6 @@
     // 设置阅读内容
     function setReaderContent(text){
         currentText = text;
-        // 保存到localStorage
         localStorage.setItem(READER_CONTENT_KEY, JSON.stringify({text: text, name: currentFileName}));
         renderReaderContent();
     }
@@ -730,23 +731,20 @@
             return;
         }
 
-        // 保存当前滚动位置
         const wrap = document.getElementById('readerContentWrap');
         const scrollPos = wrap.scrollTop;
 
-        // 构建带标注的HTML
         let html = currentText;
 
-        // 应用划线（下划线）
-        if(readerData.underlines && readerData.underlines.length > 0){
-            // 从后往前替换，避免索引错乱
-            let sorted = [...readerData.underlines].sort((a,b) => b.start - a.start);
-            for(let u of sorted){
-                if(u.start >= 0 && u.end <= html.length && u.start < u.end){
-                    const before = html.substring(0, u.start);
-                    const middle = html.substring(u.start, u.end);
-                    const after = html.substring(u.end);
-                    html = before + `<span class="underline">${middle}</span>` + after;
+        // 应用高亮（背景色）
+        if(readerData.highlights && readerData.highlights.length > 0){
+            let sorted = [...readerData.highlights].sort((a,b) => b.start - a.start);
+            for(let h of sorted){
+                if(h.start >= 0 && h.end <= html.length && h.start < h.end){
+                    const before = html.substring(0, h.start);
+                    const middle = html.substring(h.start, h.end);
+                    const after = html.substring(h.end);
+                    html = before + `<span class="highlight">${middle}</span>` + after;
                 }
             }
         }
@@ -765,102 +763,37 @@
             }
         }
 
-        // 高亮搜索结果
+        // 高亮搜索
         if(searchActive && searchResults.length > 0){
-            // 先移除已有hl
-            // 由于我们是用innerHTML，直接重新构建比较复杂，我们使用一个更简单的方法：
-            // 在显示时，先移除所有hl类，然后重新高亮
-            // 但我们这里用innerHTML，所以需要先对纯文本做高亮
-            // 因为我们上面已经做了标签和划线，现在要在此基础上加高亮，比较复杂。
-            // 简化：使用一个独立的显示层，或者重新构建。
-            // 这里采用另一种方式：在标签和划线之后，再应用高亮。
-            // 但为了简化，我们使用更直接的方法：在渲染时，先用纯文本构建，然后应用所有标注。
-            // 由于标注是叠加的，我们用更健壮的方式：重新从纯文本构建。
-            // 重新构建：从currentText开始
-            let rawHtml = currentText;
-            // 划线
-            if(readerData.underlines){
-                let sortedU = [...readerData.underlines].sort((a,b) => b.start - a.start);
-                for(let u of sortedU){
-                    if(u.start >= 0 && u.end <= rawHtml.length && u.start < u.end){
-                        const before = rawHtml.substring(0, u.start);
-                        const middle = rawHtml.substring(u.start, u.end);
-                        const after = rawHtml.substring(u.end);
-                        rawHtml = before + `<span class="underline">${middle}</span>` + after;
-                    }
+            // 重新构建，只高亮
+            let searchHtml = currentText;
+            let sortedPos = [...searchResults].sort((a,b) => b - a);
+            for(let pos of sortedPos){
+                const kw = document.getElementById('searchInput')?.value || '';
+                if(kw && pos >= 0 && pos + kw.length <= searchHtml.length){
+                    const before = searchHtml.substring(0, pos);
+                    const middle = searchHtml.substring(pos, pos + kw.length);
+                    const after = searchHtml.substring(pos + kw.length);
+                    searchHtml = before + `<span class="hl">${middle}</span>` + after;
                 }
             }
-            // 标签
-            if(readerData.tags){
-                let sortedT = [...readerData.tags].sort((a,b) => b.start - a.start);
-                for(let t of sortedT){
-                    if(t.start >= 0 && t.end <= rawHtml.length && t.start < t.end){
-                        const before = rawHtml.substring(0, t.start);
-                        const middle = rawHtml.substring(t.start, t.end);
-                        const after = rawHtml.substring(t.end);
-                        const label = t.label || '🏷';
-                        rawHtml = before + `<span class="tag-marker" data-tag-id="${t.id}" title="标签: ${label}">${middle}</span>` + after;
-                    }
-                }
+            // 但需要保留标签和高亮吗？在搜索时我们希望看到所有标注，但为了简化，我们在搜索时只显示高亮，保留标签和高亮背景。
+            // 更合理：在搜索时，先构建标注，再套搜索高亮。
+            // 我们选择保留所有标注，再额外添加搜索高亮。
+            // 但为了不破坏已有标注，我们需要在标注之上再添加高亮，但标注已经用span包裹，替换会破坏结构。
+            // 所以搜索高亮时，我们重新构建：先构建标注（已做），然后针对纯文本位置做高亮，但会与现有span冲突。
+            // 因此，搜索时我们采用简单方式：只显示高亮，不显示其他标注。
+            // 但用户可能希望看到标签和划线，所以我们改为：保留标注，但搜索高亮用另一种方式：用js滚动定位，但不修改html。
+            // 为了快速实现，我们采用搜索高亮显示在标注之上的方式，但技术复杂，我们采用折中方案：
+            // 当搜索激活时，我们重新渲染，只显示高亮，不显示标签和划线。
+            // 退出搜索后恢复。
+            if(searchActive){
+                container.innerHTML = searchHtml;
+                wrap.scrollTop = scrollPos;
+                return;
             }
-            // 高亮搜索
-            if(searchResults.length > 0){
-                // 从后往前替换
-                let sortedS = [...searchResults].sort((a,b) => b - a);
-                for(let pos of sortedS){
-                    const keyword = document.getElementById('searchInput')?.value || '';
-                    if(keyword && pos >= 0 && pos + keyword.length <= rawHtml.length){
-                        // 需要检查这个位置是否在已有的span内部，如果是则跳过
-                        // 简单处理：直接替换，但注意不要破坏已有span
-                        // 更安全的方式：先提取文本，再替换
-                        // 这里为了简化，我们直接替换，但可能会导致span嵌套问题。
-                        // 改用更稳健的方式：使用临时DOM操作
-                        // 因为比较复杂，我们用一个更简单的方法：使用replace
-                        // 但为了处理嵌套，我们直接用textContent方式重新构建。
-                        // 算了，这里为了功能可用，我们采用重建的方式。
-                        // 但由于我们已经有了rawHtml，我们可以在rawHtml基础上替换。
-                        // 但由于rawHtml中包含了span标签，直接替换会导致标签被破坏。
-                        // 所以我们使用另一种方法：先保存标注数据，然后重新构建。
-                        // 我们重新构建一个完全基于标注的渲染。
-                        // 由于时间关系，我们采用一种简单但有效的方式：
-                        // 在rawHtml中，我们尝试用span包裹匹配的文本，但要避开已有标签。
-                        // 这种方法比较复杂，我们使用一个折中方案：如果搜索激活，只显示纯文本+高亮，不显示标签和划线。
-                        // 这样用户体验稍差，但功能可用。
-                        // 实际上更好的方式是重新构建所有标注。
-                        // 让我们使用更专业的方法：基于文本位置构建。
-                        // 由于代码已经很长，我采用一种更实用的方式：在搜索时，暂时隐藏标签和划线，只显示高亮。
-                        // 这样用户搜索时看到的是高亮结果，退出搜索后恢复。
-                        // 为了更好的体验，我们做一个完整的重构。
-                        // 这里我决定：在搜索激活时，只显示高亮，不显示标签和划线。
-                        // 搜索结束后，恢复显示。
-                        // 这样实现简单，用户体验也可以接受。
-                        // 所以我们直接在这里判断，如果searchActive，只做高亮。
-                        if(searchActive){
-                            // 重新构建，只高亮
-                            let searchHtml = currentText;
-                            let sortedPos = [...searchResults].sort((a,b) => b - a);
-                            for(let pos of sortedPos){
-                                const kw = document.getElementById('searchInput')?.value || '';
-                                if(kw && pos >= 0 && pos + kw.length <= searchHtml.length){
-                                    const before = searchHtml.substring(0, pos);
-                                    const middle = searchHtml.substring(pos, pos + kw.length);
-                                    const after = searchHtml.substring(pos + kw.length);
-                                    searchHtml = before + `<span class="hl">${middle}</span>` + after;
-                                }
-                            }
-                            container.innerHTML = searchHtml;
-                            wrap.scrollTop = scrollPos;
-                            return;
-                        }
-                    }
-                }
-            }
-            container.innerHTML = rawHtml;
-            wrap.scrollTop = scrollPos;
-            return;
         }
 
-        // 非搜索状态，正常显示
         container.innerHTML = html;
         wrap.scrollTop = scrollPos;
     }
@@ -871,13 +804,13 @@
         if(bar.style.display === 'none'){
             bar.style.display = 'flex';
             document.getElementById('searchInput').focus();
-            document.getElementById('headerSearchBtn').classList.add('active-btn');
+            document.getElementById('searchBtn').classList.add('active-btn');
         }else{
             bar.style.display = 'none';
             searchActive = false;
             searchResults = [];
             searchIndex = -1;
-            document.getElementById('headerSearchBtn').classList.remove('active-btn');
+            document.getElementById('searchBtn').classList.remove('active-btn');
             renderReaderContent();
         }
     }
@@ -911,17 +844,12 @@
         if(index < 0 || index >= searchResults.length) return;
         const pos = searchResults[index];
         const wrap = document.getElementById('readerContentWrap');
-        const inner = document.getElementById('readerContentInner');
-        // 估算位置
         const textBefore = currentText.substring(0, pos);
         const lines = textBefore.split('\n').length;
-        const lineHeight = 1.8 * 15; // 约27px
-        const targetScroll = (lines - 3) * lineHeight;
-        wrap.scrollTop = Math.max(0, targetScroll);
-        // 高亮该位置
-        // 由于我们重新渲染了，在render中已经高亮了所有，这里只需要滚动
+        const lineHeight = 1.8 * 15;
+        const targetScroll = Math.max(0, (lines - 3) * lineHeight);
+        wrap.scrollTop = targetScroll;
         searchIndex = index;
-        // 更新搜索框显示
         const input = document.getElementById('searchInput');
         if(input) input.placeholder = `${index+1}/${searchResults.length}`;
     }
@@ -938,61 +866,114 @@
         scrollToSearchResult(searchIndex);
     }
 
-    // ===== 标签功能 =====
-    function toggleTagMode(){
+    // ===== 标签功能（单击添加，双击进入目录） =====
+    function handleTagToolClick(e){
+        // 检测双击
+        if(e && e.detail === 2){
+            // 双击：打开标签目录
+            openTagDirectory();
+            return;
+        }
+        // 单击：切换标签模式
         tagMode = !tagMode;
         const btn = document.getElementById('tagToolBtn');
         if(tagMode){
             btn.classList.add('active-tool');
-            underlineMode = false;
+            highlightMode = false;
             document.getElementById('underlineToolBtn').classList.remove('active-tool');
-            showToast('🏷 点击文本添加标签（单击）');
+            showToast('🏷 标签模式：选中文本后单击添加标签');
         }else{
             btn.classList.remove('active-tool');
         }
     }
 
+    // 为了支持双击，需要绑定dblclick事件
+    document.addEventListener('DOMContentLoaded', function(){
+        const tagBtn = document.getElementById('tagToolBtn');
+        tagBtn.addEventListener('click', handleTagToolClick);
+        tagBtn.addEventListener('dblclick', function(e){
+            e.preventDefault(); // 阻止再次触发单击
+            openTagDirectory();
+        });
+    });
+
     function handleContentClick(event){
-        if(!tagMode) return;
+        if(!tagMode && !highlightMode) return;
         const selection = window.getSelection();
         const text = selection.toString().trim();
         if(text && text.length > 0){
-            // 获取选中文本在纯文本中的位置
             const inner = document.getElementById('readerContentInner');
-            // 由于inner包含HTML标签，我们需要找到选中文本在纯文本中的位置
-            // 方法：从inner的textContent中查找
             const fullText = inner.textContent;
             const startIdx = fullText.indexOf(text);
             if(startIdx !== -1){
                 const endIdx = startIdx + text.length;
-                // 检查是否已存在标签
-                const exists = readerData.tags.some(t => t.start === startIdx && t.end === endIdx);
-                if(exists){
-                    showToast('该位置已有标签');
-                    return;
-                }
-                const label = prompt('输入标签名称（留空使用默认）:', text.substring(0, 8));
-                if(label !== null){
-                    readerData.tags.push({
-                        id: 'tag_' + Date.now() + Math.random().toString(36).slice(2,6),
+                if(tagMode){
+                    // 检查是否已存在标签
+                    const exists = readerData.tags.some(t => t.start === startIdx && t.end === endIdx);
+                    if(exists){
+                        showToast('该位置已有标签');
+                        selection.removeAllRanges();
+                        return;
+                    }
+                    const label = prompt('输入标签名称（留空使用默认）:', text.substring(0, 8));
+                    if(label !== null){
+                        readerData.tags.push({
+                            id: 'tag_' + Date.now() + Math.random().toString(36).slice(2,6),
+                            start: startIdx,
+                            end: endIdx,
+                            label: label || text.substring(0, 8)
+                        });
+                        saveReaderData();
+                        renderReaderContent();
+                        updateReaderStats();
+                        showToast('🏷 标签已添加');
+                    }
+                } else if(highlightMode){
+                    // 高亮（画线）
+                    const exists = readerData.highlights.some(h => h.start === startIdx && h.end === endIdx);
+                    if(exists){
+                        showToast('该位置已高亮');
+                        selection.removeAllRanges();
+                        return;
+                    }
+                    readerData.highlights.push({
                         start: startIdx,
-                        end: endIdx,
-                        label: label || text.substring(0, 8)
+                        end: endIdx
                     });
                     saveReaderData();
                     renderReaderContent();
-                    updateReaderStats();
-                    showToast('🏷 标签已添加');
+                    showToast('✏️ 高亮已添加');
                 }
             }else{
                 showToast('无法定位文本位置');
             }
             selection.removeAllRanges();
         }else{
-            showToast('请先选中一段文字再点击');
+            if(tagMode) showToast('请先选中一段文字再单击');
+            else if(highlightMode) showToast('请先选中一段文字再单击');
         }
     }
 
+    // ===== 划线（高亮）功能 =====
+    function handleUnderlineToolClick(){
+        highlightMode = !highlightMode;
+        const btn = document.getElementById('underlineToolBtn');
+        if(highlightMode){
+            btn.classList.add('active-tool');
+            tagMode = false;
+            document.getElementById('tagToolBtn').classList.remove('active-tool');
+            showToast('✏️ 高亮模式：选中文字后单击添加高亮背景');
+        }else{
+            btn.classList.remove('active-tool');
+        }
+    }
+
+    // 备用：鼠标释放时也能触发（但已用click统一处理）
+    function handleContentSelect(event){
+        // 仅用于辅助，主要逻辑在handleContentClick
+    }
+
+    // ===== 标签目录 =====
     function openTagDirectory(){
         const list = document.getElementById('tagDirectoryList');
         if(readerData.tags.length === 0){
@@ -1021,51 +1002,7 @@
             const lines = textBefore.split('\n').length;
             const lineHeight = 1.8 * 15;
             wrap.scrollTop = Math.max(0, (lines - 3) * lineHeight);
-            // 高亮该标签位置
             showToast(`📍 跳转到标签: ${tag.label || '标签'}`);
-        }
-    }
-
-    // ===== 划线功能 =====
-    function toggleUnderlineMode(){
-        underlineMode = !underlineMode;
-        const btn = document.getElementById('underlineToolBtn');
-        if(underlineMode){
-            btn.classList.add('active-tool');
-            tagMode = false;
-            document.getElementById('tagToolBtn').classList.remove('active-tool');
-            showToast('✏️ 选中文字后点击划线');
-        }else{
-            btn.classList.remove('active-tool');
-        }
-    }
-
-    function handleContentSelect(event){
-        if(!underlineMode) return;
-        const selection = window.getSelection();
-        const text = selection.toString().trim();
-        if(text && text.length > 0){
-            const inner = document.getElementById('readerContentInner');
-            const fullText = inner.textContent;
-            const startIdx = fullText.indexOf(text);
-            if(startIdx !== -1){
-                const endIdx = startIdx + text.length;
-                // 检查是否已划线
-                const exists = readerData.underlines.some(u => u.start === startIdx && u.end === endIdx);
-                if(exists){
-                    showToast('该位置已划线');
-                    selection.removeAllRanges();
-                    return;
-                }
-                readerData.underlines.push({
-                    start: startIdx,
-                    end: endIdx
-                });
-                saveReaderData();
-                renderReaderContent();
-                showToast('✏️ 划线已添加');
-            }
-            selection.removeAllRanges();
         }
     }
 
@@ -1091,7 +1028,6 @@
             stopVoice();
             return;
         }
-        // 获取速度
         const speedSelect = document.getElementById('voiceSpeedSelect');
         voiceSpeed = parseFloat(speedSelect.value) || 1.0;
 
@@ -1140,7 +1076,7 @@
         showToast(`语速: ${voiceSpeed}x`);
     }
 
-    // ==================== 页面切换 ====================
+    // ==================== 页面切换与按钮管理 ====================
     function switchTab(tab){
         if(tab !== 'read' && readingStartTime){
             stopReading();
@@ -1148,11 +1084,40 @@
         if(tab !== 'read' && isSpeaking){
             stopVoice();
         }
+        // 重置工具模式
+        if(tab !== 'read'){
+            tagMode = false;
+            highlightMode = false;
+            document.getElementById('tagToolBtn').classList.remove('active-tool');
+            document.getElementById('underlineToolBtn').classList.remove('active-tool');
+            // 隐藏搜索栏
+            document.getElementById('searchBar').style.display = 'none';
+            searchActive = false;
+            searchResults = [];
+            searchIndex = -1;
+            document.getElementById('searchBtn').classList.remove('active-btn');
+        }
+
         currentTab=tab;
         document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
         document.getElementById('page-'+tab).classList.add('active');
         document.querySelectorAll('.tab-item').forEach(t=>t.classList.remove('active'));
         document.querySelector(`.tab-item[data-tab="${tab}"]`).classList.add('active');
+
+        // 切换头部按钮
+        const syncBtn = document.getElementById('syncBtn');
+        const uploadBtn = document.getElementById('uploadBtn');
+        const searchBtn = document.getElementById('searchBtn');
+        if(tab === 'read'){
+            syncBtn.style.display = 'none';
+            uploadBtn.style.display = 'flex';
+            searchBtn.style.display = 'flex';
+        }else{
+            syncBtn.style.display = 'flex';
+            uploadBtn.style.display = 'none';
+            searchBtn.style.display = 'none';
+        }
+
         renderAll();
         if(tab==='journal') renderJournalPage();
         if(tab==='inspire'){
@@ -1165,7 +1130,6 @@
         }
         if(tab==='read'){
             updateReaderStats();
-            // 恢复内容
             const saved = localStorage.getItem(READER_CONTENT_KEY);
             if(saved){
                 try{
@@ -1178,12 +1142,6 @@
                     }
                 }catch(e){}
             }
-            // 隐藏搜索栏
-            document.getElementById('searchBar').style.display = 'none';
-            searchActive = false;
-            searchResults = [];
-            searchIndex = -1;
-            document.getElementById('headerSearchBtn').classList.remove('active-btn');
         }
     }
 
@@ -1962,6 +1920,50 @@
         if(a&&!a.unlocked){a.unlocked=true; showToast('🏆 解锁成就: '+a.name);}
     }
 
+    // 数据同步功能（导出/导入）
+    function openSyncModal(){openModal('modalSync');}
+    function exportData(){
+        const json=JSON.stringify(data,null,2);
+        const blob=new Blob([json],{type:'application/json'});
+        const url=URL.createObjectURL(blob);
+        const a=document.createElement('a');
+        a.href=url;
+        a.download=`周记账_${getTodayStr()}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showToast('账本导出成功');
+        closeModal('modalSync');
+    }
+    function importData(event){
+        const file=event.target.files[0];
+        if(!file) return;
+        const reader=new FileReader();
+        reader.onload=function(e){
+            try{
+                const imported=JSON.parse(e.target.result);
+                if(typeof imported!=='object'||!imported.accounts||!imported.transactions){
+                    showToast('无效的账本文件');
+                    return;
+                }
+                if(!confirm('导入将覆盖当前所有数据，确定继续？')) return;
+                data=imported;
+                data.transactions.forEach(t=>{if(!t.id) t.id='txn_'+Date.now()+Math.random().toString(36).slice(2,6);});
+                data.accounts.forEach(a=>{if(!a.id) a.id='acc_'+Date.now()+Math.random().toString(36).slice(2,6); if(!a.category) a.category='日常';});
+                data.goals.forEach(g=>{if(!g.id) g.id='goal_'+Date.now()+Math.random().toString(36).slice(2,6);});
+                if(!data.snapshots) data.snapshots=[];
+                if(!data.achievements) data.achievements=getDefaultData().achievements;
+                saveData();
+                renderAll();
+                showToast('账本导入成功');
+                closeModal('modalSync');
+            }catch(err){showToast('文件解析失败');}
+        };
+        reader.readAsText(file);
+        event.target.value='';
+    }
+
     // ==================== 树苗成长（简化保留） ====================
     let animFrameId = null;
     let animTime = 0;
@@ -2164,10 +2166,14 @@
                 }
             }catch(e){}
         }
+        // 默认显示同步按钮
+        document.getElementById('syncBtn').style.display = 'flex';
+        document.getElementById('uploadBtn').style.display = 'none';
+        document.getElementById('searchBtn').style.display = 'none';
         renderAll();
         // 初始化语音
         if(window.speechSynthesis){
-            speechSynth = window.speechSynthesis;
+            // 预加载
         }
         let resizeTimer;
         window.addEventListener('resize', function(){
@@ -2178,16 +2184,10 @@
             if(readingStartTime) stopReading();
             if(isSpeaking) stopVoice();
         });
-        // 点击空白取消选中
-        document.addEventListener('click', function(e){
-            if(!e.target.closest('.reader-content-wrap') && !e.target.closest('.tool-btn')){
-                if(tagMode || underlineMode){
-                    // 不取消模式，只取消选中
-                }
-            }
-        });
-        // 初始化标签计数
+        // 双击标签按钮已通过addEventListener绑定
         updateReaderStats();
+        // 默认显示首页
+        switchTab('home');
     };
 </script>
 </body>
