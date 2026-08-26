@@ -272,7 +272,131 @@
         .week-mini .w-item .w-val.positive{color:var(--green);}
         .week-mini .w-item .w-val.negative{color:var(--red);}
 
-        /* ===== 记账页表单 - 紧凑 + 金额突出 ===== */
+        /* ===== 左右滑动轮播 ===== */
+        .carousel-wrapper{
+            position:relative;
+            margin-bottom:18px;
+            border-radius:var(--radius);
+            overflow:hidden;
+            box-shadow:var(--shadow);
+            background:var(--card-bg);
+            border:1px solid var(--border);
+            /* 移除 touch-action:pan-y; 以允许水平滑动 */
+        }
+        .carousel-container{
+            display:flex;
+            overflow-x:auto;
+            scroll-snap-type:x mandatory;
+            -webkit-overflow-scrolling:touch;
+            scroll-behavior:smooth;
+            scrollbar-width:none;
+            -ms-overflow-style:none;
+            width:100%;
+        }
+        .carousel-container::-webkit-scrollbar{
+            display:none;
+        }
+        .carousel-item{
+            flex:0 0 100%;
+            scroll-snap-align:start;
+            padding:20px 22px;
+            background:var(--card-bg);
+            border-radius:0;
+            margin:0;
+            box-shadow:none;
+            border:none;
+            transition:0.2s;
+            cursor:pointer;
+            min-height:180px; /* 保证高度一致 */
+        }
+        .carousel-item:active{transform:scale(0.99);}
+        .carousel-item .card-label{
+            font-size:13px;
+            font-weight:500;
+            color:var(--text-muted);
+            letter-spacing:0.3px;
+            text-transform:uppercase;
+        }
+        .carousel-item .card-number{
+            font-size:42px;
+            font-weight:700;
+            color:var(--text-primary);
+            letter-spacing:-0.5px;
+            margin:4px 0 12px 0;
+            line-height:1.1;
+        }
+        .carousel-item .card-number .currency{font-size:26px;font-weight:600;opacity:0.4;margin-right:4px;}
+        .carousel-item .card-footer{
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            flex-wrap:wrap;
+            gap:6px 12px;
+            padding-top:12px;
+            border-top:1px solid var(--border);
+        }
+        .carousel-item .card-footer .tag{
+            font-size:12px;
+            color:var(--text-muted);
+            display:flex;
+            align-items:center;
+            gap:4px;
+            white-space:nowrap;
+        }
+        .carousel-item .card-footer .tag .num{
+            font-weight:600;
+            color:var(--text-primary);
+            font-size:14px;
+        }
+        .carousel-item .card-footer .tag .num.green{color:var(--green);}
+        .carousel-item .card-footer .tag .num.red{color:var(--red);}
+        .carousel-item .card-footer .tag .num.gold{color:var(--gold);}
+        .carousel-item .card-footer .tag .num.blue{color:var(--blue);}
+        .carousel-item .sub-note{
+            font-size:11px;
+            color:var(--text-muted);
+            margin-top:10px;
+            text-align:center;
+            opacity:0.6;
+        }
+        .carousel-item.card-blue{
+            background:var(--card-blue-bg);
+            border-color:rgba(74,124,247,0.12);
+        }
+        /* 指示点 */
+        .carousel-dots{
+            display:flex;
+            justify-content:center;
+            gap:8px;
+            padding:8px 0 12px 0;
+            background:var(--card-bg);
+            border-top:1px solid var(--border);
+        }
+        .carousel-dots .dot{
+            width:8px;
+            height:8px;
+            border-radius:50%;
+            background:var(--border);
+            transition:0.3s;
+            cursor:pointer;
+        }
+        .carousel-dots .dot.active{
+            background:var(--blue);
+            width:20px;
+            border-radius:4px;
+        }
+        .carousel-wrapper.single .carousel-dots{
+            display:none;
+        }
+        .carousel-wrapper.single .carousel-container{
+            scroll-snap-type:none;
+            overflow-x:hidden;
+        }
+        .carousel-item.hidden-item{
+            display:none;
+        }
+
+        /* 以下为原有其他样式，未改动 */
         .journal-form .form-group{
             margin-bottom:12px;
         }
@@ -361,7 +485,6 @@
         .journal-form .btn-primary:active{transform:scale(0.97);}
         .journal-form .btn-primary:disabled{opacity:0.5;pointer-events:none;}
 
-        /* 交易记录列表 */
         .txn-list{display:flex;flex-direction:column;gap:6px;max-height:420px;overflow-y:auto;}
         .recent-item{
             display:flex;
@@ -436,7 +559,6 @@
         }
         .filter-select:focus{outline:none;border-color:var(--blue);}
 
-        /* ===== 模态框 - 添加账户紧凑 ===== */
         .modal-box .form-group{
             margin-bottom:10px;
         }
@@ -769,138 +891,6 @@
         .achievement-item .ach-icon{font-size:30px;display:block;margin-bottom:4px;}
         .achievement-item .ach-name{font-size:12px;font-weight:500;color:var(--text-muted);}
         .achievement-item.unlocked .ach-name{color:var(--text-primary);}
-        .streak-display{
-            display:flex;
-            justify-content:center;
-            gap:20px;
-            margin:12px 0 4px 0;
-        }
-        .streak-display .sd-item{text-align:center;}
-        .streak-display .sd-item .sd-num{font-size:28px;font-weight:700;color:var(--gold);}
-        .streak-display .sd-item .sd-label{font-size:11px;color:var(--text-muted);}
-
-        /* ===== 树苗成长卡片 ===== */
-        .plant-card .plant-canvas-wrap{
-            display:flex;
-            justify-content:center;
-            align-items:center;
-            padding:4px 0;
-            position:relative;
-        }
-        .plant-card .plant-canvas-wrap canvas{
-            width:160px;
-            height:160px;
-            display:block;
-        }
-        .plant-card .plant-stats{
-            display:flex;
-            justify-content:center;
-            gap:24px;
-            margin:6px 0 10px 0;
-        }
-        .plant-card .plant-stats .stat-item{
-            text-align:center;
-        }
-        .plant-card .plant-stats .stat-item .stat-num{
-            font-size:22px;
-            font-weight:700;
-            color:var(--text-primary);
-        }
-        .plant-card .plant-stats .stat-item .stat-label{
-            font-size:11px;
-            color:var(--text-muted);
-        }
-        .plant-card .plant-stats .stat-item .stat-num.green{color:var(--green);}
-        .plant-card .plant-stats .stat-item .stat-num.gold{color:var(--gold);}
-        .plant-card .plant-stage-label{
-            text-align:center;
-            font-size:14px;
-            font-weight:500;
-            color:var(--text-secondary);
-            margin-bottom:4px;
-        }
-        .plant-card .water-btn{
-            display:block;
-            margin:6px auto 0 auto;
-            padding:10px 32px;
-            border:none;
-            border-radius:30px;
-            font-size:15px;
-            font-weight:600;
-            cursor:pointer;
-            transition:0.2s;
-            background:var(--blue);
-            color:#fff;
-            box-shadow:0 4px 12px rgba(74,124,247,0.2);
-        }
-        .plant-card .water-btn:active{transform:scale(0.94);}
-        .plant-card .water-btn:disabled{opacity:0.4;pointer-events:none;}
-
-        /* 浇水动画 - 水壶 */
-        .water-animation{
-            position:fixed;
-            top:0;
-            left:0;
-            width:100%;
-            height:100%;
-            pointer-events:none;
-            z-index:150;
-        }
-        .water-drop{
-            position:absolute;
-            width:8px;
-            height:18px;
-            background:radial-gradient(circle at 30% 30%, rgba(100,200,255,0.9), rgba(30,144,255,0.4));
-            border-radius:50% 50% 50% 50% / 60% 60% 40% 40%;
-            box-shadow:0 0 6px rgba(30,144,255,0.3);
-            animation:dropFall 1s ease-in forwards;
-        }
-        @keyframes dropFall{
-            0%{transform:translateY(0) scale(1) rotate(0deg);opacity:1;}
-            100%{transform:translateY(220px) scale(0.3) rotate(20deg);opacity:0;}
-        }
-        .water-splash{
-            position:absolute;
-            width:30px;
-            height:30px;
-            border-radius:50%;
-            background:radial-gradient(circle, rgba(30,144,255,0.3), rgba(30,144,255,0.05));
-            animation:splashExpand 0.7s ease-out forwards;
-        }
-        @keyframes splashExpand{
-            0%{transform:scale(0);opacity:1;}
-            100%{transform:scale(4);opacity:0;}
-        }
-        .water-can{
-            position:absolute;
-            left:50%;
-            top:8%;
-            transform:translateX(-50%);
-            font-size:56px;
-            animation:waterCan 1.2s ease forwards;
-        }
-        @keyframes waterCan{
-            0%{transform:translateX(-50%) rotate(0deg) scale(1);}
-            30%{transform:translateX(-50%) rotate(-18deg) scale(1.1);}
-            60%{transform:translateX(-50%) rotate(12deg) scale(1.05);}
-            100%{transform:translateX(-50%) rotate(0deg) scale(1);}
-        }
-
-        /* 成长进度条 */
-        .plant-progress{
-            height:4px;
-            background:var(--border);
-            border-radius:4px;
-            margin-top:8px;
-            overflow:hidden;
-        }
-        .plant-progress .plant-progress-fill{
-            height:100%;
-            border-radius:4px;
-            background:linear-gradient(90deg,var(--green),var(--blue));
-            transition:width 0.6s ease;
-        }
-
         .no-account-tip{
             text-align:center;
             padding:20px 0;
@@ -921,12 +911,10 @@
 
         @media (max-width:420px){
             body{padding:0 12px 80px 12px;}
-            .card-main .card-number{font-size:34px;}
-            .card-main .card-number .currency{font-size:22px;}
+            .carousel-item .card-number{font-size:34px;}
+            .carousel-item .card-number .currency{font-size:22px;}
             .card-secondary .goal-row .mini-circle{width:70px;height:70px;}
             .journal-form .form-group.amount-field input{font-size:20px;}
-            .plant-card .plant-canvas-wrap canvas{width:130px;height:130px;}
-            .plant-card .plant-stats .stat-item .stat-num{font-size:18px;}
         }
         @media (min-width:600px){
             body{padding:0 24px 90px 24px;}
@@ -948,28 +936,37 @@
 
 <!-- ===== 首页 ===== -->
 <div id="page-home" class="page active">
-    <div class="card-main" onclick="openFullManageModal()">
-        <div class="card-label">💰 总资产</div>
-        <div class="card-number"><span class="currency">¥</span><span id="totalAsset">0.00</span></div>
-        <div class="card-footer">
-            <span class="tag">📅 <span class="num" id="assetUpdateDateTag">--</span></span>
-            <span class="tag">本周收入 <span class="num green" id="weekIncomeTag">+¥0</span></span>
-            <span class="tag">本周支出 <span class="num red" id="weekExpenseTag">-¥0</span></span>
-            <span class="tag">结余 <span class="num" id="weekBalanceTag">¥0</span></span>
+    <!-- 左右滑动轮播容器 -->
+    <div class="carousel-wrapper" id="carouselWrapper">
+        <div class="carousel-container" id="carouselContainer">
+            <!-- 总资产卡片 -->
+            <div class="carousel-item" id="totalAssetItem" onclick="openFullManageModal()">
+                <div class="card-label">💰 总资产</div>
+                <div class="card-number"><span class="currency">¥</span><span id="totalAsset">0.00</span></div>
+                <div class="card-footer">
+                    <span class="tag">📅 <span class="num" id="assetUpdateDateTag">--</span></span>
+                    <span class="tag">本周收入 <span class="num green" id="weekIncomeTag">+¥0</span></span>
+                    <span class="tag">本周支出 <span class="num red" id="weekExpenseTag">-¥0</span></span>
+                    <span class="tag">结余 <span class="num" id="weekBalanceTag">¥0</span></span>
+                </div>
+            </div>
+            <!-- 理财资产卡片 -->
+            <div class="carousel-item card-blue" id="financeAssetItem" onclick="showFinanceAccounts()">
+                <div class="card-label">📈 理财资产</div>
+                <div class="card-number"><span class="currency">¥</span><span id="financeTotalAmount">0.00</span></div>
+                <div class="card-footer">
+                    <span class="tag">📅 <span class="num" id="financeUpdateDateTag">--</span></span>
+                    <span class="tag">累计收益 <span class="num" id="financeCumulativeTag">¥0</span></span>
+                    <span class="tag">收益率 <span class="num" id="financeRateTag">--</span></span>
+                </div>
+                <div class="sub-note">基于余额快照与收益交易统计</div>
+            </div>
         </div>
+        <!-- 指示点 -->
+        <div class="carousel-dots" id="carouselDots"></div>
     </div>
 
-    <div class="card-main card-blue" id="financeCard" onclick="showFinanceAccounts()">
-        <div class="card-label">📈 理财资产</div>
-        <div class="card-number"><span class="currency">¥</span><span id="financeTotalAmount">0.00</span></div>
-        <div class="card-footer">
-            <span class="tag">📅 <span class="num" id="financeUpdateDateTag">--</span></span>
-            <span class="tag">累计收益 <span class="num" id="financeCumulativeTag">¥0</span></span>
-            <span class="tag">收益率 <span class="num" id="financeRateTag">--</span></span>
-        </div>
-        <div class="sub-note">基于余额快照与收益交易统计</div>
-    </div>
-
+    <!-- 储蓄目标卡片 -->
     <div class="card-secondary" id="goalCard" onclick="switchTab('inspire')">
         <div class="sec-header">
             <span class="sec-title">🎯 储蓄目标</span>
@@ -1023,31 +1020,7 @@
 
 <!-- ===== 激励页 ===== -->
 <div id="page-inspire" class="page">
-    <!-- 树苗成长卡片 -->
-    <div class="card-secondary plant-card">
-        <div class="sec-header">
-            <span class="sec-title">🌱 树苗成长</span>
-            <span class="sec-action" id="plantStageLabel">种子</span>
-        </div>
-        <div class="plant-canvas-wrap">
-            <canvas id="plantCanvas" width="320" height="320"></canvas>
-        </div>
-        <div class="plant-stats">
-            <div class="stat-item">
-                <div class="stat-num green" id="todayWaterCount">0</div>
-                <div class="stat-label">今日浇水</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-num gold" id="totalWaterDays">0</div>
-                <div class="stat-label">累计天数</div>
-            </div>
-        </div>
-        <div class="plant-progress">
-            <div class="plant-progress-fill" id="plantProgressFill" style="width:0%;"></div>
-        </div>
-        <button class="water-btn" id="waterBtn" onclick="handleWaterPlant()">💧 浇水</button>
-    </div>
-
+    <!-- 树苗卡片已移除，保留目标和成就 -->
     <div class="card-secondary" style="padding:18px 18px;">
         <div class="sec-header"><span>🎯 储蓄目标</span><button class="sec-action" onclick="showAddGoalModal()" style="background:none;border:none;color:var(--blue);font-size:14px;cursor:pointer;">+ 添加</button></div>
         <div id="goalList"></div>
@@ -1091,14 +1064,13 @@
     </div>
 </div>
 
-<!-- 编辑余额 - 新增日期字段 -->
+<!-- 编辑余额 -->
 <div class="modal-overlay" id="modalEditBalance">
     <div class="modal-box">
         <h3>✏️ 编辑余额</h3>
         <div style="margin-bottom:12px;color:var(--text-primary);"><span style="font-weight:500;">账户：</span><span id="editBalanceAccountName"></span></div>
         <div class="form-group"><label>当前余额</label><input type="text" id="editBalanceCurrent" disabled style="background:#f5f5f7;color:var(--text-muted);"></div>
         <div class="form-group amount-field"><label>新余额 (¥)</label><input type="number" id="editBalanceNew" step="0.01" min="0" placeholder="输入新余额"></div>
-        <!-- ===== 修改点：新增日期选择器 ===== -->
         <div class="form-group"><label>📅 余额日期</label><input type="date" id="editBalanceDate" required></div>
         <div class="modal-actions">
             <button class="btn-undo" onclick="undoLastAdjustment()" style="flex:0.8;">↩️ 撤销</button>
@@ -1263,14 +1235,6 @@
                 {id:'goal1',name:'旅行基金',target:10000,current:3200},
                 {id:'goal2',name:'换新手机',target:6000,current:1800},
             ],
-            checkins:[
-                {date:today},
-                {date:new Date(now.getTime()-86400000).toISOString().slice(0,10)},
-                {date:new Date(now.getTime()-86400000*2).toISOString().slice(0,10)},
-                {date:new Date(now.getTime()-86400000*3).toISOString().slice(0,10)},
-                {date:new Date(now.getTime()-86400000*4).toISOString().slice(0,10)},
-                {date:new Date(now.getTime()-86400000*5).toISOString().slice(0,10)},
-            ],
             achievements:[
                 {id:'first_txn',name:'首次记账',icon:'📝',unlocked:true},
                 {id:'streak_7',name:'连续7天',icon:'🔥',unlocked:false},
@@ -1293,7 +1257,6 @@
                 if(!data.transactions) data.transactions=[];
                 if(!data.snapshots) data.snapshots=[];
                 if(!data.goals) data.goals=[];
-                if(!data.checkins) data.checkins=[];
                 if(!data.achievements) data.achievements=getDefaultData().achievements;
                 data.transactions.forEach(t=>{if(!t.id) t.id='txn_'+Date.now()+Math.random().toString(36).slice(2,6);});
                 data.accounts.forEach(a=>{if(!a.id) a.id='acc_'+Date.now()+Math.random().toString(36).slice(2,6); if(!a.category) a.category='日常';});
@@ -1337,7 +1300,6 @@
         return acc.balance+txnTotal;
     }
 
-    // ===== 辅助函数 - 格式化日期为 "xx月xx日" =====
     function formatDateToMD(dateStr){
         if(!dateStr) return '--';
         const parts = dateStr.split('-');
@@ -1347,7 +1309,6 @@
         return month + '月' + day + '日';
     }
 
-    // ===== 获取账户最新快照日期 =====
     function getAccountLatestSnapshotDate(accId){
         const snaps = data.snapshots.filter(s => s.accountId === accId);
         if(snaps.length === 0) return null;
@@ -1401,379 +1362,6 @@
         return last||null;
     }
 
-    // ==================== 树苗成长相关 ====================
-    const PLANT_STAGES = [
-        { name: '种子', min: 0, max: 0 },
-        { name: '发芽', min: 1, max: 2 },
-        { name: '小苗', min: 3, max: 5 },
-        { name: '树苗', min: 6, max: 10 },
-        { name: '小树', min: 11, max: 20 },
-        { name: '大树', min: 21, max: 40 },
-        { name: '开花', min: 41, max: 60 },
-        { name: '结果', min: 61, max: Infinity }
-    ];
-
-    function getPlantStage(totalDays){
-        for(let s of PLANT_STAGES){
-            if(totalDays >= s.min && totalDays <= s.max) return s;
-        }
-        return PLANT_STAGES[0];
-    }
-
-    function drawPlant(ctx, w, h, totalDays){
-        ctx.clearRect(0, 0, w, h);
-        const stage = getPlantStage(totalDays);
-        const progress = Math.min(1, totalDays / 70);
-
-        const groundY = h - 40;
-        ctx.fillStyle = '#8B6B4A';
-        ctx.fillRect(0, groundY, w, 40);
-        for(let i=0; i<10+totalDays*0.5; i++){
-            const gx = Math.random() * w;
-            const gy = groundY - 2 - Math.random() * 8;
-            ctx.strokeStyle = i%3===0 ? '#66BB6A' : '#81C784';
-            ctx.lineWidth = 1.2;
-            ctx.beginPath();
-            ctx.moveTo(gx, groundY+2);
-            ctx.quadraticCurveTo(gx-4, gy, gx-2, groundY);
-            ctx.stroke();
-            ctx.beginPath();
-            ctx.moveTo(gx+2, groundY+2);
-            ctx.quadraticCurveTo(gx+6, gy+3, gx+4, groundY);
-            ctx.stroke();
-        }
-
-        if(totalDays >= 3){
-            const flowerCount = Math.min(3 + Math.floor((totalDays-3)/3), 15);
-            for(let i=0; i<flowerCount; i++){
-                const fx = 20 + Math.random() * (w-40);
-                const fy = groundY - 5 - Math.random() * 12;
-                const size = 3 + Math.random() * 4;
-                const colors = ['#F06292', '#EC407A', '#F48FB1', '#E91E63', '#FFB74D', '#FFF176'];
-                ctx.fillStyle = colors[i % colors.length];
-                for(let p=0; p<5; p++){
-                    const angle = (p/5)*Math.PI*2 - Math.PI/2;
-                    const r = p%2===0 ? size : size*0.6;
-                    const px = fx + Math.cos(angle)*r;
-                    const py = fy + Math.sin(angle)*r;
-                    ctx.beginPath();
-                    ctx.arc(px, py, size*0.5, 0, Math.PI*2);
-                    ctx.fill();
-                }
-                ctx.fillStyle = '#FFD54F';
-                ctx.beginPath();
-                ctx.arc(fx, fy, size*0.3, 0, Math.PI*2);
-                ctx.fill();
-            }
-        }
-
-        const cx = w/2;
-        const baseY = groundY;
-        if(totalDays === 0){
-            ctx.fillStyle = '#8B6B4A';
-            ctx.beginPath();
-            ctx.ellipse(cx, groundY - 6, 12, 8, 0, 0, Math.PI*2);
-            ctx.fill();
-            ctx.fillStyle = '#5D4037';
-            ctx.beginPath();
-            ctx.ellipse(cx, groundY - 8, 6, 5, 0, 0, Math.PI*2);
-            ctx.fill();
-            ctx.fillStyle = '#8D6E63';
-            ctx.font = '20px sans-serif';
-            ctx.textAlign = 'center';
-            ctx.fillText('🌰', cx, groundY - 6);
-            return;
-        }
-
-        const trunkH = 20 + progress * 80;
-        const trunkW = 4 + progress * 12;
-        const trunkTop = baseY - trunkH;
-
-        ctx.fillStyle = '#5D4037';
-        ctx.fillRect(cx - trunkW/2, trunkTop, trunkW, trunkH);
-
-        const crownSize = 10 + progress * 60;
-        const crownY = trunkTop - 4;
-
-        const gradient = ctx.createRadialGradient(cx, crownY - 10, 5, cx, crownY, crownSize);
-        if(totalDays >= 41){
-            gradient.addColorStop(0, '#66BB6A');
-            gradient.addColorStop(0.6, '#4CAF50');
-            gradient.addColorStop(0.85, '#388E3C');
-            gradient.addColorStop(1, '#2E7D32');
-        }else if(totalDays >= 21){
-            gradient.addColorStop(0, '#81C784');
-            gradient.addColorStop(0.6, '#4CAF50');
-            gradient.addColorStop(1, '#2E7D32');
-        }else{
-            gradient.addColorStop(0, '#A5D6A7');
-            gradient.addColorStop(0.6, '#66BB6A');
-            gradient.addColorStop(1, '#388E3C');
-        }
-        ctx.beginPath();
-        ctx.arc(cx, crownY, crownSize, 0, Math.PI*2);
-        ctx.fillStyle = gradient;
-        ctx.fill();
-
-        if(totalDays >= 3){
-            const offset = crownSize * 0.7;
-            ctx.beginPath();
-            ctx.arc(cx - offset * 0.5, crownY + 8, crownSize * 0.7, 0, Math.PI*2);
-            ctx.fillStyle = totalDays >= 41 ? 'rgba(102,187,106,0.8)' : 'rgba(76,175,80,0.8)';
-            ctx.fill();
-            ctx.beginPath();
-            ctx.arc(cx + offset * 0.5, crownY + 8, crownSize * 0.7, 0, Math.PI*2);
-            ctx.fill();
-        }
-
-        if(totalDays >= 41){
-            const flowerColors = ['#F06292', '#EC407A', '#F48FB1', '#E91E63', '#F8BBD0'];
-            const flowerCount = Math.min(3 + Math.floor((totalDays-41)/5), 12);
-            for(let i=0; i<flowerCount; i++){
-                const angle = (i / flowerCount) * Math.PI * 2 + 0.3;
-                const radius = crownSize * (0.4 + Math.random() * 0.4);
-                const fx = cx + Math.cos(angle) * radius;
-                const fy = crownY + Math.sin(angle) * radius * 0.7 - 4;
-                const size = 4 + Math.random() * 6;
-                ctx.fillStyle = flowerColors[i % flowerColors.length];
-                ctx.beginPath();
-                for(let p=0; p<5; p++){
-                    const a = (p/5) * Math.PI*2 - Math.PI/2;
-                    const r = p%2===0 ? size : size*0.5;
-                    if(p===0) ctx.moveTo(fx + Math.cos(a)*r, fy + Math.sin(a)*r);
-                    else ctx.lineTo(fx + Math.cos(a)*r, fy + Math.sin(a)*r);
-                }
-                ctx.closePath();
-                ctx.fill();
-                ctx.fillStyle = '#FFD54F';
-                ctx.beginPath();
-                ctx.arc(fx, fy, size*0.25, 0, Math.PI*2);
-                ctx.fill();
-            }
-        }
-
-        if(totalDays >= 61){
-            const fruitColors = ['#E53935', '#EF5350', '#FF6F00', '#F9A825'];
-            const fruitCount = Math.min(2 + Math.floor((totalDays-61)/10), 8);
-            for(let i=0; i<fruitCount; i++){
-                const angle = (i / fruitCount) * Math.PI * 2 + 0.8;
-                const radius = crownSize * (0.5 + Math.random() * 0.3);
-                const fx = cx + Math.cos(angle) * radius;
-                const fy = crownY + Math.sin(angle) * radius * 0.6 + 4;
-                const size = 5 + Math.random() * 5;
-                ctx.fillStyle = fruitColors[i % fruitColors.length];
-                ctx.beginPath();
-                ctx.arc(fx, fy, size, 0, Math.PI*2);
-                ctx.fill();
-                ctx.fillStyle = 'rgba(255,255,255,0.3)';
-                ctx.beginPath();
-                ctx.arc(fx-2, fy-2, size*0.3, 0, Math.PI*2);
-                ctx.fill();
-            }
-        }
-
-        if(totalDays >= 3){
-            const birds = [
-                { x: 20, y: 30, t: 0 },
-                { x: w-30, y: 25, t: 1.2 }
-            ];
-            birds.forEach((b, idx) => {
-                const time = Date.now() / 2000 + idx * 1.5;
-                const bx = b.x + Math.sin(time) * 20;
-                const by = b.y + Math.cos(time * 0.7) * 10;
-                ctx.fillStyle = '#795548';
-                ctx.beginPath();
-                ctx.ellipse(bx, by, 8, 5, 0, 0, Math.PI*2);
-                ctx.fill();
-                ctx.fillStyle = '#8D6E63';
-                ctx.beginPath();
-                ctx.ellipse(bx-5, by-2, 6, 3, -0.3 + Math.sin(time)*0.2, 0, Math.PI*2);
-                ctx.fill();
-                ctx.beginPath();
-                ctx.ellipse(bx+5, by-2, 6, 3, 0.3 + Math.cos(time)*0.2, 0, Math.PI*2);
-                ctx.fill();
-                ctx.fillStyle = '#6D4C41';
-                ctx.beginPath();
-                ctx.moveTo(bx-8, by+2);
-                ctx.lineTo(bx-14, by+6);
-                ctx.lineTo(bx-8, by+6);
-                ctx.fill();
-                ctx.fillStyle = '#000';
-                ctx.beginPath();
-                ctx.arc(bx+3, by-2, 1.5, 0, Math.PI*2);
-                ctx.fill();
-                ctx.fillStyle = '#FF9800';
-                ctx.beginPath();
-                ctx.moveTo(bx+8, by+1);
-                ctx.lineTo(bx+13, by+2);
-                ctx.lineTo(bx+8, by+4);
-                ctx.fill();
-            });
-        }
-
-        if(totalDays >= 5){
-            const butterflies = [
-                { x: 50, y: 50, t: 0 },
-                { x: w-40, y: 40, t: 2.5 },
-                { x: 80, y: 70, t: 1.2 }
-            ];
-            butterflies.forEach((b, idx) => {
-                const time = Date.now() / 1500 + idx * 2.0;
-                const bx = b.x + Math.sin(time) * 30;
-                const by = b.y + Math.cos(time * 0.6) * 20;
-                const wingSize = 6 + Math.sin(time)*1;
-                ctx.fillStyle = idx%2===0 ? '#FF80AB' : '#4DD0E1';
-                ctx.beginPath();
-                ctx.ellipse(bx-3, by-2, wingSize, wingSize*0.6, -0.4 + Math.sin(time)*0.1, 0, Math.PI*2);
-                ctx.fill();
-                ctx.fillStyle = idx%2===0 ? '#F48FB1' : '#4FC3F7';
-                ctx.beginPath();
-                ctx.ellipse(bx+3, by-2, wingSize, wingSize*0.6, 0.4 + Math.cos(time)*0.1, 0, Math.PI*2);
-                ctx.fill();
-                ctx.fillStyle = '#4E342E';
-                ctx.beginPath();
-                ctx.ellipse(bx, by, 2, 6, 0, 0, Math.PI*2);
-                ctx.fill();
-                ctx.strokeStyle = '#4E342E';
-                ctx.lineWidth = 1;
-                ctx.beginPath();
-                ctx.moveTo(bx-1, by-4);
-                ctx.lineTo(bx-5, by-9);
-                ctx.stroke();
-                ctx.beginPath();
-                ctx.moveTo(bx+1, by-4);
-                ctx.lineTo(bx+5, by-9);
-                ctx.stroke();
-            });
-        }
-    }
-
-    function triggerWaterAnimation(){
-        const container = document.createElement('div');
-        container.className = 'water-animation';
-        document.body.appendChild(container);
-
-        const can = document.createElement('div');
-        can.className = 'water-can';
-        can.textContent = '🧹';
-        container.appendChild(can);
-
-        for(let i=0; i<30; i++){
-            const drop = document.createElement('div');
-            drop.className = 'water-drop';
-            const x = 20 + Math.random() * 60;
-            const delay = Math.random() * 0.4;
-            drop.style.left = x + '%';
-            drop.style.top = '12%';
-            drop.style.animationDelay = delay + 's';
-            drop.style.width = (5 + Math.random() * 6) + 'px';
-            drop.style.height = (12 + Math.random() * 14) + 'px';
-            drop.style.background = `radial-gradient(circle at 30% 30%, rgba(100,200,255,${0.6+Math.random()*0.4}), rgba(30,144,255,${0.3+Math.random()*0.3}))`;
-            container.appendChild(drop);
-        }
-
-        for(let i=0; i<12; i++){
-            const splash = document.createElement('div');
-            splash.className = 'water-splash';
-            const x = 20 + Math.random() * 60;
-            const delay = 0.5 + Math.random() * 0.5;
-            splash.style.left = x + '%';
-            splash.style.top = '55%';
-            splash.style.animationDelay = delay + 's';
-            splash.style.width = (20 + Math.random() * 20) + 'px';
-            splash.style.height = splash.style.width;
-            container.appendChild(splash);
-        }
-
-        setTimeout(()=>{
-            if(container.parentNode) container.remove();
-        }, 2000);
-
-        if(!document.getElementById('waterAnimStyle')){
-            const style = document.createElement('style');
-            style.id = 'waterAnimStyle';
-            style.textContent = `
-                @keyframes waterCan{
-                    0%{transform:translateX(-50%) rotate(0deg) scale(1);}
-                    30%{transform:translateX(-50%) rotate(-18deg) scale(1.1);}
-                    60%{transform:translateX(-50%) rotate(12deg) scale(1.05);}
-                    100%{transform:translateX(-50%) rotate(0deg) scale(1);}
-                }
-            `;
-            document.head.appendChild(style);
-        }
-    }
-
-    function waterPlant(){
-        const today = getTodayStr();
-        const alreadyWatered = data.checkins.some(c => c.date === today);
-
-        if(!alreadyWatered){
-            data.checkins.push({ date: today });
-            saveData();
-            showToast('💧 浇水成功！树苗长大了一点！');
-        } else {
-            showToast('🌱 今天已经浇过水啦！');
-        }
-
-        triggerWaterAnimation();
-        renderPlant();
-        checkAchievements();
-        if(document.getElementById('page-inspire').classList.contains('active')){
-            renderGoals();
-            renderAchievements();
-        }
-    }
-
-    function handleWaterPlant(){
-        waterPlant();
-        if(document.getElementById('page-inspire').classList.contains('active')){
-            renderPlant();
-        }
-    }
-
-    function renderPlant(){
-        const canvas = document.getElementById('plantCanvas');
-        if(!canvas) return;
-        const ctx = canvas.getContext('2d');
-        const rect = canvas.parentElement.getBoundingClientRect();
-        const size = Math.min(rect.width || 160, 200);
-        canvas.width = size * 2;
-        canvas.height = size * 2;
-        canvas.style.width = size + 'px';
-        canvas.style.height = size + 'px';
-        ctx.scale(2, 2);
-
-        const totalDays = data.checkins.length;
-        const today = getTodayStr();
-        const todayCount = data.checkins.filter(c => c.date === today).length;
-
-        drawPlant(ctx, size, size, totalDays);
-
-        document.getElementById('todayWaterCount').textContent = todayCount;
-        document.getElementById('totalWaterDays').textContent = totalDays;
-
-        const stage = getPlantStage(totalDays);
-        document.getElementById('plantStageLabel').textContent = stage.name;
-
-        const pct = Math.min(100, (totalDays / 70) * 100);
-        document.getElementById('plantProgressFill').style.width = pct + '%';
-
-        const btn = document.getElementById('waterBtn');
-        if(btn){
-            const already = data.checkins.some(c => c.date === today);
-            if(already){
-                btn.textContent = '🌱 已浇水';
-                btn.disabled = true;
-                btn.style.background = 'var(--green)';
-            }else{
-                btn.textContent = '💧 浇水';
-                btn.disabled = false;
-                btn.style.background = 'var(--blue)';
-            }
-        }
-    }
-
     // ==================== Toast ====================
     let toastTimer=null;
     function showToast(msg){
@@ -1799,11 +1387,7 @@
         document.querySelector(`.tab-item[data-tab="${tab}"]`).classList.add('active');
         renderAll();
         if(tab==='journal') renderJournalPage();
-        if(tab==='inspire'){
-            renderPlant();
-            renderGoals();
-            renderAchievements();
-        }
+        // 不再需要渲染树苗
     }
 
     // ==================== 账户管理 ====================
@@ -1815,7 +1399,6 @@
         openModal('modalFullManage');
     }
 
-    // ===== 账户管理列表 - 显示最新修改时间 =====
     function renderFullAccountList(){
         const container=document.getElementById('fullAccountList');
         const total=data.accounts.reduce((sum,acc)=>sum+getAccountBalance(acc.id),0);
@@ -1923,7 +1506,7 @@
         showToast('账户已删除');
     }
 
-    // ===== 编辑余额 - 支持修改日期 =====
+    // ===== 编辑余额 =====
     function openEditBalanceModal(accId){
         const acc=data.accounts.find(a=>a.id===accId);
         if(!acc) return;
@@ -1945,9 +1528,29 @@
         if(isNaN(newVal)||newVal<0){ showToast('请输入有效金额'); return; }
         const current=getAccountBalance(accId);
         const diff=newVal-current;
-        if(Math.abs(diff)<0.001){ showToast('余额无变化'); closeModal('modalEditBalance'); return; }
         const selectedDate = document.getElementById('editBalanceDate').value;
         if(!selectedDate){ showToast('请选择日期'); return; }
+
+        const latestDate = getAccountLatestSnapshotDate(accId);
+        const dateChanged = (latestDate !== selectedDate);
+        const balanceUnchanged = Math.abs(diff) < 0.001;
+
+        if (balanceUnchanged && !dateChanged) {
+            showToast('余额和日期均无变化');
+            closeModal('modalEditBalance');
+            return;
+        }
+
+        if (balanceUnchanged && dateChanged) {
+            data.snapshots.push({accountId:accId, date:selectedDate, balance:current});
+            saveData();
+            closeModal('modalEditBalance');
+            if(document.getElementById('modalFullManage').classList.contains('show')) renderFullAccountList();
+            if(document.getElementById('modalFinanceAccounts').classList.contains('show')) showFinanceAccounts();
+            renderAll();
+            showToast(`已更新 ${acc.name} 的余额日期为 ${formatDateToMD(selectedDate)}`);
+            return;
+        }
 
         const isFinance=isFinanceAccount(acc);
         let txnType=diff>0?'income':'expense';
@@ -2230,30 +1833,7 @@
         renderAll();
         showToast('✅ 记录已保存');
 
-        setTimeout(() => {
-            const today = getTodayStr();
-            const alreadyWatered = data.checkins.some(c => c.date === today);
-            if(!alreadyWatered){
-                data.checkins.push({ date: today });
-                saveData();
-                triggerWaterAnimation();
-                switchTab('inspire');
-                setTimeout(() => {
-                    renderPlant();
-                    renderGoals();
-                    renderAchievements();
-                }, 100);
-            } else {
-                switchTab('inspire');
-                setTimeout(() => {
-                    renderPlant();
-                    renderGoals();
-                    renderAchievements();
-                }, 100);
-                showToast('🌱 今天已经浇过水啦！看看树苗吧');
-            }
-        }, 300);
-
+        // 不再触发浇水
         checkAchievements();
     }
 
@@ -2387,9 +1967,59 @@
         document.getElementById('financeUpdateDateTag').textContent=lastDate||'--';
 
         const hasFinance = data.accounts.some(a => isFinanceAccount(a));
-        const card = document.getElementById('financeCard');
-        if(hasFinance) card.classList.remove('card-hidden');
-        else card.classList.add('card-hidden');
+        const financeItem = document.getElementById('financeAssetItem');
+        const wrapper = document.getElementById('carouselWrapper');
+        const dots = document.getElementById('carouselDots');
+
+        if (hasFinance) {
+            financeItem.classList.remove('hidden-item');
+            wrapper.classList.remove('single');
+            updateCarouselDots(2);
+        } else {
+            financeItem.classList.add('hidden-item');
+            wrapper.classList.add('single');
+            dots.innerHTML = '';
+        }
+        const container = document.getElementById('carouselContainer');
+        container.scrollLeft = 0;
+        updateCarouselActiveDot(0);
+    }
+
+    // ==================== 轮播指示点管理 ====================
+    function updateCarouselDots(count){
+        const dotsContainer = document.getElementById('carouselDots');
+        dotsContainer.innerHTML = '';
+        for (let i = 0; i < count; i++) {
+            const dot = document.createElement('span');
+            dot.className = 'dot' + (i === 0 ? ' active' : '');
+            dot.dataset.index = i;
+            dot.addEventListener('click', function(){
+                const container = document.getElementById('carouselContainer');
+                const scrollWidth = container.scrollWidth / count;
+                container.scrollLeft = i * scrollWidth;
+            });
+            dotsContainer.appendChild(dot);
+        }
+    }
+
+    function updateCarouselActiveDot(index){
+        const dots = document.querySelectorAll('#carouselDots .dot');
+        dots.forEach((dot, i) => {
+            dot.classList.toggle('active', i === index);
+        });
+    }
+
+    function initCarouselScrollListener(){
+        const container = document.getElementById('carouselContainer');
+        container.addEventListener('scroll', function(){
+            const items = container.querySelectorAll('.carousel-item:not(.hidden-item)');
+            const totalItems = items.length;
+            if (totalItems <= 1) return;
+            const scrollLeft = container.scrollLeft;
+            const itemWidth = container.scrollWidth / totalItems;
+            const index = Math.round(scrollLeft / itemWidth);
+            updateCarouselActiveDot(index);
+        });
     }
 
     // ==================== 储蓄目标圆形迷你图 ====================
@@ -2564,7 +2194,9 @@
     function checkAchievements(){
         const ach=data.achievements;
         if(data.transactions.length>0) unlockAchievement('first_txn');
-        const totalDays = data.checkins.length;
+        // 基于不同交易日期天数（记账天数）
+        const txnDates = new Set(data.transactions.map(t => t.date));
+        const totalDays = txnDates.size;
         if(totalDays >= 7) unlockAchievement('streak_7');
         if(totalDays >= 30) unlockAchievement('streak_30');
         if(data.transactions.length>=10) unlockAchievement('txn_10');
@@ -2597,7 +2229,6 @@
         showToast('账本导出成功');
         closeModal('modalSync');
     }
-    // ===== 修复：导入时自动将理财相关分类归为“理财” =====
     function importData(event){
         const file=event.target.files[0];
         if(!file) return;
@@ -2611,7 +2242,6 @@
                 }
                 if(!confirm('导入将覆盖当前所有数据，确定继续？')) return;
                 data=imported;
-                // 标准化账户分类：识别理财相关
                 data.accounts.forEach(acc => {
                     if (acc.category) {
                         const cat = acc.category.trim();
@@ -2620,12 +2250,10 @@
                         }
                     }
                 });
-                // 补全ID等
                 data.transactions.forEach(t=>{if(!t.id) t.id='txn_'+Date.now()+Math.random().toString(36).slice(2,6);});
                 data.accounts.forEach(a=>{if(!a.id) a.id='acc_'+Date.now()+Math.random().toString(36).slice(2,6); if(!a.category) a.category='日常';});
                 data.goals.forEach(g=>{if(!g.id) g.id='goal_'+Date.now()+Math.random().toString(36).slice(2,6);});
                 if(!data.snapshots) data.snapshots=[];
-                if(!data.checkins) data.checkins=[];
                 if(!data.achievements) data.achievements=getDefaultData().achievements;
                 saveData();
                 renderAll();
@@ -2646,26 +2274,38 @@
         renderHomeWeekChart();
         renderGoals();
         renderAchievements();
-        if(document.getElementById('page-inspire').classList.contains('active')){
-            renderPlant();
-        }
         if(document.getElementById('page-journal').classList.contains('active')) renderJournalPage();
         if(document.getElementById('modalFullManage').classList.contains('show')) renderFullAccountList();
         if(document.getElementById('modalFinanceAccounts').classList.contains('show')) showFinanceAccounts();
+        // 确保轮播指示点更新
+        const hasFinance = data.accounts.some(a => isFinanceAccount(a));
+        const totalItems = hasFinance ? 2 : 1;
+        updateCarouselDots(totalItems);
+        const container = document.getElementById('carouselContainer');
+        if (container) container.scrollLeft = 0;
+        updateCarouselActiveDot(0);
     }
 
+    // 页面加载完成后初始化轮播监听
     window.onload=function(){
         loadData();
         renderAll();
+        initCarouselScrollListener();
         let resizeTimer;
         window.addEventListener('resize', function(){
             clearTimeout(resizeTimer);
-            resizeTimer=setTimeout(()=>{ renderPlant(); renderGoalMini(); }, 200);
+            resizeTimer=setTimeout(()=>{ renderGoalMini(); }, 200);
         });
         console.log('💡 提示：可通过 openUploadBalanceModal() 上传余额');
-        if(document.getElementById('page-inspire').classList.contains('active')){
-            renderPlant();
-        }
+        // 初始指示点
+        setTimeout(() => {
+            const hasFinance = data.accounts.some(a => isFinanceAccount(a));
+            const totalItems = hasFinance ? 2 : 1;
+            updateCarouselDots(totalItems);
+            const container = document.getElementById('carouselContainer');
+            if (container) container.scrollLeft = 0;
+            updateCarouselActiveDot(0);
+        }, 100);
     };
 </script>
 </body>
