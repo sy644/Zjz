@@ -1337,7 +1337,7 @@
         return acc.balance+txnTotal;
     }
 
-    // ===== 修改点：辅助函数 - 格式化日期为 "xx月xx日" =====
+    // ===== 辅助函数 - 格式化日期为 "xx月xx日" =====
     function formatDateToMD(dateStr){
         if(!dateStr) return '--';
         const parts = dateStr.split('-');
@@ -1347,7 +1347,7 @@
         return month + '月' + day + '日';
     }
 
-    // ===== 修改点：获取账户最新快照日期 =====
+    // ===== 获取账户最新快照日期 =====
     function getAccountLatestSnapshotDate(accId){
         const snaps = data.snapshots.filter(s => s.accountId === accId);
         if(snaps.length === 0) return null;
@@ -1815,7 +1815,7 @@
         openModal('modalFullManage');
     }
 
-    // ===== 修改点：账户管理列表 - 显示最新修改时间 =====
+    // ===== 账户管理列表 - 显示最新修改时间 =====
     function renderFullAccountList(){
         const container=document.getElementById('fullAccountList');
         const total=data.accounts.reduce((sum,acc)=>sum+getAccountBalance(acc.id),0);
@@ -1827,7 +1827,6 @@
         data.accounts.forEach(acc=>{
             const bal=getAccountBalance(acc.id);
             const pct=total>0?(bal/total*100):0;
-            // 获取最新快照日期
             const latestDate = getAccountLatestSnapshotDate(acc.id);
             const dateStr = latestDate ? formatDateToMD(latestDate) : '--';
             html+=`
@@ -1924,7 +1923,7 @@
         showToast('账户已删除');
     }
 
-    // ===== 修改点：编辑余额 - 支持修改日期 =====
+    // ===== 编辑余额 - 支持修改日期 =====
     function openEditBalanceModal(accId){
         const acc=data.accounts.find(a=>a.id===accId);
         if(!acc) return;
@@ -1933,13 +1932,11 @@
         document.getElementById('editBalanceAccountName').textContent=acc.name;
         document.getElementById('editBalanceCurrent').value=formatMoney(current);
         document.getElementById('editBalanceNew').value=current.toFixed(2);
-        // 设置日期：优先使用最新快照日期，否则使用今天
         const latestDate = getAccountLatestSnapshotDate(accId);
         document.getElementById('editBalanceDate').value = latestDate || getTodayStr();
         openModal('modalEditBalance');
     }
 
-    // ===== 修改点：确认编辑余额 - 使用用户选择的日期 =====
     function confirmEditBalance(){
         const accId=editingAccountId;
         const acc=data.accounts.find(a=>a.id===accId);
@@ -1949,7 +1946,6 @@
         const current=getAccountBalance(accId);
         const diff=newVal-current;
         if(Math.abs(diff)<0.001){ showToast('余额无变化'); closeModal('modalEditBalance'); return; }
-        // 获取用户选择的日期
         const selectedDate = document.getElementById('editBalanceDate').value;
         if(!selectedDate){ showToast('请选择日期'); return; }
 
@@ -1962,7 +1958,7 @@
             type:txnType,
             category:isFinance?(diff>0?'理财收益':'理财亏损'):'余额调整',
             amount:Math.abs(diff),
-            date:selectedDate,  // 使用用户选择的日期
+            date:selectedDate,
             note:isFinance?'手动更新理财余额':'手动更新余额'
         };
         data.transactions.push(txn);
@@ -1991,7 +1987,6 @@
         const current=getAccountBalance(accId);
         document.getElementById('editBalanceCurrent').value=formatMoney(current);
         document.getElementById('editBalanceNew').value=current.toFixed(2);
-        // 更新日期字段为最新快照日期
         const latestDate = getAccountLatestSnapshotDate(accId);
         document.getElementById('editBalanceDate').value = latestDate || getTodayStr();
         if(document.getElementById('modalFullManage').classList.contains('show')) renderFullAccountList();
@@ -2586,7 +2581,7 @@
         if(a&&!a.unlocked){a.unlocked=true; showToast('🏆 解锁成就: '+a.name);}
     }
 
-    // ==================== 导入导出 ====================
+    // ==================== 导入导出（已修复理财识别） ====================
     function openSyncModal(){openModal('modalSync');}
     function exportData(){
         const json=JSON.stringify(data,null,2);
@@ -2602,6 +2597,7 @@
         showToast('账本导出成功');
         closeModal('modalSync');
     }
+    // ===== 修复：导入时自动将理财相关分类归为“理财” =====
     function importData(event){
         const file=event.target.files[0];
         if(!file) return;
@@ -2615,6 +2611,16 @@
                 }
                 if(!confirm('导入将覆盖当前所有数据，确定继续？')) return;
                 data=imported;
+                // 标准化账户分类：识别理财相关
+                data.accounts.forEach(acc => {
+                    if (acc.category) {
+                        const cat = acc.category.trim();
+                        if (/理财|投资|基金|股票|收益/.test(cat)) {
+                            acc.category = '理财';
+                        }
+                    }
+                });
+                // 补全ID等
                 data.transactions.forEach(t=>{if(!t.id) t.id='txn_'+Date.now()+Math.random().toString(36).slice(2,6);});
                 data.accounts.forEach(a=>{if(!a.id) a.id='acc_'+Date.now()+Math.random().toString(36).slice(2,6); if(!a.category) a.category='日常';});
                 data.goals.forEach(g=>{if(!g.id) g.id='goal_'+Date.now()+Math.random().toString(36).slice(2,6);});
@@ -2656,7 +2662,7 @@
             clearTimeout(resizeTimer);
             resizeTimer=setTimeout(()=>{ renderPlant(); renderGoalMini(); }, 200);
         });
-        console.log('💡 提示可通过 openUploadBalanceModal() 上传');
+        console.log('💡 提示：可通过 openUploadBalanceModal() 上传余额');
         if(document.getElementById('page-inspire').classList.contains('active')){
             renderPlant();
         }
