@@ -281,7 +281,6 @@
             box-shadow:var(--shadow);
             background:var(--card-bg);
             border:1px solid var(--border);
-            /* 移除 touch-action:pan-y; 以允许水平滑动 */
         }
         .carousel-container{
             display:flex;
@@ -307,7 +306,7 @@
             border:none;
             transition:0.2s;
             cursor:pointer;
-            min-height:180px; /* 保证高度一致 */
+            min-height:180px;
         }
         .carousel-item:active{transform:scale(0.99);}
         .carousel-item .card-label{
@@ -363,7 +362,6 @@
             background:var(--card-blue-bg);
             border-color:rgba(74,124,247,0.12);
         }
-        /* 指示点 */
         .carousel-dots{
             display:flex;
             justify-content:center;
@@ -396,130 +394,29 @@
             display:none;
         }
 
-        /* 以下为原有其他样式，未改动 */
-        .journal-form .form-group{
-            margin-bottom:12px;
-        }
-        .journal-form .form-group label{
-            display:block;
-            font-size:12px;
-            font-weight:500;
-            color:var(--text-secondary);
-            margin-bottom:2px;
-        }
+        /* 表单与记账页 */
+        .journal-form .form-group{margin-bottom:12px;}
+        .journal-form .form-group label{display:block;font-size:12px;font-weight:500;color:var(--text-secondary);margin-bottom:2px;}
         .journal-form .form-group select,
-        .journal-form .form-group input{
-            width:100%;
-            padding:10px 14px;
-            border:1.5px solid var(--border);
-            border-radius:var(--radius-sm);
-            font-size:15px;
-            background:#fff;
-            color:var(--text-primary);
-            transition:0.2s;
-            appearance:none;
-            -webkit-appearance:none;
-            font-family:inherit;
-        }
+        .journal-form .form-group input{width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:15px;background:#fff;color:var(--text-primary);transition:0.2s;appearance:none;-webkit-appearance:none;font-family:inherit;}
         .journal-form .form-group select:focus,
-        .journal-form .form-group input:focus{
-            outline:none;
-            border-color:var(--blue);
-            box-shadow:0 0 0 3px rgba(74,124,247,0.08);
-        }
-        .journal-form .form-group.amount-field label{
-            font-size:14px;
-            font-weight:600;
-            color:var(--text-primary);
-        }
-        .journal-form .form-group.amount-field input{
-            font-size:22px;
-            font-weight:700;
-            padding:14px 16px;
-            border-color:var(--blue);
-            background:#fafcff;
-            text-align:center;
-            letter-spacing:0.5px;
-        }
-        .journal-form .form-group.amount-field input:focus{
-            border-color:var(--blue);
-            box-shadow:0 0 0 4px rgba(74,124,247,0.12);
-        }
-        .journal-form .radio-group{
-            display:flex;
-            flex-wrap:wrap;
-            gap:6px;
-        }
-        .journal-form .radio-group label{
-            display:flex;
-            align-items:center;
-            gap:5px;
-            font-weight:400;
-            color:var(--text-primary);
-            cursor:pointer;
-            padding:8px 14px;
-            border-radius:30px;
-            border:1.5px solid var(--border);
-            transition:0.2s;
-            font-size:13px;
-            background:#fff;
-        }
+        .journal-form .form-group input:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(74,124,247,0.08);}
+        .journal-form .form-group.amount-field label{font-size:14px;font-weight:600;color:var(--text-primary);}
+        .journal-form .form-group.amount-field input{font-size:22px;font-weight:700;padding:14px 16px;border-color:var(--blue);background:#fafcff;text-align:center;letter-spacing:0.5px;}
+        .journal-form .form-group.amount-field input:focus{border-color:var(--blue);box-shadow:0 0 0 4px rgba(74,124,247,0.12);}
+        .journal-form .radio-group{display:flex;flex-wrap:wrap;gap:6px;}
+        .journal-form .radio-group label{display:flex;align-items:center;gap:5px;font-weight:400;color:var(--text-primary);cursor:pointer;padding:8px 14px;border-radius:30px;border:1.5px solid var(--border);transition:0.2s;font-size:13px;background:#fff;}
         .journal-form .radio-group input[type="radio"]{display:none;}
-        .journal-form .radio-group label:has(input[type="radio"]:checked){
-            border-color:var(--blue);
-            background:rgba(74,124,247,0.06);
-        }
-        .journal-form .btn-primary{
-            width:100%;
-            padding:14px;
-            background:var(--blue);
-            color:#fff;
-            border:none;
-            border-radius:var(--radius-sm);
-            font-size:16px;
-            font-weight:600;
-            cursor:pointer;
-            transition:0.2s;
-            box-shadow:0 4px 12px rgba(74,124,247,0.2);
-        }
+        .journal-form .radio-group label:has(input[type="radio"]:checked){border-color:var(--blue);background:rgba(74,124,247,0.06);}
+        .journal-form .btn-primary{width:100%;padding:14px;background:var(--blue);color:#fff;border:none;border-radius:var(--radius-sm);font-size:16px;font-weight:600;cursor:pointer;transition:0.2s;box-shadow:0 4px 12px rgba(74,124,247,0.2);}
         .journal-form .btn-primary:active{transform:scale(0.97);}
         .journal-form .btn-primary:disabled{opacity:0.5;pointer-events:none;}
 
         .txn-list{display:flex;flex-direction:column;gap:6px;max-height:420px;overflow-y:auto;}
-        .recent-item{
-            display:flex;
-            align-items:center;
-            justify-content:space-between;
-            padding:10px 14px;
-            border-radius:var(--radius-sm);
-            background:var(--bg);
-            font-size:14px;
-            color:var(--text-primary);
-        }
-        .recent-item .left{
-            display:flex;
-            align-items:center;
-            gap:10px;
-            flex:1;
-            min-width:0;
-        }
-        .recent-item .left .category{
-            background:#fff;
-            padding:2px 12px;
-            border-radius:20px;
-            font-size:11px;
-            color:var(--text-muted);
-            white-space:nowrap;
-            border:1px solid var(--border);
-        }
-        .recent-item .left .note{
-            color:var(--text-muted);
-            font-size:12px;
-            white-space:nowrap;
-            overflow:hidden;
-            text-overflow:ellipsis;
-            max-width:80px;
-        }
+        .recent-item{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-radius:var(--radius-sm);background:var(--bg);font-size:14px;color:var(--text-primary);}
+        .recent-item .left{display:flex;align-items:center;gap:10px;flex:1;min-width:0;}
+        .recent-item .left .category{background:#fff;padding:2px 12px;border-radius:20px;font-size:11px;color:var(--text-muted);white-space:nowrap;border:1px solid var(--border);}
+        .recent-item .left .note{color:var(--text-muted);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:80px;}
         .recent-item .amount{font-weight:600;font-size:15px;}
         .recent-item .amount.expense{color:var(--red);}
         .recent-item .amount.income{color:var(--green);}
@@ -527,387 +424,92 @@
         .recent-item .amount.asset_gain{color:#22bb99;}
         .recent-item .amount.asset_loss{color:#ee7722;}
         .recent-item .amount.adjustment{color:var(--gold);}
-        .recent-item .date{
-            font-size:11px;
-            color:var(--text-muted);
-            margin-right:8px;
-        }
-        .recent-item .del-txn{
-            background:none;
-            border:none;
-            color:var(--text-muted);
-            font-size:16px;
-            cursor:pointer;
-            padding:4px 8px;
-            border-radius:6px;
-            transition:0.2s;
-        }
+        .recent-item .date{font-size:11px;color:var(--text-muted);margin-right:8px;}
+        .recent-item .del-txn{background:none;border:none;color:var(--text-muted);font-size:16px;cursor:pointer;padding:4px 8px;border-radius:6px;transition:0.2s;}
         .recent-item .del-txn:active{background:rgba(0,0,0,0.04);color:var(--text-primary);}
 
-        .filter-select{
-            width:100%;
-            padding:10px 14px;
-            border:1.5px solid var(--border);
-            border-radius:var(--radius-sm);
-            font-size:15px;
-            background:#fff;
-            color:var(--text-primary);
-            appearance:none;
-            -webkit-appearance:none;
-            font-family:inherit;
-            margin-bottom:12px;
-        }
+        .filter-select{width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:15px;background:#fff;color:var(--text-primary);appearance:none;-webkit-appearance:none;font-family:inherit;margin-bottom:12px;}
         .filter-select:focus{outline:none;border-color:var(--blue);}
 
-        .modal-box .form-group{
-            margin-bottom:10px;
-        }
-        .modal-box .form-group label{
-            font-size:12px;
-            font-weight:500;
-            color:var(--text-secondary);
-            margin-bottom:2px;
-        }
+        /* 模态框 */
+        .modal-box .form-group{margin-bottom:10px;}
+        .modal-box .form-group label{font-size:12px;font-weight:500;color:var(--text-secondary);margin-bottom:2px;}
         .modal-box .form-group select,
-        .modal-box .form-group input{
-            padding:10px 14px;
-            font-size:15px;
-        }
-        .modal-box .preset-account-wrap{
-            gap:6px;
-            margin-bottom:10px;
-        }
-        .modal-box .preset-acc-item{
-            padding:8px;
-            font-size:12px;
-        }
-        .modal-box .text-muted.mb-8{
-            margin-bottom:6px;
-            font-size:12px;
-        }
-        .modal-box .modal-actions{
-            margin-top:12px;
-        }
-        .modal-box .modal-actions button{
-            padding:10px;
-            font-size:14px;
-        }
-        .modal-box .form-group.amount-field label{
-            font-weight:600;
-            color:var(--text-primary);
-        }
-        .modal-box .form-group.amount-field input{
-            font-size:18px;
-            font-weight:700;
-            border-color:var(--blue);
-            background:#fafcff;
-            text-align:center;
-        }
+        .modal-box .form-group input{padding:10px 14px;font-size:15px;}
+        .modal-box .preset-account-wrap{gap:6px;margin-bottom:10px;}
+        .modal-box .preset-acc-item{padding:8px;font-size:12px;}
+        .modal-box .text-muted.mb-8{margin-bottom:6px;font-size:12px;}
+        .modal-box .modal-actions{margin-top:12px;}
+        .modal-box .modal-actions button{padding:10px;font-size:14px;}
+        .modal-box .form-group.amount-field label{font-weight:600;color:var(--text-primary);}
+        .modal-box .form-group.amount-field input{font-size:18px;font-weight:700;border-color:var(--blue);background:#fafcff;text-align:center;}
 
-        .modal-overlay{
-            display:none;
-            position:fixed;
-            inset:0;
-            background:rgba(0,0,0,0.35);
-            z-index:200;
-            align-items:center;
-            justify-content:center;
-            padding:24px;
-            backdrop-filter:blur(4px);
-            -webkit-backdrop-filter:blur(4px);
-        }
+        .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.35);z-index:200;align-items:center;justify-content:center;padding:24px;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);}
         .modal-overlay.show{display:flex;}
-        .modal-box{
-            background:#fff;
-            border-radius:28px;
-            padding:20px 18px 18px 18px;
-            max-width:400px;
-            width:100%;
-            box-shadow:0 20px 60px rgba(0,0,0,0.12);
-            animation:slideUp 0.25s ease;
-            max-height:90vh;
-            overflow-y:auto;
-        }
+        .modal-box{background:#fff;border-radius:28px;padding:20px 18px 18px 18px;max-width:400px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,0.12);animation:slideUp 0.25s ease;max-height:90vh;overflow-y:auto;}
         @keyframes slideUp{from{transform:translateY(30px);opacity:0;}to{transform:translateY(0);opacity:1;}}
-        .modal-box h3{
-            font-size:20px;
-            font-weight:700;
-            margin-bottom:14px;
-            display:flex;
-            justify-content:space-between;
-            align-items:center;
-            color:var(--text-primary);
-        }
-        .modal-box .modal-actions{
-            display:flex;
-            gap:10px;
-            margin-top:12px;
-            flex-wrap:wrap;
-        }
-        .modal-box .modal-actions button{
-            flex:1;
-            padding:10px;
-            border:none;
-            border-radius:14px;
-            font-size:15px;
-            font-weight:500;
-            cursor:pointer;
-            transition:0.2s;
-            min-width:80px;
-            color:var(--text-primary);
-            background:var(--bg);
-        }
+        .modal-box h3{font-size:20px;font-weight:700;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;color:var(--text-primary);}
+        .modal-box .modal-actions{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap;}
+        .modal-box .modal-actions button{flex:1;padding:10px;border:none;border-radius:14px;font-size:15px;font-weight:500;cursor:pointer;transition:0.2s;min-width:80px;color:var(--text-primary);background:var(--bg);}
         .modal-box .modal-actions .btn-cancel{background:var(--bg);color:var(--text-muted);}
         .modal-box .modal-actions .btn-confirm{background:var(--blue);color:#fff;}
         .modal-box .modal-actions .btn-undo{background:var(--gold);color:#fff;}
-        .modal-box .form-group{margin-bottom:10px;}
-        .modal-box .form-group label{
-            display:block;
-            font-size:12px;
-            font-weight:500;
-            color:var(--text-secondary);
-            margin-bottom:2px;
-        }
+        .modal-box .form-group label{display:block;font-size:12px;font-weight:500;color:var(--text-secondary);margin-bottom:2px;}
         .modal-box .form-group select,
-        .modal-box .form-group input{
-            width:100%;
-            padding:10px 14px;
-            border:1.5px solid var(--border);
-            border-radius:14px;
-            font-size:15px;
-            background:#fff;
-            color:var(--text-primary);
-            transition:0.2s;
-            appearance:none;
-            -webkit-appearance:none;
-            font-family:inherit;
-        }
+        .modal-box .form-group input{width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:14px;font-size:15px;background:#fff;color:var(--text-primary);transition:0.2s;appearance:none;-webkit-appearance:none;font-family:inherit;}
         .modal-box .form-group select:focus,
-        .modal-box .form-group input:focus{
-            outline:none;
-            border-color:var(--blue);
-            box-shadow:0 0 0 3px rgba(74,124,247,0.06);
-        }
+        .modal-box .form-group input:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(74,124,247,0.06);}
         .modal-box .form-group select option{background:#fff;color:var(--text-primary);}
-        .modal-box .radio-group{
-            display:flex;
-            flex-wrap:wrap;
-            gap:6px;
-        }
-        .modal-box .radio-group label{
-            display:flex;
-            align-items:center;
-            gap:5px;
-            font-weight:400;
-            color:var(--text-primary);
-            cursor:pointer;
-            padding:8px 14px;
-            border-radius:30px;
-            border:1.5px solid var(--border);
-            transition:0.2s;
-            font-size:13px;
-            background:#fff;
-        }
+        .modal-box .radio-group{display:flex;flex-wrap:wrap;gap:6px;}
+        .modal-box .radio-group label{display:flex;align-items:center;gap:5px;font-weight:400;color:var(--text-primary);cursor:pointer;padding:8px 14px;border-radius:30px;border:1.5px solid var(--border);transition:0.2s;font-size:13px;background:#fff;}
         .modal-box .radio-group input[type="radio"]{display:none;}
-        .modal-box .radio-group label:has(input[type="radio"]:checked){
-            border-color:var(--blue);
-            background:rgba(74,124,247,0.06);
-        }
-        .modal-box .btn-primary{
-            width:100%;
-            padding:14px;
-            background:var(--blue);
-            color:#fff;
-            border:none;
-            border-radius:14px;
-            font-size:16px;
-            font-weight:600;
-            cursor:pointer;
-            transition:0.2s;
-        }
+        .modal-box .radio-group label:has(input[type="radio"]:checked){border-color:var(--blue);background:rgba(74,124,247,0.06);}
+        .modal-box .btn-primary{width:100%;padding:14px;background:var(--blue);color:#fff;border:none;border-radius:14px;font-size:16px;font-weight:600;cursor:pointer;transition:0.2s;}
         .modal-box .btn-primary:active{transform:scale(0.97);}
         .modal-box .text-muted{color:var(--text-muted);font-size:12px;}
-        .modal-box .preset-account-wrap{
-            display:grid;
-            grid-template-columns:1fr 1fr;
-            gap:6px;
-            margin-bottom:10px;
-        }
-        .preset-acc-item{
-            padding:8px;
-            border:1.5px solid var(--border);
-            border-radius:14px;
-            text-align:center;
-            cursor:pointer;
-            font-size:12px;
-            color:var(--text-primary);
-            background:#fff;
-            transition:0.2s;
-        }
+        .modal-box .preset-account-wrap{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px;}
+        .preset-acc-item{padding:8px;border:1.5px solid var(--border);border-radius:14px;text-align:center;cursor:pointer;font-size:12px;color:var(--text-primary);background:#fff;transition:0.2s;}
         .preset-acc-item:active{border-color:var(--blue);background:rgba(74,124,247,0.04);}
-        .account-detail-item{
-            display:flex;
-            align-items:center;
-            justify-content:space-between;
-            padding:12px 0;
-            border-bottom:1px solid var(--border);
-            cursor:pointer;
-            color:var(--text-primary);
-        }
+        .account-detail-item{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);cursor:pointer;color:var(--text-primary);}
         .account-detail-item:last-child{border-bottom:none;}
-        .account-detail-item .left-info{
-            display:flex;
-            align-items:center;
-            gap:12px;
-            flex:1;
-            min-width:0;
-        }
+        .account-detail-item .left-info{display:flex;align-items:center;gap:12px;flex:1;min-width:0;}
         .account-detail-item .left-info .icon{font-size:24px;flex-shrink:0;}
-        .account-detail-item .left-info .name-wrap{
-            display:flex;
-            flex-direction:column;
-            min-width:0;
-        }
+        .account-detail-item .left-info .name-wrap{display:flex;flex-direction:column;min-width:0;}
         .account-detail-item .left-info .name{font-weight:500;font-size:15px;white-space:nowrap;}
-        .account-detail-item .left-info .update-time{
-            font-size:11px;
-            color:var(--text-muted);
-            margin-top:1px;
-            display:flex;
-            align-items:center;
-            gap:3px;
-        }
-        .account-detail-item .left-info .cat-tag{
-            font-size:11px;
-            background:var(--bg);
-            padding:2px 12px;
-            border-radius:20px;
-            color:var(--text-muted);
-            flex-shrink:0;
-        }
-        .account-detail-item .right-info{
-            text-align:right;
-            display:flex;
-            align-items:center;
-            gap:8px;
-            flex-shrink:0;
-        }
+        .account-detail-item .left-info .update-time{font-size:11px;color:var(--text-muted);margin-top:1px;display:flex;align-items:center;gap:3px;}
+        .account-detail-item .left-info .cat-tag{font-size:11px;background:var(--bg);padding:2px 12px;border-radius:20px;color:var(--text-muted);flex-shrink:0;}
+        .account-detail-item .right-info{text-align:right;display:flex;align-items:center;gap:8px;flex-shrink:0;}
         .account-detail-item .right-info .bal{font-weight:600;font-size:16px;color:var(--text-primary);}
         .account-detail-item .right-info .pct{font-size:11px;color:var(--text-muted);}
-        .account-detail-total{
-            display:flex;
-            justify-content:space-between;
-            padding:14px 0 4px 0;
-            border-top:1px solid var(--border);
-            margin-top:6px;
-            font-weight:700;
-            font-size:17px;
-            color:var(--text-primary);
-        }
+        .account-detail-total{display:flex;justify-content:space-between;padding:14px 0 4px 0;border-top:1px solid var(--border);margin-top:6px;font-weight:700;font-size:17px;color:var(--text-primary);}
         .account-detail-empty{padding:20px 0;text-align:center;color:var(--text-muted);}
-        .txn-detail-item{
-            display:flex;
-            justify-content:space-between;
-            padding:10px 0;
-            border-bottom:1px solid var(--border);
-            font-size:14px;
-            color:var(--text-primary);
-        }
+        .txn-detail-item{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);font-size:14px;color:var(--text-primary);}
         .txn-detail-item .cat{color:var(--text-muted);}
         .txn-detail-item .amt{font-weight:600;}
         .txn-detail-item .amt.income{color:var(--green);}
         .txn-detail-item .amt.expense{color:var(--red);}
         .txn-detail-item .note{color:var(--text-muted);font-size:12px;}
-        .balance-input-group{
-            display:flex;
-            align-items:center;
-            gap:12px;
-            margin-bottom:10px;
-            color:var(--text-primary);
-        }
+        .balance-input-group{display:flex;align-items:center;gap:12px;margin-bottom:10px;color:var(--text-primary);}
         .balance-input-group .acc-label{width:80px;font-weight:500;flex-shrink:0;}
-        .balance-input-group input{
-            flex:1;
-            padding:12px 14px;
-            border:1.5px solid var(--border);
-            border-radius:14px;
-            font-size:15px;
-            background:#fff;
-            color:var(--text-primary);
-        }
+        .balance-input-group input{flex:1;padding:12px 14px;border:1.5px solid var(--border);border-radius:14px;font-size:15px;background:#fff;color:var(--text-primary);}
         .balance-input-group input:focus{border-color:var(--blue);outline:none;}
-        .toast{
-            position:fixed;
-            top:12%;
-            left:50%;
-            transform:translateX(-50%) translateY(-20px);
-            background:rgba(0,0,0,0.78);
-            color:#fff;
-            padding:12px 24px;
-            border-radius:30px;
-            font-size:14px;
-            font-weight:500;
-            box-shadow:0 8px 30px rgba(0,0,0,0.12);
-            z-index:300;
-            opacity:0;
-            transition:opacity 0.3s ease,transform 0.3s ease;
-            pointer-events:none;
-            max-width:80%;
-            backdrop-filter:blur(8px);
-            -webkit-backdrop-filter:blur(8px);
-        }
+        .toast{position:fixed;top:12%;left:50%;transform:translateX(-50%) translateY(-20px);background:rgba(0,0,0,0.78);color:#fff;padding:12px 24px;border-radius:30px;font-size:14px;font-weight:500;box-shadow:0 8px 30px rgba(0,0,0,0.12);z-index:300;opacity:0;transition:opacity 0.3s ease,transform 0.3s ease;pointer-events:none;max-width:80%;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);}
         .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
         .hidden{display:none !important;}
         .text-center{text-align:center;}
         .mb-8{margin-bottom:8px;}
         .goal-circle-canvas{width:100%;height:100%;display:block;}
         .card-hidden{display:none !important;}
-        .goal-tag{
-            background:var(--bg);
-            border-radius:20px;
-            padding:2px 12px;
-            font-size:11px;
-            color:var(--text-muted);
-        }
+        .goal-tag{background:var(--bg);border-radius:20px;padding:2px 12px;font-size:11px;color:var(--text-muted);}
         .goal-tag strong{color:var(--text-primary);font-weight:600;}
-        .achievement-grid{
-            display:grid;
-            grid-template-columns:repeat(3,1fr);
-            gap:10px;
-            margin-top:4px;
-        }
-        .achievement-item{
-            text-align:center;
-            padding:12px 6px;
-            background:rgba(0,0,0,0.02);
-            border-radius:12px;
-            transition:0.2s;
-            border:1px solid transparent;
-        }
-        .achievement-item.unlocked{
-            background:rgba(74,124,247,0.06);
-            border-color:rgba(74,124,247,0.12);
-        }
+        .achievement-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:4px;}
+        .achievement-item{text-align:center;padding:12px 6px;background:rgba(0,0,0,0.02);border-radius:12px;transition:0.2s;border:1px solid transparent;}
+        .achievement-item.unlocked{background:rgba(74,124,247,0.06);border-color:rgba(74,124,247,0.12);}
         .achievement-item .ach-icon{font-size:30px;display:block;margin-bottom:4px;}
         .achievement-item .ach-name{font-size:12px;font-weight:500;color:var(--text-muted);}
         .achievement-item.unlocked .ach-name{color:var(--text-primary);}
-        .no-account-tip{
-            text-align:center;
-            padding:20px 0;
-            color:var(--text-muted);
-        }
-        .no-account-tip button{
-            background:var(--blue);
-            color:#fff;
-            border:none;
-            border-radius:30px;
-            padding:10px 24px;
-            font-size:14px;
-            font-weight:600;
-            cursor:pointer;
-            margin-top:8px;
-            box-shadow:0 4px 12px rgba(74,124,247,0.2);
-        }
+        .no-account-tip{text-align:center;padding:20px 0;color:var(--text-muted);}
+        .no-account-tip button{background:var(--blue);color:#fff;border:none;border-radius:30px;padding:10px 24px;font-size:14px;font-weight:600;cursor:pointer;margin-top:8px;box-shadow:0 4px 12px rgba(74,124,247,0.2);}
 
         @media (max-width:420px){
             body{padding:0 12px 80px 12px;}
@@ -936,37 +538,33 @@
 
 <!-- ===== 首页 ===== -->
 <div id="page-home" class="page active">
-    <!-- 左右滑动轮播容器 -->
     <div class="carousel-wrapper" id="carouselWrapper">
         <div class="carousel-container" id="carouselContainer">
-            <!-- 总资产卡片 -->
             <div class="carousel-item" id="totalAssetItem" onclick="openFullManageModal()">
                 <div class="card-label">💰 总资产</div>
                 <div class="card-number"><span class="currency">¥</span><span id="totalAsset">0.00</span></div>
                 <div class="card-footer">
-                    <span class="tag">📅 <span class="num" id="assetUpdateDateTag">--</span></span>
+                    <span class="tag">📅 更新于 <span class="num" id="assetUpdateDateTag">--</span></span>
                     <span class="tag">本周收入 <span class="num green" id="weekIncomeTag">+¥0</span></span>
                     <span class="tag">本周支出 <span class="num red" id="weekExpenseTag">-¥0</span></span>
                     <span class="tag">结余 <span class="num" id="weekBalanceTag">¥0</span></span>
                 </div>
             </div>
-            <!-- 理财资产卡片 -->
-            <div class="carousel-item card-blue" id="financeAssetItem" onclick="showFinanceAccounts()">
+            <div class="carousel-item card-blue" id="financeAssetItem" onclick="showFinanceChartModal()">
                 <div class="card-label">📈 理财资产</div>
                 <div class="card-number"><span class="currency">¥</span><span id="financeTotalAmount">0.00</span></div>
                 <div class="card-footer">
                     <span class="tag">📅 <span class="num" id="financeUpdateDateTag">--</span></span>
+                    <span class="tag">本周 <span class="num" id="financeWeekChangeTag">¥0</span></span>
                     <span class="tag">累计收益 <span class="num" id="financeCumulativeTag">¥0</span></span>
                     <span class="tag">收益率 <span class="num" id="financeRateTag">--</span></span>
                 </div>
                 <div class="sub-note">基于余额快照与收益交易统计</div>
             </div>
         </div>
-        <!-- 指示点 -->
         <div class="carousel-dots" id="carouselDots"></div>
     </div>
 
-    <!-- 储蓄目标卡片 -->
     <div class="card-secondary" id="goalCard" onclick="switchTab('inspire')">
         <div class="sec-header">
             <span class="sec-title">🎯 储蓄目标</span>
@@ -989,18 +587,18 @@
             <span class="sec-title">📊 近四周对比</span>
         </div>
         <div class="week-mini" id="weekMiniContainer"></div>
+        <div class="week-summary" id="weekSummary" style="margin-top:14px;padding:12px 14px;background:linear-gradient(135deg,#f8faff,#eef2fa);border-radius:12px;font-size:12px;line-height:1.75;color:var(--text-secondary);border:1px solid rgba(74,124,247,0.08);display:none;"></div>
     </div>
 </div>
 
 <!-- ===== 记账页 ===== -->
 <div id="page-journal" class="page">
     <div class="card-secondary" style="padding:18px 18px;">
-        <div class="sec-header" style="margin-bottom:14px;">
-            <span class="sec-title" style="font-size:17px;">✏️ 记一笔</span>
+        <div class="sec-header" style="margin-bottom:14px; cursor:pointer;" onclick="toggleJournalForm()">
+            <span class="sec-title" style="font-size:17px;">✏️ 记一笔 <span style="font-size:12px;color:var(--text-muted);font-weight:400;" id="journalFormToggleText">（点击展开）</span></span>
+            <span id="journalFormToggleIcon" style="font-size:14px;color:var(--text-muted);">▼</span>
         </div>
-        <div id="journalFormContainer">
-            <!-- 由JS动态渲染：表单或提示 -->
-        </div>
+        <div id="journalFormContainer" style="display:none;"></div>
     </div>
 
     <div class="card-secondary" style="padding:18px 18px;">
@@ -1020,7 +618,6 @@
 
 <!-- ===== 激励页 ===== -->
 <div id="page-inspire" class="page">
-    <!-- 树苗卡片已移除，保留目标和成就 -->
     <div class="card-secondary" style="padding:18px 18px;">
         <div class="sec-header"><span>🎯 储蓄目标</span><button class="sec-action" onclick="showAddGoalModal()" style="background:none;border:none;color:var(--blue);font-size:14px;cursor:pointer;">+ 添加</button></div>
         <div id="goalList"></div>
@@ -1035,20 +632,43 @@
 <nav class="tab-nav">
     <button class="tab-item active" data-tab="home" onclick="switchTab('home')"><span class="tab-icon">🏠</span> 首页</button>
     <button class="tab-item" data-tab="journal" onclick="switchTab('journal')"><span class="tab-icon">📝</span> 记账</button>
-    <button class="tab-item" data-tab="inspire" onclick="switchTab('inspire')"><span class="tab-icon">🌟</span> 激励</button>
+    <button class="tab-item" data-tab="inspire" onclick="switchTab('inspire')"><span class="tab-icon">🎯</span> 小目标</button>
 </nav>
 
 <!-- ===== 模态框 ===== -->
 <!-- 账户管理 -->
 <div class="modal-overlay" id="modalFullManage">
     <div class="modal-box">
-        <h3><span>💳 账户管理</span><button class="sec-action" onclick="closeModal('modalFullManage')" style="background:none;border:none;color:var(--text-muted);font-size:18px;cursor:pointer;">✕</button></h3>
+        <h3 style="display:flex;justify-content:space-between;align-items:center;">
+            <span>💳 账户管理</span>
+            <div>
+                <button onclick="undoLastAdjustmentGlobal()" style="background:var(--bg);border:none;border-radius:8px;padding:4px 10px;font-size:12px;cursor:pointer;color:var(--text-muted);margin-right:8px;transition:0.2s;" title="撤销最近一笔全局调整">↩️ 撤销</button>
+                <button class="sec-action" onclick="closeModal('modalFullManage')" style="background:none;border:none;color:var(--text-muted);font-size:18px;cursor:pointer;">✕</button>
+            </div>
+        </h3>
         <div id="fullAccountList"></div>
         <div style="margin-top:12px;text-align:right;">
             <button class="sec-action" onclick="closeModal('modalFullManage');showAddAccountModal();" style="background:none;border:none;color:var(--blue);font-size:15px;font-weight:600;cursor:pointer;">+ 添加账户</button>
         </div>
         <div class="modal-actions">
             <button class="btn-cancel" onclick="closeModal('modalFullManage')">关闭</button>
+        </div>
+    </div>
+</div>
+
+<!-- 理财盈亏图表 -->
+<div class="modal-overlay" id="modalFinanceChart">
+    <div class="modal-box">
+        <h3><span>📈 理财盈亏走势</span><button class="sec-action" onclick="closeModal('modalFinanceChart')" style="background:none;border:none;color:var(--text-muted);font-size:18px;cursor:pointer;">✕</button></h3>
+        <div style="display:flex;gap:8px;margin-bottom:14px;">
+            <button id="btnChartWeek" class="btn-confirm" style="flex:1;padding:8px;border-radius:10px;border:none;font-size:13px;font-weight:600;cursor:pointer;" onclick="renderFinanceChart('week')">近4周</button>
+            <button id="btnChartMonth" style="flex:1;padding:8px;border-radius:10px;border:none;font-size:13px;font-weight:600;cursor:pointer;background:var(--bg);color:var(--text-muted);" onclick="renderFinanceChart('month')">近6月</button>
+        </div>
+        <div id="financeChartContainer" style="height:220px;display:flex;align-items:flex-end;justify-content:space-around;padding:10px 0;position:relative;"></div>
+        <div style="text-align:center;font-size:11px;color:var(--text-muted);margin-top:4px;">柱状图高度代表盈亏绝对值，绿=盈利，红=亏损</div>
+        <div class="modal-actions" style="margin-top:12px;">
+            <button class="btn-confirm" onclick="closeModal('modalFinanceChart');showFinanceAccounts();">查看账户明细</button>
+            <button class="btn-cancel" onclick="closeModal('modalFinanceChart')">关闭</button>
         </div>
     </div>
 </div>
@@ -1073,7 +693,6 @@
         <div class="form-group amount-field"><label>新余额 (¥)</label><input type="number" id="editBalanceNew" step="0.01" min="0" placeholder="输入新余额"></div>
         <div class="form-group"><label>📅 余额日期</label><input type="date" id="editBalanceDate" required></div>
         <div class="modal-actions">
-            <button class="btn-undo" onclick="undoLastAdjustment()" style="flex:0.8;">↩️ 撤销</button>
             <button class="btn-cancel" onclick="closeModal('modalEditBalance')">取消</button>
             <button class="btn-confirm" onclick="confirmEditBalance()">确认</button>
         </div>
@@ -1082,17 +701,19 @@
 
 <!-- 本周明细 -->
 <div class="modal-overlay" id="modalWeekDetail">
-    <div class="modal-box">
-        <h3 id="weekDetailTitle">本周收入明细</h3>
-        <div id="weekDetailListModal"></div>
-        <div class="modal-actions"><button class="btn-cancel" onclick="closeModal('modalWeekDetail')">关闭</button></div>
+    <div class="modal-box" style="max-height:80vh; display:flex; flex-direction:column;">
+        <h3 style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border); padding-bottom:12px; margin-bottom:0;">
+            <span id="weekDetailTitle">本周收入明细</span>
+            <button onclick="closeModal('modalWeekDetail')" style="background:none; border:none; color:var(--text-muted); font-size:20px; cursor:pointer; padding:4px 8px;">✕</button>
+        </h3>
+        <div id="weekDetailListModal" style="overflow-y:auto; flex:1; padding-top:12px;"></div>
     </div>
 </div>
 
-<!-- 添加账户 -->
+<!-- 添加/编辑账户 -->
 <div class="modal-overlay" id="modalAccount">
     <div class="modal-box">
-        <h3>➕ 添加账户</h3>
+        <h3 id="accountModalTitle">➕ 添加账户</h3>
         <div class="text-muted mb-8">快速选择预设账户，也可以自定义填写</div>
         <div class="preset-account-wrap" id="presetAccountWrap"></div>
         <div class="form-group">
@@ -1108,17 +729,17 @@
             <select id="accCategory"><option value="日常">日常</option><option value="理财">理财</option><option value="投资">投资</option><option value="负债">负债</option><option value="其他">其他</option></select>
             <input type="text" id="accCategoryCustom" placeholder="或自定义分类" style="margin-top:4px;padding:8px 12px;font-size:14px;">
         </div>
-        <div class="form-group amount-field">
+        <div class="form-group amount-field" id="initialBalanceGroup">
             <label>初始余额 (¥)</label>
             <input type="number" id="accBalance" step="0.01" min="0" value="0.00">
         </div>
-        <div class="form-group">
+        <div class="form-group" id="initialBalanceDateGroup">
             <label>余额日期</label>
             <input type="date" id="accBalanceDate" required>
         </div>
         <div class="modal-actions">
             <button class="btn-cancel" onclick="closeModal('modalAccount')">取消</button>
-            <button class="btn-confirm" onclick="addAccount()">确认添加</button>
+            <button class="btn-confirm" onclick="addAccount()">确认</button>
         </div>
     </div>
 </div>
@@ -1276,14 +897,23 @@
     function formatMoney(v){return '¥'+v.toFixed(2);}
     function formatPercent(v){return (v*100).toFixed(2)+'%';}
     function parseDate(d){const p=d.split('-');return new Date(parseInt(p[0]),parseInt(p[1])-1,parseInt(p[2]));}
-    function getTodayStr(){return new Date().toISOString().slice(0,10);}
+    function getTodayStr(){
+        const d=new Date();
+        const y=d.getFullYear();
+        const m=String(d.getMonth()+1).padStart(2,'0');
+        const day=String(d.getDate()).padStart(2,'0');
+        return y+'-'+m+'-'+day;
+    }
     function getWeekStart(dateStr){
         const d=parseDate(dateStr);
         const day=d.getDay()||7;
         const diff=(day-1)*86400000;
         const m=new Date(d.getTime()-diff);
         m.setHours(0,0,0,0);
-        return m.toISOString().slice(0,10);
+        const y=m.getFullYear();
+        const mo=String(m.getMonth()+1).padStart(2,'0');
+        const da=String(m.getDate()).padStart(2,'0');
+        return y+'-'+mo+'-'+da;
     }
     function getAccountBalance(accId){
         const acc=data.accounts.find(a=>a.id===accId);
@@ -1387,11 +1017,11 @@
         document.querySelector(`.tab-item[data-tab="${tab}"]`).classList.add('active');
         renderAll();
         if(tab==='journal') renderJournalPage();
-        // 不再需要渲染树苗
     }
 
     // ==================== 账户管理 ====================
     let editingAccountId=null;
+    let editingAccountInfoId=null; // 用于区分编辑账户信息
     let longPressTimer=null;
 
     function openFullManageModal(){
@@ -1433,12 +1063,117 @@
                     <div class="right-info">
                         <div class="bal">${formatMoney(bal)}</div>
                         <div class="pct">${pct.toFixed(1)}%</div>
+                        <button onclick="event.stopPropagation(); showEditAccountModal('${acc.id}')" style="margin-left:8px;background:var(--bg);border:none;border-radius:6px;padding:4px 8px;font-size:12px;cursor:pointer;color:var(--text-muted);transition:0.2s;">✏️</button>
                     </div>
                 </div>
             `;
         });
         html+=`<div class="account-detail-total"><span>📊 合计</span><span>${formatMoney(total)}</span></div>`;
         container.innerHTML=html;
+    }
+
+    // ==================== 理财盈亏图表（带0轴） ====================
+    function showFinanceChartModal() {
+        openModal('modalFinanceChart');
+        renderFinanceChart('week');
+    }
+
+    function renderFinanceChart(period) {
+        const container = document.getElementById('financeChartContainer');
+        const btnW = document.getElementById('btnChartWeek');
+        const btnM = document.getElementById('btnChartMonth');
+        if (!container) return;
+
+        if (period === 'week') {
+            btnW.style.background = 'var(--blue)'; btnW.style.color = '#fff';
+            btnM.style.background = 'var(--bg)'; btnM.style.color = 'var(--text-muted)';
+        } else {
+            btnM.style.background = 'var(--blue)'; btnM.style.color = '#fff';
+            btnW.style.background = 'var(--bg)'; btnW.style.color = 'var(--text-muted)';
+        }
+
+        const now = new Date();
+        const periods = [];
+
+        if (period === 'week') {
+            for (let i = 3; i >= 0; i--) {
+                const d = new Date(now);
+                d.setDate(d.getDate() - i * 7);
+                const fmtDate = (dt) => {
+                    const y = dt.getFullYear();
+                    const m = String(dt.getMonth()+1).padStart(2,'0');
+                    const day = String(dt.getDate()).padStart(2,'0');
+                    return y+'-'+m+'-'+day;
+                };
+                const start = getWeekStart(fmtDate(d));
+                const endD = new Date(parseDate(start));
+                endD.setDate(endD.getDate() + 6);
+                const end = fmtDate(endD);
+                const label = '第' + getWeekNumber(parseDate(start)).week + '周';
+                periods.push({ start, end, label });
+            }
+        } else {
+            for (let i = 5; i >= 0; i--) {
+                const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+                const y = d.getFullYear();
+                const m = d.getMonth() + 1;
+                const start = y + '-' + (m < 10 ? '0' : '') + m + '-01';
+                const lastDay = new Date(y, m, 0).getDate();
+                const end = y + '-' + (m < 10 ? '0' : '') + m + '-' + (lastDay < 10 ? '0' : '') + lastDay;
+                periods.push({ start, end, label: m + '月' });
+            }
+        }
+
+        let maxAbs = 0;
+        const values = periods.map(p => {
+            let profit = 0;
+            data.transactions.forEach(t => {
+                if (t.date >= p.start && t.date <= p.end) {
+                    const acc = data.accounts.find(a => a.id === t.accountId);
+                    if (acc && isFinanceAccount(acc)) {
+                        if (t.type === 'asset_gain') profit += t.amount;
+                        else if (t.type === 'asset_loss') profit -= t.amount;
+                    }
+                }
+            });
+            if (Math.abs(profit) > maxAbs) maxAbs = Math.abs(profit);
+            return { profit, label: p.label };
+        });
+
+        if (maxAbs === 0) maxAbs = 1;
+
+        let html = '<div style="position:absolute; left:10px; right:10px; top:50%; height:1px; background:var(--border); z-index:1;"></div>';
+        
+        values.forEach(v => {
+            const ratio = Math.abs(v.profit) / maxAbs;
+            const hPct = ratio * 45; 
+            const isPos = v.profit > 0.001;
+            const isNeg = v.profit < -0.001;
+            const color = isPos ? 'var(--green)' : (isNeg ? 'var(--red)' : 'var(--text-muted)');
+            const valTxt = v.profit === 0 ? '0' : (isPos ? '+' : '') + v.profit.toFixed(0);
+
+            if (isPos) {
+                html += `<div style="flex:1; display:flex; flex-direction:column; align-items:center; position:relative; height:100%;">
+                    <div style="position:absolute; bottom:50%; width:60%; max-width:28px; height:${hPct}%; background:${color}; border-radius:4px 4px 0 0; transition:height 0.4s ease;"></div>
+                    <div style="position:absolute; bottom:calc(50% + ${hPct}% + 4px); font-size:10px; font-weight:700; color:${color};">${valTxt}</div>
+                    <div style="position:absolute; bottom:4px; font-size:10px; color:var(--text-muted);">${v.label}</div>
+                </div>`;
+            } else if (isNeg) {
+                html += `<div style="flex:1; display:flex; flex-direction:column; align-items:center; position:relative; height:100%;">
+                    <div style="position:absolute; top:50%; width:60%; max-width:28px; height:${hPct}%; background:${color}; border-radius:0 0 4px 4px; transition:height 0.4s ease;"></div>
+                    <div style="position:absolute; top:calc(50% + ${hPct}% + 4px); font-size:10px; font-weight:700; color:${color};">${valTxt}</div>
+                    <div style="position:absolute; bottom:4px; font-size:10px; color:var(--text-muted);">${v.label}</div>
+                </div>`;
+            } else {
+                html += `<div style="flex:1; display:flex; flex-direction:column; align-items:center; position:relative; height:100%;">
+                    <div style="position:absolute; top:50%; font-size:11px; font-weight:700; color:${color}; transform:translateY(-50%);">0</div>
+                    <div style="position:absolute; bottom:4px; font-size:10px; color:var(--text-muted);">${v.label}</div>
+                </div>`;
+            }
+        });
+        container.innerHTML = html;
+        container.style.display = 'flex';
+        container.style.alignItems = 'stretch';
     }
 
     // ==================== 理财账户明细 ====================
@@ -1468,6 +1203,7 @@
                         <div class="right-info">
                             <div class="bal">${formatMoney(bal)}</div>
                             <div class="pct">${pct.toFixed(1)}%</div>
+                            <button onclick="event.stopPropagation(); showEditAccountModal('${acc.id}')" style="margin-left:8px;background:var(--bg);border:none;border-radius:6px;padding:4px 8px;font-size:12px;cursor:pointer;color:var(--text-muted);transition:0.2s;">✏️</button>
                         </div>
                     </div>
                 `;
@@ -1559,7 +1295,7 @@
             id:genId(),
             accountId:accId,
             type:txnType,
-            category:isFinance?(diff>0?'理财收益':'理财亏损'):'余额调整',
+            category:isFinance?'理财余额调整':'余额调整',
             amount:Math.abs(diff),
             date:selectedDate,
             note:isFinance?'手动更新理财余额':'手动更新余额'
@@ -1598,7 +1334,28 @@
         showToast('已撤销最近一笔调整');
     }
 
-    // ==================== 添加账户 ====================
+    // ==================== 全局撤销 ====================
+    function undoLastAdjustmentGlobal(){
+        const adjustments = data.transactions
+            .filter(t => t.category === '余额调整' || t.category === '理财收益' || t.category === '理财亏损')
+            .sort((a,b) => b.date.localeCompare(a.date) || b.id.localeCompare(a.id));
+        if(adjustments.length === 0){ showToast('没有可撤销的调整记录'); return; }
+        const last = adjustments[0];
+        if(!confirm(`撤销全局最近一笔调整？\n日期：${last.date}\n账户：${data.accounts.find(a=>a.id===last.accountId)?.name || '未知'}\n金额：${last.type==='income'||last.type==='asset_gain'?'+':'-'}${last.amount.toFixed(2)}`)) return;
+        
+        data.transactions = data.transactions.filter(t => t.id !== last.id);
+        
+        const snapIdx = data.snapshots.findIndex(s => s.accountId === last.accountId && s.date === last.date);
+        if(snapIdx !== -1) data.snapshots.splice(snapIdx, 1);
+        
+        saveData();
+        if(document.getElementById('modalFullManage').classList.contains('show')) renderFullAccountList();
+        if(document.getElementById('modalFinanceAccounts').classList.contains('show')) showFinanceAccounts();
+        renderAll();
+        showToast('已撤销最近一笔全局调整');
+    }
+
+    // ==================== 添加/编辑账户 ====================
     function renderPresetAccountModal(){
         const wrap=document.getElementById('presetAccountWrap');
         wrap.innerHTML=PRESET_ACCOUNTS.map(p=>`<div class="preset-acc-item" onclick="fillPresetAccount('${p.name}','${p.icon}','${p.category}')">${p.icon} ${p.name}</div>`).join('');
@@ -1609,7 +1366,14 @@
         document.getElementById('accCategory').value=category;
         document.getElementById('accCategoryCustom').value='';
     }
-    function showAddAccountModal(){
+    
+    function showAddAccountModal() {
+        editingAccountInfoId = null;
+        document.getElementById('accountModalTitle').textContent = '➕ 添加账户';
+        document.getElementById('initialBalanceGroup').style.display = 'block';
+        document.getElementById('initialBalanceDateGroup').style.display = 'block';
+        
+        // 重置表单
         document.getElementById('accName').value='';
         document.getElementById('accIcon').value='';
         document.getElementById('accCategory').value='日常';
@@ -1618,62 +1382,226 @@
         document.getElementById('accBalanceDate').value=getTodayStr();
         openModal('modalAccount');
     }
-    function addAccount(){
-        const name=document.getElementById('accName').value.trim();
-        const icon=document.getElementById('accIcon').value.trim()||'🏦';
-        let category=document.getElementById('accCategory').value;
-        const custom=document.getElementById('accCategoryCustom').value.trim();
-        if(custom) category=custom;
-        const bal=parseFloat(document.getElementById('accBalance').value)||0;
-        const date=document.getElementById('accBalanceDate').value;
-        if(!date){showToast('请选择余额日期');return;}
-        if(!name){showToast('请填写账户名称');return;}
-        const newAcc={id:genId(),name:name,icon:icon,balance:bal,category:category};
+
+    function showEditAccountModal(accId) {
+        editingAccountInfoId = accId;
+        const acc = data.accounts.find(a => a.id === accId);
+        if (!acc) return;
+        
+        document.getElementById('accountModalTitle').textContent = '✏️ 编辑账户';
+        document.getElementById('accName').value = acc.name;
+        document.getElementById('accIcon').value = acc.icon || '🏦';
+        
+        // 处理分类
+        const standardCats = ['日常', '理财', '投资', '负债', '其他'];
+        if (standardCats.includes(acc.category)) {
+            document.getElementById('accCategory').value = acc.category;
+            document.getElementById('accCategoryCustom').value = '';
+        } else {
+            document.getElementById('accCategory').value = '其他';
+            document.getElementById('accCategoryCustom').value = acc.category;
+        }
+        
+        // 隐藏余额相关字段，提示用户使用专门功能
+        document.getElementById('initialBalanceGroup').style.display = 'none';
+        document.getElementById('initialBalanceDateGroup').style.display = 'none';
+        
+        openModal('modalAccount');
+    }
+
+    function addAccount() {
+        const name = document.getElementById('accName').value.trim();
+        const icon = document.getElementById('accIcon').value.trim() || '🏦';
+        let category = document.getElementById('accCategory').value;
+        const custom = document.getElementById('accCategoryCustom').value.trim();
+        if (custom) category = custom;
+
+        if (!name) { showToast('请填写账户名称'); return; }
+
+        // 编辑模式
+        if (editingAccountInfoId) {
+            const acc = data.accounts.find(a => a.id === editingAccountInfoId);
+            if (acc) {
+                acc.name = name;
+                acc.icon = icon;
+                acc.category = category;
+                saveData();
+                closeModal('modalAccount');
+                renderAll();
+                if (document.getElementById('modalFullManage').classList.contains('show')) renderFullAccountList();
+                if (document.getElementById('modalFinanceAccounts').classList.contains('show')) showFinanceAccounts();
+                showToast('账户信息已更新');
+            }
+            return;
+        }
+
+        // 添加模式
+        const bal = parseFloat(document.getElementById('accBalance').value) || 0;
+        const date = document.getElementById('accBalanceDate').value;
+        if (!date) { showToast('请选择余额日期'); return; }
+        
+        const newAcc = { id: genId(), name: name, icon: icon, balance: bal, category: category };
         data.accounts.push(newAcc);
-        data.snapshots.push({accountId:newAcc.id, date:date, balance:bal});
+        data.snapshots.push({ accountId: newAcc.id, date: date, balance: bal });
         saveData();
         closeModal('modalAccount');
         renderAll();
-        if(document.getElementById('modalFullManage').classList.contains('show')) renderFullAccountList();
+        if (document.getElementById('modalFullManage').classList.contains('show')) renderFullAccountList();
         showToast('账户已添加');
     }
 
-    // ==================== 本周明细 ====================
-    function showWeekDetail(type){
-        const today=getTodayStr();
-        const weekStart=getWeekStart(today);
-        const weekTxns=data.transactions.filter(t=>t.date>=weekStart&&t.date<=today);
-        let filtered=[];
-        if(type==='income') filtered=weekTxns.filter(t=>t.type==='income'||t.type==='asset_gain');
-        else if(type==='expense') filtered=weekTxns.filter(t=>t.type==='expense'||t.type==='asset_loss');
-        const title=type==='income'?'本周收入明细':'本周支出明细';
-        document.getElementById('weekDetailTitle').textContent=title;
-        const container=document.getElementById('weekDetailListModal');
-        if(filtered.length===0){
-            container.innerHTML='<div class="text-muted text-center" style="padding:16px 0;">本周暂无此类记录</div>';
-        }else{
-            let html='';
-            filtered.sort((a,b)=>b.date.localeCompare(a.date)||b.id.localeCompare(a.id));
-            filtered.forEach(t=>{
-                const acc=data.accounts.find(a=>a.id===t.accountId);
-                const accName=acc?acc.name:'未知';
-                const amtClass=(t.type==='income'||t.type==='asset_gain')?'income':'expense';
-                const sign=(t.type==='income'||t.type==='asset_gain')?'+':'-';
-                html+=`
-                    <div class="txn-detail-item">
-                        <div>
-                            <span>${t.category||'📦'}</span>
-                            <span class="cat">${accName}</span>
-                            ${t.note?`<span class="note">${t.note}</span>`:''}
-                            <span style="font-size:12px;color:var(--text-muted);margin-left:8px;">${t.date}</span>
-                        </div>
-                        <span class="amt ${amtClass}">${sign}${t.amount.toFixed(2)}</span>
-                    </div>
-                `;
-            });
-            container.innerHTML=html;
+    // ==================== 本周明细（完整资产变动报告） ====================
+    function showWeekDetailByWeek(startDate, endDate, label, income, expense) {
+        document.getElementById('weekDetailTitle').textContent = label + ' 资产变动';
+        const fmtDate = (dt) => {
+            const y = dt.getFullYear();
+            const m = String(dt.getMonth()+1).padStart(2,'0');
+            const day = String(dt.getDate()).padStart(2,'0');
+            return y+'-'+m+'-'+day;
+        };
+
+        // 1. 筛选当周所有流水
+        const weekTxns = data.transactions.filter(t => t.date >= startDate && t.date <= endDate);
+
+        // 2. 汇总本周收支
+        const weekIncome = weekTxns.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0);
+        const weekExpense = weekTxns.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0);
+
+        // 3. 理财盈亏（只认真正的理财收益/亏损，排除余额调整）
+        let weekAssetGain = 0, weekAssetLoss = 0;
+        weekTxns.forEach(t => {
+            if (t.category === '理财收益') weekAssetGain += t.amount;
+            if (t.category === '理财亏损') weekAssetLoss += t.amount;
+        });
+
+        // 4. 总资产变动 = 收入 - 支出 + 理财收益 - 理财亏损
+        const totalAssetChange = weekIncome - weekExpense + weekAssetGain - weekAssetLoss;
+
+        // 5. 计算账户快照明细（用于展示期初/期末对账）
+        const accountChanges = [];
+        let totalStart = 0, totalEnd = 0;
+        let totalStartKnown = true, totalEndKnown = true;
+        const before = new Date(parseDate(startDate));
+        before.setDate(before.getDate() - 1);
+        const beforeStr = fmtDate(before);
+
+        data.accounts.forEach(acc => {
+            const startSnap = data.snapshots.filter(s => s.accountId === acc.id && s.date <= beforeStr).sort((a, b) => b.date.localeCompare(a.date))[0];
+            const endSnap = data.snapshots.filter(s => s.accountId === acc.id && s.date <= endDate).sort((a, b) => b.date.localeCompare(a.date))[0];
+            const startBal = startSnap ? startSnap.balance : null;
+            const endBal = endSnap ? endSnap.balance : null;
+
+            const accWeekTxns = data.transactions.filter(t => t.accountId === acc.id && t.date >= startDate && t.date <= endDate);
+            const weekNet = accWeekTxns.reduce((sum, t) => {
+                if (t.type === 'income' || t.type === 'asset_gain') return sum + t.amount;
+                if (t.type === 'expense' || t.type === 'asset_loss') return sum - t.amount;
+                if (t.type === 'transfer') return t.transferTargetId ? sum - t.amount : sum + t.amount;
+                return sum;
+            }, 0);
+            const change = (startBal !== null && endBal !== null) ? (endBal - startBal) : weekNet;
+
+            if (startBal !== null) totalStart += startBal; else totalStartKnown = false;
+            if (endBal !== null) totalEnd += endBal; else totalEndKnown = false;
+
+            if (Math.abs(change) > 0.001 || accWeekTxns.length > 0) {
+                accountChanges.push({ acc, startBal, endBal, change });
+            }
+        });
+        accountChanges.sort((a, b) => Math.abs(b.change) - Math.abs(a.change));
+        const financeAccChanges = accountChanges.filter(c => isFinanceAccount(c.acc));
+
+        // 6. 构造 HTML
+        let html = '';
+
+        // 顶部：总资产变动
+        html += `<div style="background:linear-gradient(135deg,#f8faff,#eef2fa);padding:16px;border-radius:16px;margin-bottom:14px;border:1px solid rgba(74,124,247,0.1);">
+            <div style="font-size:12px;color:var(--text-muted);margin-bottom:6px;">💰 总资产变动</div>
+            <div style="font-size:24px;font-weight:700;color:${totalAssetChange >= 0 ? 'var(--green)' : 'var(--red)'};">
+                ${totalAssetChange >= 0 ? '+' : ''}${formatMoney(totalAssetChange)}
+            </div>
+            <div style="display:flex;justify-content:space-between;margin-top:10px;padding-top:10px;border-top:1px dashed rgba(74,124,247,0.15);font-size:12px;color:var(--text-muted);">
+                <span>期初 ${totalStartKnown ? formatMoney(totalStart) : '--'}</span><span>→</span><span>期末 ${totalEndKnown ? formatMoney(totalEnd) : '--'}</span>
+            </div>
+            <div style="font-size:10px;color:var(--text-muted);margin-top:4px;text-align:center;">ℹ️ 期初/期末基于最近两次余额快照，用于核对账实差异</div>
+        </div>`;
+
+        // 本周收支
+        html += `<div style="background:var(--bg);padding:12px 14px;border-radius:12px;margin-bottom:14px;">
+            <div style="font-size:12px;font-weight:600;color:var(--text-secondary);margin-bottom:8px;">📊 收支汇总</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px 16px;font-size:13px;">
+                <div style="display:flex;justify-content:space-between;"><span style="color:var(--text-muted);">收入</span><span style="color:var(--green);font-weight:600;">+${formatMoney(weekIncome)}</span></div>
+                <div style="display:flex;justify-content:space-between;"><span style="color:var(--text-muted);">支出</span><span style="color:var(--red);font-weight:600;">-${formatMoney(weekExpense)}</span></div>
+                <div style="display:flex;justify-content:space-between;grid-column:1/-1;padding-top:8px;border-top:1px solid var(--border);">
+                    <span style="color:var(--text-muted);">结余</span><span style="font-weight:700;color:${weekIncome - weekExpense >= 0 ? 'var(--green)' : 'var(--red)'};">${weekIncome - weekExpense >= 0 ? '+' : ''}${formatMoney(weekIncome - weekExpense)}</span>
+                </div>
+            </div>
+        </div>`;
+
+        // 理财变动汇总
+        if (weekAssetGain > 0.001 || weekAssetLoss > 0.001) {
+            const finNet = weekAssetGain - weekAssetLoss;
+            html += `<div style="background:var(--card-blue-bg);padding:12px 14px;border-radius:12px;margin-bottom:14px;border:1px solid rgba(74,124,247,0.12);">
+                <div style="font-size:12px;font-weight:600;color:var(--text-secondary);margin-bottom:8px;">📈 理财变动</div>
+                <div style="display:flex;justify-content:space-between;font-size:14px;margin-bottom:6px;">
+                    <span style="color:var(--text-muted);">资产净值变动</span><span style="font-weight:700;color:${finNet >= 0 ? 'var(--green)' : 'var(--red)'};">${finNet >= 0 ? '+' : ''}${formatMoney(finNet)}</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text-muted);padding-top:6px;border-top:1px dashed rgba(74,124,247,0.15);">
+                    <span>✨ 收益 +${formatMoney(weekAssetGain)}</span><span>📉 亏损 -${formatMoney(weekAssetLoss)}</span>
+                </div>
+            </div>`;
         }
+
+        // 账户变动明细（折叠）
+        if (accountChanges.length > 0) {
+            html += `<details style="margin-bottom:12px;border:1px solid var(--border);border-radius:12px;padding:8px 12px;cursor:pointer;">
+                <summary style="font-weight:600;font-size:13px;color:var(--text-secondary);padding:4px 0;">💳 账户变动明细 (点击展开)</summary>
+                <div style="padding-top:8px;border-top:1px solid var(--border);">`;
+            accountChanges.forEach((c, idx) => {
+                const cls = c.change >= 0 ? 'var(--green)' : 'var(--red)';
+                const sign = c.change >= 0 ? '+' : '';
+                const isFin = isFinanceAccount(c.acc);
+                html += `<div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;${idx < accountChanges.length - 1 ? 'border-bottom:1px solid var(--border);' : ''}font-size:13px;">
+                    <div style="display:flex;align-items:center;gap:8px;min-width:0;"><span>${c.acc.icon || '🏦'}</span><span style="font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${c.acc.name}</span>${isFin ? '<span style="font-size:10px;color:var(--blue);background:rgba(74,124,247,0.1);padding:1px 6px;border-radius:8px;">理财</span>' : ''}</div>
+                    <div style="text-align:right;flex-shrink:0;margin-left:8px;"><div style="font-weight:600;color:${cls};">${sign}${formatMoney(c.change)}</div>${c.startBal !== null && c.endBal !== null ? `<div style="font-size:10px;color:var(--text-muted);margin-top:1px;">${c.startBal.toFixed(0)} → ${c.endBal.toFixed(0)}</div>` : ''}</div>
+                </div>`;
+            });
+            html += `</div></details>`;
+        }
+
+        // 交易明细（折叠）
+        if (weekTxns.length > 0) {
+            html += `<details style="margin-bottom:12px;border:1px solid var(--border);border-radius:12px;padding:8px 12px;cursor:pointer;">
+                <summary style="font-weight:600;font-size:13px;color:var(--text-secondary);padding:4px 0;">📋 交易明细 (点击展开)</summary>
+                <div style="padding-top:8px;border-top:1px solid var(--border);">`;
+            const sortedTxns = [...weekTxns].sort((a, b) => b.date.localeCompare(a.date) || b.id.localeCompare(a.id));
+            sortedTxns.forEach(t => {
+                const acc = data.accounts.find(a => a.id === t.accountId);
+                const accName = acc ? acc.name : '未知';
+                const isIncome = (t.type === 'income' || t.type === 'asset_gain');
+                const amtClass = isIncome ? 'income' : 'expense';
+                const sign = isIncome ? '+' : '-';
+                html += `<div class="txn-detail-item" style="padding:8px 0;">
+                    <div style="min-width:0;flex:1;"><span>${t.category || '📦'}</span><span class="cat" style="margin-left:6px;">${accName}</span>${t.note ? `<span class="note" style="margin-left:6px;">${t.note}</span>` : ''}<span style="font-size:11px;color:var(--text-muted);margin-left:6px;">${t.date}</span></div>
+                    <span class="amt ${amtClass}" style="font-size:13px;flex-shrink:0;">${sign}${t.amount.toFixed(2)}</span>
+                </div>`;
+            });
+            html += `</div></details>`;
+        }
+
+        document.getElementById('weekDetailListModal').innerHTML = html;
         openModal('modalWeekDetail');
+    }
+
+    // ==================== 记账页折叠 ====================
+    function toggleJournalForm(){
+        const container = document.getElementById('journalFormContainer');
+        const icon = document.getElementById('journalFormToggleIcon');
+        const text = document.getElementById('journalFormToggleText');
+        if (!container) return;
+        const isHidden = container.style.display === 'none' || container.style.display === '';
+        container.style.display = isHidden ? 'block' : 'none';
+        icon.textContent = isHidden ? '▲' : '▼';
+        text.textContent = isHidden ? '（点击收起）' : '（点击展开）';
     }
 
     // ==================== 记账页 ====================
@@ -1832,8 +1760,6 @@
 
         renderAll();
         showToast('✅ 记录已保存');
-
-        // 不再触发浇水
         checkAchievements();
     }
 
@@ -1876,38 +1802,102 @@
 
     // ==================== 首页渲染 ====================
     function renderHomeWeekChart(){
-        const container=document.getElementById('homeWeekChart');
+        const container=document.getElementById('weekMiniContainer');
         const todayDate=parseDate(getTodayStr());
         const weeks=[];
-        for(let i=0;i<4;i++){
+        const fmtDate = (dt) => {
+            const y = dt.getFullYear();
+            const m = String(dt.getMonth()+1).padStart(2,'0');
+            const day = String(dt.getDate()).padStart(2,'0');
+            return y+'-'+m+'-'+day;
+        };
+        for(let i=3;i>=0;i--){
             const d=new Date(todayDate);
             d.setDate(d.getDate()-i*7);
-            const monday=getWeekStart(d.toISOString().slice(0,10));
+            const monday=getWeekStart(fmtDate(d));
             const mondayDate=parseDate(monday);
             const sunday=new Date(mondayDate);
             sunday.setDate(sunday.getDate()+6);
-            const endStr=sunday.toISOString().slice(0,10);
+            const endStr=fmtDate(sunday);
             const weekTxns=data.transactions.filter(t=>t.date>=monday&&t.date<=endStr);
             const income=weekTxns.filter(t=>t.type==='income'||t.type==='asset_gain').reduce((s,t)=>s+t.amount,0);
             const expense=weekTxns.filter(t=>t.type==='expense'||t.type==='asset_loss').reduce((s,t)=>s+t.amount,0);
+            
+            // 总资产变动直接取流水净额，排除历史余额调整干扰
+            const totalChange = income - expense;
+
+            const weekLabel = '第' + (getWeekNumber(mondayDate).week) + '周';
             weeks.push({
-                label:'第'+(getWeekNumber(mondayDate).week)+'周',
-                balance:income-expense,
+                label: weekLabel,
+                balance: totalChange,
+                startDate: monday,
+                endDate: endStr,
+                income: income,
+                expense: expense
             });
         }
         const maxVal=Math.max(...weeks.map(w=>Math.abs(w.balance)),1);
-        const containerMini=document.getElementById('weekMiniContainer');
-        containerMini.innerHTML=weeks.map(w=>{
+        
+        container.innerHTML=weeks.map(w=>{
             const pct=Math.abs(w.balance)/maxVal*100;
             const isNeg=w.balance<0;
             const cls=isNeg?'negative':'positive';
             const sign=w.balance>=0?'+':'';
-            return `<div class="w-item">
+            return `<div class="w-item" style="cursor:pointer;" onclick="showWeekDetailByWeek('${w.startDate}', '${w.endDate}', '${w.label}', ${w.income}, ${w.expense})">
                 <div class="w-label">${w.label}</div>
                 <div class="w-bar"><div class="w-fill ${cls}" style="width:${Math.max(pct,2)}%;"></div></div>
                 <div class="w-val ${cls}">${sign}${w.balance.toFixed(0)}</div>
             </div>`;
         }).join('');
+
+        renderWeekSummary(weeks[weeks.length-1], weeks[weeks.length-2]);
+    }
+
+    // v4: 生成最近一周情况总结（带时间节点，修正总资产变动计算）
+    function renderWeekSummary(cur, prev){
+        const el = document.getElementById('weekSummary');
+        if (!el) return;
+        if (!cur) { el.style.display = 'none'; return; }
+
+        const fmtMD = (s) => { const p = s.split('-'); return p[1] + '.' + p[2]; };
+        const weekNum = cur.label.replace('第','').replace('周','');
+        const dateRange = `第${weekNum}周 (${fmtMD(cur.startDate)} - ${fmtMD(cur.endDate)})`;
+
+        let finChange = 0;
+        data.transactions.forEach(t => {
+            if (t.date < cur.startDate || t.date > cur.endDate) return;
+            const acc = data.accounts.find(a => a.id === t.accountId);
+            if (!acc || !isFinanceAccount(acc)) return;
+            if (t.type === 'asset_gain') finChange += t.amount;
+            else if (t.type === 'asset_loss') finChange -= t.amount;
+        });
+
+        // 条件：总资产变动=0 且 无收支 且 无理财变动 → 直接隐藏
+        if (Math.abs(cur.balance) < 0.001 && cur.income < 0.001 && cur.expense < 0.001 && Math.abs(finChange) < 0.001) {
+            el.style.display = 'none';
+            return;
+        }
+
+        let html = `<div style="display:flex;flex-direction:column;gap:8px;">
+            <div style="font-size:13px;font-weight:600;color:var(--text-primary);border-bottom:1px solid var(--border);padding-bottom:6px;">📅 ${dateRange} 资产总结</div>`;
+
+        const cs = cur.balance >= 0 ? '+' : '';
+        const cc = cur.balance >= 0 ? 'var(--green)' : 'var(--red)';
+        html += `<div>💰 总资产 <strong style="color:${cc};font-size:15px;">${cs}¥${Math.abs(cur.balance).toFixed(2)}</strong></div>`;
+
+        if (cur.income > 0.001 || cur.expense > 0.001) {
+            html += `<div>📊 收入 <strong style="color:var(--green);">+¥${cur.income.toFixed(2)}</strong>　支出 <strong style="color:var(--red);">-¥${cur.expense.toFixed(2)}</strong></div>`;
+        }
+
+        if (Math.abs(finChange) > 0.001) {
+            const fs = finChange >= 0 ? '+' : '-';
+            const fc = finChange >= 0 ? 'var(--green)' : 'var(--red)';
+            html += `<div>📈 理财 <strong style="color:${fc};">${fs}¥${Math.abs(finChange).toFixed(2)}</strong></div>`;
+        }
+
+        html += `</div>`;
+        el.innerHTML = html;
+        el.style.display = 'block';
     }
 
     function getWeekNumber(date){
@@ -1965,6 +1955,25 @@
 
         const lastDate=getFinanceLastUpdateDate();
         document.getElementById('financeUpdateDateTag').textContent=lastDate||'--';
+
+        // v2: 本周理财变动
+        const _todayW = getTodayStr();
+        const _weekStartW = getWeekStart(_todayW);
+        let _weekFinanceChange = 0;
+        data.transactions.forEach(t => {
+            if (t.date < _weekStartW || t.date > _todayW) return;
+            const acc = data.accounts.find(a => a.id === t.accountId);
+            if (!acc || !isFinanceAccount(acc)) return;
+            if (t.type === 'asset_gain' || t.type === 'income') _weekFinanceChange += t.amount;
+            else if (t.type === 'asset_loss' || t.type === 'expense') _weekFinanceChange -= t.amount;
+            else if (t.type === 'transfer') _weekFinanceChange += t.transferTargetId ? -t.amount : t.amount;
+        });
+        const _wkEl = document.getElementById('financeWeekChangeTag');
+        if (_wkEl) {
+            const _wkSign = _weekFinanceChange >= 0 ? '+' : '';
+            _wkEl.textContent = _wkSign + Math.abs(_weekFinanceChange).toFixed(2);
+            _wkEl.className = 'num ' + (_weekFinanceChange >= 0 ? 'green' : 'red');
+        }
 
         const hasFinance = data.accounts.some(a => isFinanceAccount(a));
         const financeItem = document.getElementById('financeAssetItem');
@@ -2107,7 +2116,7 @@
                     id:genId(),
                     accountId:acc.id,
                     type:adjType,
-                    category:isFinance?(diff>0?'理财收益':'理财亏损'):'余额调整',
+                    category:isFinance?'理财余额调整':'余额调整',
                     amount:Math.abs(diff),
                     date:uploadDt,
                     note:isFinance?'周报上传理财余额调整':'周报上传余额调整'
@@ -2194,7 +2203,6 @@
     function checkAchievements(){
         const ach=data.achievements;
         if(data.transactions.length>0) unlockAchievement('first_txn');
-        // 基于不同交易日期天数（记账天数）
         const txnDates = new Set(data.transactions.map(t => t.date));
         const totalDays = txnDates.size;
         if(totalDays >= 7) unlockAchievement('streak_7');
@@ -2213,7 +2221,7 @@
         if(a&&!a.unlocked){a.unlocked=true; showToast('🏆 解锁成就: '+a.name);}
     }
 
-    // ==================== 导入导出（已修复理财识别） ====================
+    // ==================== 导入导出 ====================
     function openSyncModal(){openModal('modalSync');}
     function exportData(){
         const json=JSON.stringify(data,null,2);
@@ -2277,7 +2285,6 @@
         if(document.getElementById('page-journal').classList.contains('active')) renderJournalPage();
         if(document.getElementById('modalFullManage').classList.contains('show')) renderFullAccountList();
         if(document.getElementById('modalFinanceAccounts').classList.contains('show')) showFinanceAccounts();
-        // 确保轮播指示点更新
         const hasFinance = data.accounts.some(a => isFinanceAccount(a));
         const totalItems = hasFinance ? 2 : 1;
         updateCarouselDots(totalItems);
@@ -2288,6 +2295,17 @@
 
     // 页面加载完成后初始化轮播监听
     window.onload=function(){
+        // 限制所有日期输入框最大值为今天
+        const _today = getTodayStr();
+        document.querySelectorAll('input[type="date"]').forEach(el => { el.max = _today; });
+        // 动态生成的元素也限制
+        const _observer = new MutationObserver(() => {
+            document.querySelectorAll('input[type="date"]').forEach(el => {
+                if (!el.max) el.max = getTodayStr();
+            });
+        });
+        _observer.observe(document.body, { childList: true, subtree: true });
+
         loadData();
         renderAll();
         initCarouselScrollListener();
@@ -2296,8 +2314,6 @@
             clearTimeout(resizeTimer);
             resizeTimer=setTimeout(()=>{ renderGoalMini(); }, 200);
         });
-        console.log('💡 提示：可通过 openUploadBalanceModal() 上传余额');
-        // 初始指示点
         setTimeout(() => {
             const hasFinance = data.accounts.some(a => isFinanceAccount(a));
             const totalItems = hasFinance ? 2 : 1;
