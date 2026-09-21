@@ -248,6 +248,12 @@
             color:var(--text-muted);
             text-transform:uppercase;
         }
+        .week-mini .w-item .w-date{
+            font-size:11px;
+            font-weight:700;
+            margin:1px 0 0 0;
+            letter-spacing:0.3px;
+        }
         .week-mini .w-item .w-bar{
             height:4px;
             background:var(--border);
@@ -412,11 +418,11 @@
         .journal-form .btn-primary:active{transform:scale(0.97);}
         .journal-form .btn-primary:disabled{opacity:0.5;pointer-events:none;}
 
-        .txn-list{display:flex;flex-direction:column;gap:6px;max-height:420px;overflow-y:auto;}
+        .txn-list{display:flex;flex-direction:column;gap:6px;}
         .recent-item{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-radius:var(--radius-sm);background:var(--bg);font-size:14px;color:var(--text-primary);}
-        .recent-item .left{display:flex;align-items:center;gap:10px;flex:1;min-width:0;}
-        .recent-item .left .category{background:#fff;padding:2px 12px;border-radius:20px;font-size:11px;color:var(--text-muted);white-space:nowrap;border:1px solid var(--border);}
-        .recent-item .left .note{color:var(--text-muted);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:80px;}
+        .recent-item .left{display:flex;align-items:center;gap:6px;flex:1;min-width:0;}
+        .recent-item .left .category{background:#fff;padding:2px 8px;border-radius:20px;font-size:11px;color:var(--text-muted);white-space:nowrap;border:1px solid var(--border);flex-shrink:0;}
+        .recent-item .left .note{color:var(--text-muted);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:70px;flex-shrink:1;}
         .recent-item .amount{font-weight:600;font-size:15px;}
         .recent-item .amount.expense{color:var(--red);}
         .recent-item .amount.income{color:var(--green);}
@@ -483,6 +489,13 @@
         .account-detail-item .right-info .pct{font-size:11px;color:var(--text-muted);}
         .account-detail-total{display:flex;justify-content:space-between;padding:14px 0 4px 0;border-top:1px solid var(--border);margin-top:6px;font-weight:700;font-size:17px;color:var(--text-primary);}
         .account-detail-empty{padding:20px 0;text-align:center;color:var(--text-muted);}
+        .finance-group-header{display:flex;justify-content:space-between;align-items:center;padding:14px 14px;border-radius:12px;cursor:pointer;user-select:none;transition:0.2s;margin-bottom:6px;}
+        .finance-group-header.collapsed{background:var(--bg);border:1px solid var(--border);}
+        .finance-group-header.expanded{background:linear-gradient(135deg,#eef2fa,#e0e8f8);border:1px solid rgba(74,124,247,0.25);}
+        .finance-group-header:active{transform:scale(0.99);}
+        .finance-group-arrow{font-size:12px;color:var(--text-muted);transition:transform 0.3s;display:inline-block;}
+        .finance-group-header.collapsed .finance-group-arrow{transform:rotate(-90deg);}
+        .finance-group-header.expanded .finance-group-arrow{transform:rotate(0deg);color:var(--blue);}
         .txn-detail-item{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);font-size:14px;color:var(--text-primary);}
         .txn-detail-item .cat{color:var(--text-muted);}
         .txn-detail-item .amt{font-weight:600;}
@@ -495,6 +508,33 @@
         .balance-input-group input:focus{border-color:var(--blue);outline:none;}
         .toast{position:fixed;top:12%;left:50%;transform:translateX(-50%) translateY(-20px);background:rgba(0,0,0,0.78);color:#fff;padding:12px 24px;border-radius:30px;font-size:14px;font-weight:500;box-shadow:0 8px 30px rgba(0,0,0,0.12);z-index:300;opacity:0;transition:opacity 0.3s ease,transform 0.3s ease;pointer-events:none;max-width:80%;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);}
         .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+        /* ===== 隐私模式：全局模糊金额 ===== */
+        body.privacy-mode #totalAsset,
+        body.privacy-mode #financeTotalAmount,
+        body.privacy-mode #financeRateTag,
+        body.privacy-mode #financeCumulativeTag,
+        body.privacy-mode #financeWeekChangeTag,
+        body.privacy-mode #weekIncomeTag,
+        body.privacy-mode #weekExpenseTag,
+        body.privacy-mode #weekBalanceTag,
+        body.privacy-mode #goalMiniPct,
+        body.privacy-mode #goalMiniDetail,
+        body.privacy-mode #goalMiniTags span strong,
+        body.privacy-mode .week-mini .w-val,
+        body.privacy-mode .account-detail-item .bal,
+        body.privacy-mode .account-detail-item .pct,
+        body.privacy-mode .account-detail-total span:last-child,
+        body.privacy-mode .finance-group-header > div:last-child > span:not(.finance-group-arrow),
+        body.privacy-mode .recent-item .amount,
+        body.privacy-mode .date-header > div:last-child > span:first-child,
+        body.privacy-mode .goal-progress-text,
+        body.privacy-mode #goalProgressCurrent,
+        body.privacy-mode #goalProgressTarget,
+        body.privacy-mode .balance-input-group input{filter:blur(7px);user-select:none;transition:filter 0.25s ease;}
+        body.privacy-mode .privacy-revealed{filter:none !important;user-select:auto !important;}
+        body.privacy-mode [class*="privacy-"],
+        body.privacy-mode span,body.privacy-mode div{cursor:default;}
+        body.privacy-mode .privacy-blur-target{cursor:pointer;}
         .hidden{display:none !important;}
         .text-center{text-align:center;}
         .mb-8{margin-bottom:8px;}
@@ -532,6 +572,7 @@
         <span class="sub">资产养成 · 每周录入真实余额核算收支</span>
     </div>
     <div class="header-actions">
+        <button onclick="togglePrivacy()" id="privacyToggleBtn" title="隐私模式" style="font-size:18px;">👁</button>
         <button onclick="openSyncModal()" title="导入/导出账本数据" style="font-size:20px;">📂</button>
     </div>
 </header>
@@ -555,7 +596,7 @@
                 <div class="card-number"><span class="currency">¥</span><span id="financeTotalAmount">0.00</span></div>
                 <div class="card-footer">
                     <span class="tag">📅 <span class="num" id="financeUpdateDateTag">--</span></span>
-                    <span class="tag">本周 <span class="num" id="financeWeekChangeTag">¥0</span></span>
+                    <span class="tag">本周盈亏 <span class="num" id="financeWeekChangeTag">¥0</span></span>
                     <span class="tag">累计收益 <span class="num" id="financeCumulativeTag">¥0</span></span>
                     <span class="tag">收益率 <span class="num" id="financeRateTag">--</span></span>
                 </div>
@@ -602,8 +643,9 @@
     </div>
 
     <div class="card-secondary" style="padding:18px 18px;">
-        <div class="sec-header">
+        <div class="sec-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
             <span class="sec-title">📋 交易记录</span>
+            <button onclick="undoLastTransaction()" style="background:var(--bg);border:none;border-radius:8px;padding:4px 10px;font-size:12px;cursor:pointer;color:var(--text-muted);transition:0.2s;display:flex;align-items:center;gap:4px;">↩️ 撤销</button>
         </div>
         <select class="filter-select" id="journalTxnFilter">
             <option value="all">全部</option>
@@ -699,6 +741,49 @@
     </div>
 </div>
 
+<!-- 理财追加/赎回 -->
+<div class="modal-overlay" id="modalFinanceTransfer">
+    <div class="modal-box">
+        <h3>💼 理财资金操作</h3>
+        <div style="margin-bottom:14px;padding:12px 14px;background:var(--card-blue-bg);border-radius:12px;border:1px solid rgba(74,124,247,0.12);">
+            <div style="font-weight:600;font-size:15px;color:var(--text-primary);" id="finTransferAccountName">--</div>
+            <div style="font-size:12px;color:var(--text-muted);margin-top:4px;">
+                净投入 <span id="finTransferPrincipal" style="color:var(--text-primary);font-weight:600;">¥0</span>
+                ｜ 市值 <span id="finTransferMarket" style="color:var(--text-primary);font-weight:600;">¥0</span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label>操作类型</label>
+            <div class="radio-group" id="finTransferDirectionRadios">
+                <label><input type="radio" name="finTransferDir" value="in" checked><span>📥 追加本金</span></label>
+                <label><input type="radio" name="finTransferDir" value="out"><span>📤 赎回本金</span></label>
+                <label onclick="closeModal('modalFinanceTransfer');openEditBalanceModal(editingFinanceTransferAccountId);" style="border-style:dashed;"><span>✏️ 手动更新余额</span></label>
+            </div>
+        </div>
+        <div class="form-group">
+            <label id="finTransferTargetLabel">从哪个账户转入</label>
+            <select id="finTransferTarget"></select>
+        </div>
+        <div class="form-group amount-field">
+            <label>金额 (¥)</label>
+            <input type="number" id="finTransferAmount" step="0.01" min="0.01" placeholder="0.00">
+        </div>
+        <div class="form-group">
+            <label>日期</label>
+            <input type="date" id="finTransferDate" required>
+        </div>
+        <div class="form-group">
+            <label>备注 (可选)</label>
+            <input type="text" id="finTransferNote" placeholder="如：8月定投" maxlength="30">
+        </div>
+        <div class="modal-actions">
+            <button class="btn-cancel" onclick="closeModal('modalFinanceTransfer')">取消</button>
+            <button class="btn-confirm" onclick="submitFinanceTransfer()">确认</button>
+        </div>
+        <div class="text-muted" style="margin-top:8px;text-align:center;font-size:11px;">追加/赎回只搬本金，不影响累计收益与收益率</div>
+    </div>
+</div>
+
 <!-- 本周明细 -->
 <div class="modal-overlay" id="modalWeekDetail">
     <div class="modal-box" style="max-height:80vh; display:flex; flex-direction:column;">
@@ -778,9 +863,27 @@
 <div class="modal-overlay" id="modalGoal">
     <div class="modal-box">
         <h3>🎯 添加目标</h3>
+        <div class="form-group">
+            <label>目标类型</label>
+            <div class="radio-group">
+                <label><input type="radio" name="goalType" value="savings" checked onchange="toggleGoalType()"><span>💰 储蓄目标</span></label>
+                <label><input type="radio" name="goalType" value="finance" onchange="toggleGoalType()"><span>📈 理财收益目标</span></label>
+            </div>
+        </div>
         <div class="form-group"><label>目标名称</label><input type="text" id="goalName" placeholder="如：旅行基金" value="梦想基金"></div>
-        <div class="form-group"><label>目标金额 (¥)</label><input type="number" id="goalTarget" step="0.01" value="5000"></div>
-        <div class="form-group"><label>当前已存 (¥)</label><input type="number" id="goalCurrent" step="0.01" value="0"></div>
+        <div class="form-group"><label id="goalTargetLabel">目标金额 (¥)</label><input type="number" id="goalTarget" step="0.01" value="5000"></div>
+        <div class="form-group" id="goalCurrentGroup"><label>当前已存 (¥)</label><input type="number" id="goalCurrent" step="0.01" value="0"></div>
+        <div class="form-group" id="goalAccountsGroup" style="display:none;">
+            <label>关联理财账户（可多选）</label>
+            <div id="goalAccountChecks" style="display:flex;flex-direction:column;gap:6px;max-height:150px;overflow-y:auto;padding:8px;background:var(--bg);border-radius:10px;"></div>
+        </div>
+        <div class="form-group" id="goalPeriodGroup" style="display:none;">
+            <label>统计周期</label>
+            <div class="radio-group">
+                <label><input type="radio" name="goalPeriod" value="week" checked><span>📅 周度</span></label>
+                <label><input type="radio" name="goalPeriod" value="month"><span>📆 月度</span></label>
+            </div>
+        </div>
         <div class="modal-actions">
             <button class="btn-cancel" onclick="closeModal('modalGoal')">取消</button>
             <button class="btn-confirm" onclick="addGoal()">确认添加</button>
@@ -793,6 +896,7 @@
     <div class="modal-box">
         <h3>📈 更新进度</h3>
         <div class="form-group"><label>增加金额 (¥)</label><input type="number" id="goalProgressAmount" step="0.01" min="0.01" placeholder="输入金额" value="100"></div>
+        <div class="form-group"><label>资金来源账户</label><select id="goalProgressAccount"><option value="">不关联账户（仅更新目标进度）</option></select></div>
         <div style="font-size:13px;color:var(--text-muted);margin-bottom:12px;">当前进度: <span id="goalProgressCurrent">0</span> / <span id="goalProgressTarget">0</span></div>
         <div class="modal-actions">
             <button class="btn-cancel" onclick="closeModal('modalGoalProgress')">取消</button>
@@ -869,6 +973,34 @@
     }
 
     let data=null;
+
+    // ==================== 数据迁移 ====================
+    // 旧版本转账记录没有 direction 字段，这里根据配对关系推断方向
+    function migrateTransferDirections(){
+        if(!data || !data.transactions) return;
+        const transfers = data.transactions.filter(t => t.type==='transfer' && !t.direction);
+        if(transfers.length === 0) return;
+        const used = new Set();
+        transfers.forEach(t => {
+            if(used.has(t.id)) return;
+            const pair = transfers.find(o =>
+                !used.has(o.id) && o.id !== t.id &&
+                o.accountId === t.transferTargetId &&
+                o.transferTargetId === t.accountId &&
+                Math.abs(o.amount - t.amount) < 0.001 &&
+                o.date === t.date
+            );
+            if(pair){
+                t.direction = 'out';
+                pair.direction = 'in';
+                used.add(t.id); used.add(pair.id);
+            }
+        });
+        transfers.forEach(t => {
+            if(!t.direction) t.direction = t.transferTargetId ? 'out' : 'in';
+        });
+    }
+
     function loadData(){
         const raw=localStorage.getItem(STORAGE_KEY);
         if(raw){
@@ -882,6 +1014,8 @@
                 data.transactions.forEach(t=>{if(!t.id) t.id='txn_'+Date.now()+Math.random().toString(36).slice(2,6);});
                 data.accounts.forEach(a=>{if(!a.id) a.id='acc_'+Date.now()+Math.random().toString(36).slice(2,6); if(!a.category) a.category='日常';});
                 data.goals.forEach(g=>{if(!g.id) g.id='goal_'+Date.now()+Math.random().toString(36).slice(2,6);});
+                migrateTransferDirections();
+                saveData();
                 return;
             }catch(e){}
         }
@@ -915,6 +1049,8 @@
         const da=String(m.getDate()).padStart(2,'0');
         return y+'-'+mo+'-'+da;
     }
+
+    // ==================== 账户余额计算（含方向） ====================
     function getAccountBalance(accId){
         const acc=data.accounts.find(a=>a.id===accId);
         if(!acc) return 0;
@@ -922,8 +1058,9 @@
             if(t.type==='income'||t.type==='asset_gain') return sum+t.amount;
             if(t.type==='expense'||t.type==='asset_loss') return sum-t.amount;
             if(t.type==='transfer'){
-                if(t.transferTargetId) return sum-t.amount;
-                else return sum+t.amount;
+                if(t.direction==='out') return sum-t.amount;
+                if(t.direction==='in') return sum+t.amount;
+                return t.transferTargetId ? sum-t.amount : sum+t.amount;
             }
             return sum;
         },0);
@@ -957,22 +1094,37 @@
         data.accounts.forEach(acc=>{if(isFinanceAccount(acc)) total+=getAccountBalance(acc.id);});
         return total;
     }
-    function getFinanceCost(){
-        let cost=0;
-        data.accounts.forEach(acc=>{if(isFinanceAccount(acc)) cost+=acc.balance;});
-        return cost;
-    }
-    function getFinanceCumulativeReturn(){
-        let total=0;
-        data.transactions.forEach(t=>{
-            const acc=data.accounts.find(a=>a.id===t.accountId);
-            if(acc&&isFinanceAccount(acc)){
-                if(t.type==='asset_gain') total+=t.amount;
-                else if(t.type==='asset_loss') total-=t.amount;
+
+    // 单个理财账户的净本金投入 = 初始余额 + 转入 - 转出 + income - expense
+    function getFinancePrincipal(accId){
+        const acc = data.accounts.find(a=>a.id===accId);
+        if(!acc) return 0;
+        let principal = acc.balance;
+        data.transactions.filter(t=>t.accountId===accId).forEach(t=>{
+            if(t.type==='transfer'){
+                if(t.direction==='in') principal += t.amount;
+                else if(t.direction==='out') principal -= t.amount;
+                else principal += t.transferTargetId ? -t.amount : t.amount;
+            } else if(t.type==='income'){
+                principal += t.amount;
+            } else if(t.type==='expense'){
+                principal -= t.amount;
             }
         });
+        return principal;
+    }
+
+    function getFinanceTotalPrincipal(){
+        let total = 0;
+        data.accounts.forEach(acc=>{ if(isFinanceAccount(acc)) total += getFinancePrincipal(acc.id); });
         return total;
     }
+
+    // 累计收益 = 市值 - 净本金
+    function getFinanceCumulativeReturn(){
+        return getFinanceTotal() - getFinanceTotalPrincipal();
+    }
+
     function getLastUpdateDate(){
         let last=null;
         data.snapshots.forEach(s=>{if(!last||s.date>last) last=s.date;});
@@ -992,6 +1144,76 @@
         return last||null;
     }
 
+    // ==================== 隐私模式 ====================
+    const PRIVACY_KEY = 'financeAppPrivacy';
+    function enablePrivacy(){
+        // 每次开启都清掉上轮遗留的揭示状态，保证全部重新打码
+        document.querySelectorAll('.privacy-revealed').forEach(function(el){
+            el.classList.remove('privacy-revealed');
+        });
+        document.body.classList.add('privacy-mode');
+        localStorage.setItem(PRIVACY_KEY, '1');
+        const btn = document.getElementById('privacyToggleBtn');
+        if(btn) btn.textContent = '🙈';
+    }
+    function disablePrivacy(){
+        if(!document.body.classList.contains('privacy-mode')) return;
+        document.body.classList.remove('privacy-mode');
+        localStorage.setItem(PRIVACY_KEY, '0');
+        const btn = document.getElementById('privacyToggleBtn');
+        if(btn) btn.textContent = '👁';
+    }
+    function togglePrivacy(){
+        if(document.body.classList.contains('privacy-mode')){
+            disablePrivacy();
+            showToast('👁 隐私模式已关闭');
+        } else {
+            enablePrivacy();
+            showToast('🔒 隐私模式已开启 · 点击任意处取消');
+        }
+    }
+    function applyPrivacyOnLoad(){
+        if(localStorage.getItem(PRIVACY_KEY) === '1'){
+            document.body.classList.add('privacy-mode');
+            const btn = document.getElementById('privacyToggleBtn');
+            if(btn) btn.textContent = '🙈';
+        }
+    }
+
+    // 隐私模式下：点击被模糊的金额 → 揭示它；再点一次 → 重新隐藏
+    function findPrivacyTarget(el){
+        let node = el;
+        let revealed = null;
+        let blurred = null;
+        while(node && node !== document.body && node.nodeType === 1){
+            // 优先记录已揭示的祖先（即使它的 filter 已被覆盖为 none）
+            if(!revealed && node.classList && node.classList.contains('privacy-revealed')){
+                revealed = node;
+            }
+            if(!blurred){
+                const cs = getComputedStyle(node);
+                if(cs.filter && cs.filter !== 'none' && cs.filter.indexOf('blur') !== -1){
+                    blurred = node;
+                }
+            }
+            if(revealed || blurred) break;
+            node = node.parentElement;
+        }
+        return revealed || blurred;
+    }
+    document.addEventListener('click', function(e){
+        if(!document.body.classList.contains('privacy-mode')) return;
+        // 点隐私切换按钮本身不拦
+        if(e.target.closest && e.target.closest('#privacyToggleBtn')) return;
+        const target = findPrivacyTarget(e.target);
+        if(target){
+            e.stopPropagation();
+            e.preventDefault();
+            target.classList.toggle('privacy-revealed');
+        }
+        // 点击非金额区域：正常放行，不干扰其他操作
+    }, true);
+
     // ==================== Toast ====================
     let toastTimer=null;
     function showToast(msg){
@@ -1010,6 +1232,10 @@
 
     let currentTab='home';
     function switchTab(tab){
+        // 离开记账页时清空所有日期展开状态，下次进入恢复默认折叠
+        if(currentTab==='journal' && tab!=='journal'){
+            expandedJournalDates.clear();
+        }
         currentTab=tab;
         document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
         document.getElementById('page-'+tab).classList.add('active');
@@ -1019,12 +1245,102 @@
         if(tab==='journal') renderJournalPage();
     }
 
+    // ==================== 账户点击路由 ====================
+    // 日常账户 → 编辑余额；理财账户 → 追加/赎回
+    function openAccountClick(accId){
+        const acc = data.accounts.find(a=>a.id===accId);
+        if(!acc) return;
+        if(isFinanceAccount(acc)){
+            openFinanceTransferModal(accId);
+        } else {
+            openEditBalanceModal(accId);
+        }
+    }
+
+    // ==================== 理财追加/赎回 ====================
+    let editingFinanceTransferAccountId = null;
+
+    function openFinanceTransferModal(accId){
+        const acc = data.accounts.find(a=>a.id===accId);
+        if(!acc) return;
+        if(data.accounts.length < 2){
+            showToast('至少需要两个账户才能追加/赎回');
+            return;
+        }
+        editingFinanceTransferAccountId = accId;
+        document.getElementById('finTransferAccountName').textContent = acc.icon + ' ' + acc.name;
+        document.getElementById('finTransferPrincipal').textContent = formatMoney(getFinancePrincipal(accId));
+        document.getElementById('finTransferMarket').textContent = formatMoney(getAccountBalance(accId));
+
+        const radios = document.querySelectorAll('input[name="finTransferDir"]');
+        radios.forEach(r => {
+            r.checked = (r.value === 'in');
+            r.onchange = updateFinTransferTargets;
+        });
+
+        updateFinTransferTargets();
+        document.getElementById('finTransferAmount').value = '';
+        document.getElementById('finTransferNote').value = '';
+        document.getElementById('finTransferDate').value = getTodayStr();
+        openModal('modalFinanceTransfer');
+    }
+
+    function updateFinTransferTargets(){
+        const dir = document.querySelector('input[name="finTransferDir"]:checked')?.value || 'in';
+        const targetSel = document.getElementById('finTransferTarget');
+        const label = document.getElementById('finTransferTargetLabel');
+        const accId = editingFinanceTransferAccountId;
+        const others = data.accounts.filter(a => a.id !== accId);
+        targetSel.innerHTML = others.map(a=>{
+            const bal = getAccountBalance(a.id);
+            return `<option value="${a.id}">${a.icon||'🏦'} ${a.name} (${formatMoney(bal)})</option>`;
+        }).join('');
+        label.textContent = dir === 'in' ? '从哪个账户转入' : '赎回资金转入哪个账户';
+    }
+
+    function submitFinanceTransfer(){
+        const accId = editingFinanceTransferAccountId;
+        const acc = data.accounts.find(a=>a.id===accId);
+        if(!acc){ showToast('账户不存在'); return; }
+        const dir = document.querySelector('input[name="finTransferDir"]:checked')?.value;
+        if(!dir){ showToast('请选择操作类型'); return; }
+        const targetId = document.getElementById('finTransferTarget').value;
+        if(!targetId){ showToast('请选择对方账户'); return; }
+        if(targetId === accId){ showToast('对方账户不能相同'); return; }
+        const amt = parseFloat(document.getElementById('finTransferAmount').value);
+        if(isNaN(amt) || amt <= 0){ showToast('请输入有效金额'); return; }
+        const dt = document.getElementById('finTransferDate').value;
+        if(!dt){ showToast('请选择日期'); return; }
+        const note = document.getElementById('finTransferNote').value.trim();
+
+        if(dir === 'in'){
+            // 追加：日常/其他 → 理财（理财账户方向 in，对方 out）
+            data.transactions.push({id:genId(), accountId:accId, type:'transfer', transferTargetId:targetId, direction:'in', category:'账户互转', amount:amt, date:dt, note:note||'追加本金'});
+            data.transactions.push({id:genId(), accountId:targetId, type:'transfer', transferTargetId:accId, direction:'out', category:'账户互转', amount:amt, date:dt, note:note||'追加本金'});
+        } else {
+            // 赎回：理财 → 日常/其他（理财账户方向 out，对方 in）
+            data.transactions.push({id:genId(), accountId:accId, type:'transfer', transferTargetId:targetId, direction:'out', category:'账户互转', amount:amt, date:dt, note:note||'赎回本金'});
+            data.transactions.push({id:genId(), accountId:targetId, type:'transfer', transferTargetId:accId, direction:'in', category:'账户互转', amount:amt, date:dt, note:note||'赎回本金'});
+        }
+        saveData();
+        closeModal('modalFinanceTransfer');
+        renderAll();
+        if(document.getElementById('modalFullManage').classList.contains('show')) renderFullAccountList();
+        if(document.getElementById('modalFinanceAccounts').classList.contains('show')) showFinanceAccounts();
+        showToast(dir === 'in' ? '✅ 已追加本金' : '✅ 已赎回本金');
+        checkAchievements();
+    }
+
     // ==================== 账户管理 ====================
     let editingAccountId=null;
-    let editingAccountInfoId=null; // 用于区分编辑账户信息
+    let editingAccountInfoId=null;
     let longPressTimer=null;
+    let expandedJournalDates = new Set();
+    let isFinanceGroupCollapsed = true;
 
     function openFullManageModal(){
+        // 每次打开账户管理，理财分组恢复为折叠状态
+        isFinanceGroupCollapsed = true;
         renderFullAccountList();
         openModal('modalFullManage');
     }
@@ -1037,37 +1353,33 @@
             return;
         }
         let html='';
-        data.accounts.forEach(acc=>{
-            const bal=getAccountBalance(acc.id);
-            const pct=total>0?(bal/total*100):0;
-            const latestDate = getAccountLatestSnapshotDate(acc.id);
-            const dateStr = latestDate ? formatDateToMD(latestDate) : '--';
-            html+=`
-                <div class="account-detail-item" 
-                     data-accid="${acc.id}"
-                     ontouchstart="startLongPress(event,'${acc.id}')" 
-                     ontouchend="cancelLongPress(event)"
-                     ontouchmove="cancelLongPress(event)"
-                     onmousedown="startLongPress(event,'${acc.id}')" 
-                     onmouseup="cancelLongPress(event)"
-                     onmouseleave="cancelLongPress(event)"
-                     onclick="openEditBalanceModal('${acc.id}')">
-                    <div class="left-info">
-                        <span class="icon">${acc.icon||'🏦'}</span>
-                        <div class="name-wrap">
-                            <span class="name">${acc.name}</span>
-                            <span class="update-time">📅 ${dateStr}</span>
-                        </div>
-                        <span class="cat-tag">${acc.category||'日常'}</span>
-                    </div>
-                    <div class="right-info">
-                        <div class="bal">${formatMoney(bal)}</div>
-                        <div class="pct">${pct.toFixed(1)}%</div>
-                        <button onclick="event.stopPropagation(); showEditAccountModal('${acc.id}')" style="margin-left:8px;background:var(--bg);border:none;border-radius:6px;padding:4px 8px;font-size:12px;cursor:pointer;color:var(--text-muted);transition:0.2s;">✏️</button>
-                    </div>
-                </div>
-            `;
+        const dailyAccounts = data.accounts.filter(acc => !isFinanceAccount(acc));
+        const financeAccounts = data.accounts.filter(acc => isFinanceAccount(acc));
+
+        dailyAccounts.forEach(acc => {
+            html += renderSingleAccountItem(acc, total);
         });
+
+        if (financeAccounts.length > 0) {
+            const financeTotal = financeAccounts.reduce((sum, acc) => sum + getAccountBalance(acc.id), 0);
+            const financePct = total > 0 ? (financeTotal / total * 100) : 0;
+            html += `<div class="finance-group-header ${isFinanceGroupCollapsed ? 'collapsed' : 'expanded'}" onclick="toggleFinanceGroup()">
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <span style="font-size:18px;">📈</span>
+                    <span style="font-weight:600; font-size:15px;">理财账户 (${financeAccounts.length})</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <span style="font-weight:600; font-size:16px;">${formatMoney(financeTotal)}</span>
+                    <span style="font-size:11px; color:var(--text-muted);">${financePct.toFixed(1)}%</span>
+                    <span class="finance-group-arrow">▼</span>
+                </div>
+            </div>`;
+            if (!isFinanceGroupCollapsed) {
+                financeAccounts.forEach(acc => {
+                    html += renderSingleAccountItem(acc, total);
+                });
+            }
+        }
         html+=`<div class="account-detail-total"><span>📊 合计</span><span>${formatMoney(total)}</span></div>`;
         container.innerHTML=html;
     }
@@ -1187,22 +1499,28 @@
             let html='';
             financeAccounts.forEach(acc=>{
                 const bal=getAccountBalance(acc.id);
-                const pct=total>0?(bal/total*100):0;
+                const principal=getFinancePrincipal(acc.id);
+                const pnl=bal-principal;
+                const pnlRate=principal>0.001?pnl/principal:0;
                 const latestDate = getAccountLatestSnapshotDate(acc.id);
                 const dateStr = latestDate ? formatDateToMD(latestDate) : '--';
+                const pnlColor = pnl>=0 ? 'var(--green)' : 'var(--red)';
+                const pnlSign = pnl>=0 ? '+' : '';
                 html+=`
-                    <div class="account-detail-item" onclick="openEditBalanceModal('${acc.id}')">
+                    <div class="account-detail-item" onclick="openAccountClick('${acc.id}')">
                         <div class="left-info">
                             <span class="icon">${acc.icon||'🏦'}</span>
                             <div class="name-wrap">
                                 <span class="name">${acc.name}</span>
-                                <span class="update-time">📅 ${dateStr}</span>
+                                <span class="update-time">📅 ${dateStr} · 点击追加/赎回</span>
                             </div>
                             <span class="cat-tag">${acc.category||'理财'}</span>
                         </div>
                         <div class="right-info">
-                            <div class="bal">${formatMoney(bal)}</div>
-                            <div class="pct">${pct.toFixed(1)}%</div>
+                            <div style="text-align:right;">
+                                <div class="bal">${formatMoney(bal)}</div>
+                                <div class="pct" style="color:${pnlColor};">${pnlSign}${formatMoney(Math.abs(pnl))} (${(pnlRate*100).toFixed(2)}%)</div>
+                            </div>
                             <button onclick="event.stopPropagation(); showEditAccountModal('${acc.id}')" style="margin-left:8px;background:var(--bg);border:none;border-radius:6px;padding:4px 8px;font-size:12px;cursor:pointer;color:var(--text-muted);transition:0.2s;">✏️</button>
                         </div>
                     </div>
@@ -1232,8 +1550,45 @@
     function cancelLongPress(e){
         if(longPressTimer){clearTimeout(longPressTimer); longPressTimer=null;}
     }
+    function toggleFinanceGroup() {
+        isFinanceGroupCollapsed = !isFinanceGroupCollapsed;
+        renderFullAccountList();
+    }
+
+    function renderSingleAccountItem(acc, total) {
+        const bal=getAccountBalance(acc.id);
+        const pct=total>0?(bal/total*100):0;
+        const latestDate = getAccountLatestSnapshotDate(acc.id);
+        const dateStr = latestDate ? formatDateToMD(latestDate) : '--';
+        return `
+            <div class="account-detail-item" 
+                 data-accid="${acc.id}"
+                 ontouchstart="startLongPress(event,'${acc.id}')" 
+                 ontouchend="cancelLongPress(event)"
+                 ontouchmove="cancelLongPress(event)"
+                 onmousedown="startLongPress(event,'${acc.id}')" 
+                 onmouseup="cancelLongPress(event)"
+                 onmouseleave="cancelLongPress(event)"
+                 onclick="openAccountClick('${acc.id}')">
+                <div class="left-info">
+                    <span class="icon">${acc.icon||'🏦'}</span>
+                    <div class="name-wrap">
+                        <span class="name">${acc.name}</span>
+                        <span class="update-time">📅 ${dateStr}</span>
+                    </div>
+                    <span class="cat-tag">${acc.category||'日常'}</span>
+                </div>
+                <div class="right-info">
+                    <div class="bal">${formatMoney(bal)}</div>
+                    <div class="pct">${pct.toFixed(1)}%</div>
+                    <button onclick="event.stopPropagation(); showEditAccountModal('${acc.id}')" style="margin-left:8px;background:var(--bg);border:none;border-radius:6px;padding:4px 8px;font-size:12px;cursor:pointer;color:var(--text-muted);transition:0.2s;">✏️</button>
+                </div>
+            </div>
+        `;
+    }
+
     function deleteAccount(accId){
-        data.transactions = data.transactions.filter(t => t.accountId !== accId);
+        data.transactions = data.transactions.filter(t => t.accountId !== accId && t.transferTargetId !== accId);
         data.snapshots = data.snapshots.filter(s => s.accountId !== accId);
         data.accounts = data.accounts.filter(a => a.id !== accId);
         saveData();
@@ -1314,7 +1669,7 @@
         const accId=editingAccountId;
         if(!accId){ showToast('请先选择账户'); return; }
         const adjustments=data.transactions
-            .filter(t=>t.accountId===accId&&(t.category==='余额调整'||t.category==='理财收益'||t.category==='理财亏损'))
+            .filter(t=>t.accountId===accId&&(t.category==='余额调整'||t.category==='理财余额调整'))
             .sort((a,b)=>b.date.localeCompare(a.date)||b.id.localeCompare(a.id));
         if(adjustments.length===0){ showToast('没有可撤销的调整记录'); return; }
         const last=adjustments[0];
@@ -1337,7 +1692,7 @@
     // ==================== 全局撤销 ====================
     function undoLastAdjustmentGlobal(){
         const adjustments = data.transactions
-            .filter(t => t.category === '余额调整' || t.category === '理财收益' || t.category === '理财亏损')
+            .filter(t => t.category === '余额调整' || t.category === '理财余额调整')
             .sort((a,b) => b.date.localeCompare(a.date) || b.id.localeCompare(a.id));
         if(adjustments.length === 0){ showToast('没有可撤销的调整记录'); return; }
         const last = adjustments[0];
@@ -1373,7 +1728,6 @@
         document.getElementById('initialBalanceGroup').style.display = 'block';
         document.getElementById('initialBalanceDateGroup').style.display = 'block';
         
-        // 重置表单
         document.getElementById('accName').value='';
         document.getElementById('accIcon').value='';
         document.getElementById('accCategory').value='日常';
@@ -1392,7 +1746,6 @@
         document.getElementById('accName').value = acc.name;
         document.getElementById('accIcon').value = acc.icon || '🏦';
         
-        // 处理分类
         const standardCats = ['日常', '理财', '投资', '负债', '其他'];
         if (standardCats.includes(acc.category)) {
             document.getElementById('accCategory').value = acc.category;
@@ -1402,7 +1755,6 @@
             document.getElementById('accCategoryCustom').value = acc.category;
         }
         
-        // 隐藏余额相关字段，提示用户使用专门功能
         document.getElementById('initialBalanceGroup').style.display = 'none';
         document.getElementById('initialBalanceDateGroup').style.display = 'none';
         
@@ -1418,7 +1770,6 @@
 
         if (!name) { showToast('请填写账户名称'); return; }
 
-        // 编辑模式
         if (editingAccountInfoId) {
             const acc = data.accounts.find(a => a.id === editingAccountInfoId);
             if (acc) {
@@ -1435,7 +1786,6 @@
             return;
         }
 
-        // 添加模式
         const bal = parseFloat(document.getElementById('accBalance').value) || 0;
         const date = document.getElementById('accBalanceDate').value;
         if (!date) { showToast('请选择余额日期'); return; }
@@ -1460,24 +1810,21 @@
             return y+'-'+m+'-'+day;
         };
 
-        // 1. 筛选当周所有流水
         const weekTxns = data.transactions.filter(t => t.date >= startDate && t.date <= endDate);
 
-        // 2. 汇总本周收支
         const weekIncome = weekTxns.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0);
         const weekExpense = weekTxns.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0);
 
-        // 3. 理财盈亏（只认真正的理财收益/亏损，排除余额调整）
         let weekAssetGain = 0, weekAssetLoss = 0;
         weekTxns.forEach(t => {
-            if (t.category === '理财收益') weekAssetGain += t.amount;
-            if (t.category === '理财亏损') weekAssetLoss += t.amount;
+            const acc = data.accounts.find(a => a.id === t.accountId);
+            if (!acc || !isFinanceAccount(acc)) return;
+            if (t.type === 'asset_gain') weekAssetGain += t.amount;
+            if (t.type === 'asset_loss') weekAssetLoss += t.amount;
         });
 
-        // 4. 总资产变动 = 收入 - 支出 + 理财收益 - 理财亏损
         const totalAssetChange = weekIncome - weekExpense + weekAssetGain - weekAssetLoss;
 
-        // 5. 计算账户快照明细（用于展示期初/期末对账）
         const accountChanges = [];
         let totalStart = 0, totalEnd = 0;
         let totalStartKnown = true, totalEndKnown = true;
@@ -1495,7 +1842,11 @@
             const weekNet = accWeekTxns.reduce((sum, t) => {
                 if (t.type === 'income' || t.type === 'asset_gain') return sum + t.amount;
                 if (t.type === 'expense' || t.type === 'asset_loss') return sum - t.amount;
-                if (t.type === 'transfer') return t.transferTargetId ? sum - t.amount : sum + t.amount;
+                if (t.type === 'transfer') {
+                    if (t.direction === 'out') return sum - t.amount;
+                    if (t.direction === 'in') return sum + t.amount;
+                    return t.transferTargetId ? sum - t.amount : sum + t.amount;
+                }
                 return sum;
             }, 0);
             const change = (startBal !== null && endBal !== null) ? (endBal - startBal) : weekNet;
@@ -1508,12 +1859,9 @@
             }
         });
         accountChanges.sort((a, b) => Math.abs(b.change) - Math.abs(a.change));
-        const financeAccChanges = accountChanges.filter(c => isFinanceAccount(c.acc));
 
-        // 6. 构造 HTML
         let html = '';
 
-        // 顶部：总资产变动
         html += `<div style="background:linear-gradient(135deg,#f8faff,#eef2fa);padding:16px;border-radius:16px;margin-bottom:14px;border:1px solid rgba(74,124,247,0.1);">
             <div style="font-size:12px;color:var(--text-muted);margin-bottom:6px;">💰 总资产变动</div>
             <div style="font-size:24px;font-weight:700;color:${totalAssetChange >= 0 ? 'var(--green)' : 'var(--red)'};">
@@ -1525,7 +1873,6 @@
             <div style="font-size:10px;color:var(--text-muted);margin-top:4px;text-align:center;">ℹ️ 期初/期末基于最近两次余额快照，用于核对账实差异</div>
         </div>`;
 
-        // 本周收支
         html += `<div style="background:var(--bg);padding:12px 14px;border-radius:12px;margin-bottom:14px;">
             <div style="font-size:12px;font-weight:600;color:var(--text-secondary);margin-bottom:8px;">📊 收支汇总</div>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px 16px;font-size:13px;">
@@ -1537,13 +1884,12 @@
             </div>
         </div>`;
 
-        // 理财变动汇总
         if (weekAssetGain > 0.001 || weekAssetLoss > 0.001) {
             const finNet = weekAssetGain - weekAssetLoss;
             html += `<div style="background:var(--card-blue-bg);padding:12px 14px;border-radius:12px;margin-bottom:14px;border:1px solid rgba(74,124,247,0.12);">
-                <div style="font-size:12px;font-weight:600;color:var(--text-secondary);margin-bottom:8px;">📈 理财变动</div>
+                <div style="font-size:12px;font-weight:600;color:var(--text-secondary);margin-bottom:8px;">📈 理财盈亏（不含本金流动）</div>
                 <div style="display:flex;justify-content:space-between;font-size:14px;margin-bottom:6px;">
-                    <span style="color:var(--text-muted);">资产净值变动</span><span style="font-weight:700;color:${finNet >= 0 ? 'var(--green)' : 'var(--red)'};">${finNet >= 0 ? '+' : ''}${formatMoney(finNet)}</span>
+                    <span style="color:var(--text-muted);">净值变动</span><span style="font-weight:700;color:${finNet >= 0 ? 'var(--green)' : 'var(--red)'};">${finNet >= 0 ? '+' : ''}${formatMoney(finNet)}</span>
                 </div>
                 <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text-muted);padding-top:6px;border-top:1px dashed rgba(74,124,247,0.15);">
                     <span>✨ 收益 +${formatMoney(weekAssetGain)}</span><span>📉 亏损 -${formatMoney(weekAssetLoss)}</span>
@@ -1551,7 +1897,6 @@
             </div>`;
         }
 
-        // 账户变动明细（折叠）
         if (accountChanges.length > 0) {
             html += `<details style="margin-bottom:12px;border:1px solid var(--border);border-radius:12px;padding:8px 12px;cursor:pointer;">
                 <summary style="font-weight:600;font-size:13px;color:var(--text-secondary);padding:4px 0;">💳 账户变动明细 (点击展开)</summary>
@@ -1568,7 +1913,6 @@
             html += `</div></details>`;
         }
 
-        // 交易明细（折叠）
         if (weekTxns.length > 0) {
             html += `<details style="margin-bottom:12px;border:1px solid var(--border);border-radius:12px;padding:8px 12px;cursor:pointer;">
                 <summary style="font-weight:600;font-size:13px;color:var(--text-secondary);padding:4px 0;">📋 交易明细 (点击展开)</summary>
@@ -1578,11 +1922,12 @@
                 const acc = data.accounts.find(a => a.id === t.accountId);
                 const accName = acc ? acc.name : '未知';
                 const isIncome = (t.type === 'income' || t.type === 'asset_gain');
-                const amtClass = isIncome ? 'income' : 'expense';
-                const sign = isIncome ? '+' : '-';
+                const amtClass = isIncome ? 'income' : (t.type === 'transfer' ? '' : 'expense');
+                const sign = isIncome ? '+' : (t.type === 'transfer' ? '' : '-');
+                const transferTag = t.type === 'transfer' ? (t.direction === 'in' ? ' 转入' : ' 转出') : '';
                 html += `<div class="txn-detail-item" style="padding:8px 0;">
-                    <div style="min-width:0;flex:1;"><span>${t.category || '📦'}</span><span class="cat" style="margin-left:6px;">${accName}</span>${t.note ? `<span class="note" style="margin-left:6px;">${t.note}</span>` : ''}<span style="font-size:11px;color:var(--text-muted);margin-left:6px;">${t.date}</span></div>
-                    <span class="amt ${amtClass}" style="font-size:13px;flex-shrink:0;">${sign}${t.amount.toFixed(2)}</span>
+                    <div style="min-width:0;flex:1;"><span>${t.category || '📦'}</span><span class="cat" style="margin-left:6px;">${accName}${transferTag}</span>${t.note ? `<span class="note" style="margin-left:6px;">${t.note}</span>` : ''}<span style="font-size:11px;color:var(--text-muted);margin-left:6px;">${t.date}</span></div>
+                    <span class="amt ${amtClass}" style="font-size:13px;flex-shrink:0;${t.type==='transfer'?'color:var(--gold);':''}">${sign}${t.amount.toFixed(2)}</span>
                 </div>`;
             });
             html += `</div></details>`;
@@ -1626,7 +1971,7 @@
                         <select id="journalAccount" required></select>
                     </div>
                     <div class="form-group" id="journalTransferWrap" style="display:none;">
-                        <label>转入账户</label>
+                        <label>对方账户</label>
                         <select id="journalTransferTarget"></select>
                     </div>
                     <div class="form-group" id="journalTypeGroup">
@@ -1702,7 +2047,8 @@
         let html='';
         if(isFinance){
             html=`<label><input type="radio" name="journalType" value="asset_gain" checked><span>📈资产增值</span></label>
-                  <label><input type="radio" name="journalType" value="asset_loss"><span>📉资产减值</span></label>`;
+                  <label><input type="radio" name="journalType" value="asset_loss"><span>📉资产减值</span></label>
+                  <label><input type="radio" name="journalType" value="transfer"><span>🔄转出赎回</span></label>`;
             catGroup.classList.add('hidden');
         }else{
             html=`<label><input type="radio" name="journalType" value="expense" checked><span>💸支出</span></label>
@@ -1737,11 +2083,12 @@
         const dt=document.getElementById('journalDate').value;
         const note=document.getElementById('journalNote').value.trim();
         if(!accId||!dt||isNaN(amt)||amt<=0){showToast('请完善表单');return;}
+
         if(type==='transfer'){
             const targetId=document.getElementById('journalTransferTarget').value;
             if(targetId===accId){showToast('转出和转入账户不能相同');return;}
-            data.transactions.push({id:genId(),accountId:accId,type:'transfer',transferTargetId:targetId,category:'账户互转',amount:amt,date:dt,note:note||'账户转账'});
-            data.transactions.push({id:genId(),accountId:targetId,type:'transfer',transferTargetId:accId,category:'账户互转',amount:amt,date:dt,note:note||'账户转账'});
+            data.transactions.push({id:genId(),accountId:accId,type:'transfer',transferTargetId:targetId,direction:'out',category:'账户互转',amount:amt,date:dt,note:note||'账户转账'});
+            data.transactions.push({id:genId(),accountId:targetId,type:'transfer',transferTargetId:accId,direction:'in',category:'账户互转',amount:amt,date:dt,note:note||'账户转账'});
         }else{
             const acc=data.accounts.find(a=>a.id===accId);
             let finalCat=cat;
@@ -1770,29 +2117,154 @@
         if(filter==='expense') filtered=filtered.filter(t=>t.type==='expense'||t.type==='asset_loss');
         else if(filter==='income') filtered=filtered.filter(t=>t.type==='income'||t.type==='asset_gain');
         else if(filter==='transfer') filtered=filtered.filter(t=>t.type==='transfer');
-        else if(filter==='adjustment') filtered=filtered.filter(t=>t.category==='余额调整');
-        filtered.sort((a,b)=>b.date.localeCompare(a.date)||b.id.localeCompare(a.id));
+        else if(filter==='adjustment') filtered=filtered.filter(t=>t.category==='余额调整'||t.category==='理财余额调整');
+        
         if(filtered.length===0){
             container.innerHTML=`<div class="empty-tip" style="text-align:center;color:var(--text-muted);padding:30px 0;font-size:14px;">📭 暂无交易记录</div>`;
             return;
         }
-        container.innerHTML=filtered.map(t=>{
-            const acc=data.accounts.find(a=>a.id===t.accountId);
-            const accName=acc?acc.name:'已删除';
-            let sign='',cls='';
-            if(t.type==='expense'||t.type==='asset_loss'){sign='-';cls='expense';}
-            else if(t.type==='income'||t.type==='asset_gain'){sign='+';cls='income';}
-            else if(t.type==='transfer'){sign='';cls='transfer';}
-            else {cls='adjustment';}
-            return `<div class="recent-item">
-    <div class="left"><span>${t.category||'📦'}</span><span class="category">${accName}</span>${t.note?`<span class="note">${t.note}</span>`:''}</div>
-    <div style="display:flex;align-items:center;gap:6px;"><span class="date">${t.date}</span><span class="amount ${cls}">${sign}${t.amount.toFixed(2)}</span><button class="del-txn" onclick="deleteJournalTransaction('${t.id}')">✕</button></div>
-    </div>`;
+
+        // 按日期分组
+        const groups = {};
+        filtered.forEach(t => {
+            if (!groups[t.date]) groups[t.date] = [];
+            groups[t.date].push(t);
+        });
+
+        const sortedDates = Object.keys(groups).sort((a,b)=>b.localeCompare(a));
+
+        container.innerHTML = sortedDates.map(date => {
+            const items = groups[date];
+            let dayIncome = 0, dayExpense = 0, dayAssetGain = 0, dayAssetLoss = 0;
+            items.forEach(t => {
+                if (t.type === 'income') dayIncome += t.amount;
+                else if (t.type === 'expense') dayExpense += t.amount;
+                else if (t.type === 'asset_gain') dayAssetGain += t.amount;
+                else if (t.type === 'asset_loss') dayAssetLoss += t.amount;
+            });
+            const dayNet = dayIncome - dayExpense + dayAssetGain - dayAssetLoss;
+            const isExpanded = expandedJournalDates.has(date);
+            const sign = dayNet >= 0 ? '+' : '';
+            const colorCls = dayNet >= 0 ? 'income' : 'expense';
+
+            const detailHtml = items.map(t => {
+                const acc = data.accounts.find(a=>a.id===t.accountId);
+                const accName = acc ? acc.name : '已删除';
+                let tSign='', tCls='';
+                if(t.type==='expense'||t.type==='asset_loss'){tSign='-';tCls='expense';}
+                else if(t.type==='income'||t.type==='asset_gain'){tSign='+';tCls='income';}
+                else if(t.type==='transfer'){tSign='';tCls='transfer';}
+                else {tCls='adjustment';}
+                const transferTag = t.type==='transfer' ? (t.direction==='in' ? ' 转入' : ' 转出') : '';
+                return `<div class="recent-item" style="border-radius:10px; margin-bottom:4px; display:flex; flex-wrap:wrap; padding:10px 12px;" data-tid="${t.id}"
+                     ontouchstart="startTxnLongPress(event, '${t.id}')" 
+                     ontouchend="cancelTxnLongPress()"
+                     ontouchmove="cancelTxnLongPress()"
+                     onmousedown="startTxnLongPress(event, '${t.id}')" 
+                     onmouseup="cancelTxnLongPress()"
+                     onmouseleave="cancelTxnLongPress()">
+                    <div class="left" style="flex:1 1 100%; display:flex; align-items:center; gap:6px; margin-bottom:4px; min-width:0;">
+                        <span style="flex-shrink:0;">${t.category||'📦'}</span>
+                        <span class="category" style="flex-shrink:0;">${accName}${transferTag}</span>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; align-items:center; flex:1 1 100%; gap:8px;">
+                        <span class="note" style="color:var(--text-muted); font-size:12px; word-break:break-all; flex:1; min-width:0;">${t.note || '&nbsp;'}</span>
+                        <span class="amount ${tCls}" style="flex-shrink:0;">${tSign}${t.amount.toFixed(2)}</span>
+                    </div>
+                </div>`;
+            }).join('');
+
+            return `<div class="date-group" style="margin-bottom:12px; border:1px solid var(--border); border-radius:12px; overflow:hidden; background:var(--card-bg);">
+                <div class="date-header" onclick="toggleJournalDate('${date}')" style="display:flex; justify-content:space-between; align-items:center; padding:12px 14px; background:var(--bg); cursor:pointer; user-select:none;">
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <span style="font-weight:600; font-size:14px; color:var(--text-primary);">${date}</span>
+                        <span style="font-size:11px; color:var(--text-muted); background:var(--card-bg); padding:1px 8px; border-radius:10px;">${items.length}笔</span>
+                    </div>
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <span style="font-weight:700; font-size:15px; color:${dayNet >= 0 ? 'var(--green)' : 'var(--red)'};">${sign}¥${Math.abs(dayNet).toFixed(2)}</span>
+                        <span style="font-size:12px; color:var(--text-muted); transition:transform 0.3s; display:inline-block; transform:rotate(${isExpanded ? '0' : '-90'}deg);">▼</span>
+                    </div>
+                </div>
+                <div class="date-body" style="display:${isExpanded ? 'block' : 'none'}; padding:8px 10px; border-top:1px solid var(--border);">
+                    ${detailHtml}
+                </div>
+            </div>`;
         }).join('');
     }
 
+    function toggleJournalDate(date) {
+        if (expandedJournalDates.has(date)) {
+            expandedJournalDates.delete(date);
+        } else {
+            expandedJournalDates.add(date);
+        }
+        renderJournalTxnList();
+    }
+
+    let txnLongPressTimer = null;
+    function startTxnLongPress(e, tid) {
+        txnLongPressTimer = setTimeout(() => {
+            if (confirm('确定删除此记录？')) {
+                deleteJournalTransaction(tid);
+            }
+            txnLongPressTimer = null;
+        }, 800);
+    }
+    function cancelTxnLongPress() {
+        if (txnLongPressTimer) {
+            clearTimeout(txnLongPressTimer);
+            txnLongPressTimer = null;
+        }
+    }
+
+    function undoLastTransaction() {
+        const sorted = [...data.transactions].sort((a,b) => b.date.localeCompare(a.date) || b.id.localeCompare(a.id));
+        if (sorted.length === 0) { showToast('没有可撤销的交易'); return; }
+        const last = sorted[0];
+        const acc = data.accounts.find(a => a.id === last.accountId);
+        const accName = acc ? acc.name : '已删除';
+        const typeMap = { income:'收入', expense:'支出', transfer:'转账', asset_gain:'资产增值', asset_loss:'资产减值' };
+        const sign = last.type==='income'||last.type==='asset_gain' ? '+' : (last.type==='transfer'?'':'-');
+        if (!confirm(`撤销最近一笔交易？\n日期：${last.date}\n类型：${typeMap[last.type] || last.type}\n账户：${accName}\n金额：${sign}${last.amount.toFixed(2)}`)) return;
+        
+        if (last.type === 'transfer' && last.transferTargetId) {
+            const pair = data.transactions.find(t =>
+                t.id !== last.id && t.type === 'transfer' &&
+                t.accountId === last.transferTargetId && t.transferTargetId === last.accountId &&
+                Math.abs(t.amount - last.amount) < 0.001 && t.date === last.date
+            );
+            if (pair) {
+                data.transactions = data.transactions.filter(t => t.id !== pair.id);
+            }
+        }
+        data.transactions = data.transactions.filter(t => t.id !== last.id);
+        saveData();
+        renderJournalTxnList();
+        renderAll();
+        showToast('已撤销最近一笔交易');
+    }
+
     function deleteJournalTransaction(tid){
-        if(!confirm('确定删除此记录？')) return;
+        const txn = data.transactions.find(t=>t.id===tid);
+        if(!txn) return;
+        let confirmMsg = '确定删除此记录？';
+        if(txn.type==='transfer'){
+            confirmMsg = '这是转账记录，将同时删除对应的配对记录。确定继续？';
+        }
+        if(!confirm(confirmMsg)) return;
+        if(txn.type==='transfer' && txn.transferTargetId){
+            const pair = data.transactions.find(t =>
+                t.id !== txn.id &&
+                t.type === 'transfer' &&
+                t.accountId === txn.transferTargetId &&
+                t.transferTargetId === txn.accountId &&
+                Math.abs(t.amount - txn.amount) < 0.001 &&
+                t.date === txn.date
+            );
+            if(pair){
+                data.transactions = data.transactions.filter(t => t.id !== pair.id);
+            }
+        }
         data.transactions=data.transactions.filter(t=>t.id!==tid);
         saveData();
         renderJournalTxnList();
@@ -1801,6 +2273,11 @@
     }
 
     // ==================== 首页渲染 ====================
+    function getMonthColor(month){
+        const palette = ['#4a7cf7', '#ed8936', '#9f7aea'];
+        return palette[month % 3];
+    }
+
     function renderHomeWeekChart(){
         const container=document.getElementById('weekMiniContainer');
         const todayDate=parseDate(getTodayStr());
@@ -1820,11 +2297,16 @@
             sunday.setDate(sunday.getDate()+6);
             const endStr=fmtDate(sunday);
             const weekTxns=data.transactions.filter(t=>t.date>=monday&&t.date<=endStr);
-            const income=weekTxns.filter(t=>t.type==='income'||t.type==='asset_gain').reduce((s,t)=>s+t.amount,0);
-            const expense=weekTxns.filter(t=>t.type==='expense'||t.type==='asset_loss').reduce((s,t)=>s+t.amount,0);
-            
-            // 总资产变动直接取流水净额，排除历史余额调整干扰
-            const totalChange = income - expense;
+            const income=weekTxns.filter(t=>t.type==='income').reduce((s,t)=>s+t.amount,0);
+            const expense=weekTxns.filter(t=>t.type==='expense').reduce((s,t)=>s+t.amount,0);
+            let finGain=0, finLoss=0;
+            weekTxns.forEach(t=>{
+                const acc=data.accounts.find(a=>a.id===t.accountId);
+                if(!acc || !isFinanceAccount(acc)) return;
+                if(t.type==='asset_gain') finGain += t.amount;
+                if(t.type==='asset_loss') finLoss += t.amount;
+            });
+            const totalChange = income - expense + finGain - finLoss;
 
             const weekLabel = '第' + (getWeekNumber(mondayDate).week) + '周';
             weeks.push({
@@ -1832,8 +2314,8 @@
                 balance: totalChange,
                 startDate: monday,
                 endDate: endStr,
-                income: income,
-                expense: expense
+                income: income + finGain,
+                expense: expense + finLoss
             });
         }
         const maxVal=Math.max(...weeks.map(w=>Math.abs(w.balance)),1);
@@ -1843,8 +2325,12 @@
             const isNeg=w.balance<0;
             const cls=isNeg?'negative':'positive';
             const sign=w.balance>=0?'+':'';
+            const dParts = w.startDate.split('-');
+            const dateLabel = parseInt(dParts[1]) + '.' + parseInt(dParts[2]);
+            const monthColor = getMonthColor(parseInt(dParts[1]));
             return `<div class="w-item" style="cursor:pointer;" onclick="showWeekDetailByWeek('${w.startDate}', '${w.endDate}', '${w.label}', ${w.income}, ${w.expense})">
                 <div class="w-label">${w.label}</div>
+                <div class="w-date" style="color:${monthColor};">${dateLabel}</div>
                 <div class="w-bar"><div class="w-fill ${cls}" style="width:${Math.max(pct,2)}%;"></div></div>
                 <div class="w-val ${cls}">${sign}${w.balance.toFixed(0)}</div>
             </div>`;
@@ -1853,7 +2339,6 @@
         renderWeekSummary(weeks[weeks.length-1], weeks[weeks.length-2]);
     }
 
-    // v4: 生成最近一周情况总结（带时间节点，修正总资产变动计算）
     function renderWeekSummary(cur, prev){
         const el = document.getElementById('weekSummary');
         if (!el) return;
@@ -1872,7 +2357,6 @@
             else if (t.type === 'asset_loss') finChange -= t.amount;
         });
 
-        // 条件：总资产变动=0 且 无收支 且 无理财变动 → 直接隐藏
         if (Math.abs(cur.balance) < 0.001 && cur.income < 0.001 && cur.expense < 0.001 && Math.abs(finChange) < 0.001) {
             el.style.display = 'none';
             return;
@@ -1918,8 +2402,8 @@
         const today=getTodayStr();
         const weekStart=getWeekStart(today);
         const weekTxns=data.transactions.filter(t=>t.date>=weekStart&&t.date<=today);
-        const weekIncome=weekTxns.filter(t=>t.type==='income'||t.type==='asset_gain').reduce((s,t)=>s+t.amount,0);
-        const weekExpense=weekTxns.filter(t=>t.type==='expense'||t.type==='asset_loss').reduce((s,t)=>s+t.amount,0);
+        const weekIncome=weekTxns.filter(t=>t.type==='income').reduce((s,t)=>s+t.amount,0);
+        const weekExpense=weekTxns.filter(t=>t.type==='expense').reduce((s,t)=>s+t.amount,0);
         const balance=weekIncome-weekExpense;
         document.getElementById('weekIncomeTag').textContent='+¥'+weekIncome.toFixed(2);
         document.getElementById('weekExpenseTag').textContent='-¥'+weekExpense.toFixed(2);
@@ -1931,49 +2415,51 @@
         document.getElementById('assetUpdateDateTag').textContent=lastDate||'--';
     }
 
+    // ==================== 理财卡片（本金/盈亏分离） ====================
     function renderFinanceCard(){
-        const financeTotal=getFinanceTotal();
-        const cumulativeReturn=getFinanceCumulativeReturn();
-        const cost=getFinanceCost();
+        const financeTotal = getFinanceTotal();
+        const principal = getFinanceTotalPrincipal();
+        const cumulativeReturn = financeTotal - principal;
 
-        document.getElementById('financeTotalAmount').textContent=financeTotal.toFixed(2);
+        document.getElementById('financeTotalAmount').textContent = financeTotal.toFixed(2);
 
-        const returnEl=document.getElementById('financeCumulativeTag');
-        const returnSign=cumulativeReturn>=0?'+':'';
-        returnEl.textContent=`${returnSign}${formatMoney(Math.abs(cumulativeReturn))}`;
-        returnEl.className='num '+(cumulativeReturn>=0?'green':'red');
+        const returnEl = document.getElementById('financeCumulativeTag');
+        const returnSign = cumulativeReturn >= 0 ? '+' : '';
+        returnEl.textContent = `${returnSign}${formatMoney(Math.abs(cumulativeReturn))}`;
+        returnEl.className = 'num ' + (cumulativeReturn >= 0 ? 'green' : 'red');
 
-        const rateEl=document.getElementById('financeRateTag');
-        if(cost>0){
-            const rate=cumulativeReturn/cost;
-            rateEl.textContent=(rate>=0?'+':'')+formatPercent(rate);
-            rateEl.className='num '+(rate>=0?'green':'red');
-        }else{
-            rateEl.textContent='--';
-            rateEl.className='num';
+        const rateEl = document.getElementById('financeRateTag');
+        if (principal > 0.001) {
+            const rate = cumulativeReturn / principal;
+            rateEl.textContent = (rate >= 0 ? '+' : '') + formatPercent(rate);
+            rateEl.className = 'num ' + (rate >= 0 ? 'green' : 'red');
+        } else {
+            rateEl.textContent = '--';
+            rateEl.className = 'num';
         }
 
-        const lastDate=getFinanceLastUpdateDate();
-        document.getElementById('financeUpdateDateTag').textContent=lastDate||'--';
+        const lastDate = getFinanceLastUpdateDate();
+        document.getElementById('financeUpdateDateTag').textContent = lastDate || '--';
 
-        // v2: 本周理财变动
         const _todayW = getTodayStr();
         const _weekStartW = getWeekStart(_todayW);
-        let _weekFinanceChange = 0;
+        let _weekPnl = 0;
         data.transactions.forEach(t => {
             if (t.date < _weekStartW || t.date > _todayW) return;
             const acc = data.accounts.find(a => a.id === t.accountId);
             if (!acc || !isFinanceAccount(acc)) return;
-            if (t.type === 'asset_gain' || t.type === 'income') _weekFinanceChange += t.amount;
-            else if (t.type === 'asset_loss' || t.type === 'expense') _weekFinanceChange -= t.amount;
-            else if (t.type === 'transfer') _weekFinanceChange += t.transferTargetId ? -t.amount : t.amount;
+            if (t.type === 'asset_gain') _weekPnl += t.amount;
+            else if (t.type === 'asset_loss') _weekPnl -= t.amount;
         });
         const _wkEl = document.getElementById('financeWeekChangeTag');
         if (_wkEl) {
-            const _wkSign = _weekFinanceChange >= 0 ? '+' : '';
-            _wkEl.textContent = _wkSign + Math.abs(_weekFinanceChange).toFixed(2);
-            _wkEl.className = 'num ' + (_weekFinanceChange >= 0 ? 'green' : 'red');
+            const _wkSign = _weekPnl >= 0 ? '+' : '';
+            _wkEl.textContent = _wkSign + Math.abs(_weekPnl).toFixed(2);
+            _wkEl.className = 'num ' + (_weekPnl >= 0 ? 'green' : 'red');
         }
+
+        const noteEl = document.querySelector('#financeAssetItem .sub-note');
+        if (noteEl) noteEl.textContent = `净投入 ${formatMoney(principal)} ｜ 市值 ${formatMoney(financeTotal)}`;
 
         const hasFinance = data.accounts.some(a => isFinanceAccount(a));
         const financeItem = document.getElementById('financeAssetItem');
@@ -2032,6 +2518,45 @@
     }
 
     // ==================== 储蓄目标圆形迷你图 ====================
+    function dateToStr(dt){
+        const y=dt.getFullYear();
+        const m=String(dt.getMonth()+1).padStart(2,'0');
+        const d=String(dt.getDate()).padStart(2,'0');
+        return y+'-'+m+'-'+d;
+    }
+
+    function getGoalProgress(g){
+        if(g.type === 'finance'){
+            const today = getTodayStr();
+            let startStr, endStr, periodLabel;
+            if(g.period === 'month'){
+                const now = new Date();
+                const y = now.getFullYear(), m = now.getMonth();
+                startStr = dateToStr(new Date(y, m, 1));
+                endStr = dateToStr(new Date(y, m+1, 0));
+                periodLabel = (m+1) + '月';
+            } else {
+                const monday = getWeekStart(today);
+                const mondayDate = parseDate(monday);
+                const sunday = new Date(mondayDate);
+                sunday.setDate(sunday.getDate() + 6);
+                startStr = monday;
+                endStr = dateToStr(sunday);
+                periodLabel = '第' + getWeekNumber(mondayDate).week + '周';
+            }
+            let current = 0;
+            const accSet = new Set(g.accounts || []);
+            data.transactions.forEach(t => {
+                if(t.date < startStr || t.date > endStr) return;
+                if(!accSet.has(t.accountId)) return;
+                if(t.type === 'asset_gain') current += t.amount;
+                else if(t.type === 'asset_loss') current -= t.amount;
+            });
+            return { current, target: g.target, periodLabel, isFinance: true };
+        }
+        return { current: g.current || 0, target: g.target, isFinance: false };
+    }
+
     function renderGoalMini(){
         const canvas=document.getElementById('goalMiniCanvas');
         const ctx=canvas.getContext('2d');
@@ -2049,7 +2574,11 @@
         }
 
         let totalTarget=0, totalCurrent=0;
-        goals.forEach(g=>{ totalTarget+=g.target; totalCurrent+=g.current; });
+        goals.forEach(g=>{
+            const p = getGoalProgress(g);
+            totalTarget += p.target;
+            totalCurrent += Math.max(0, p.current);
+        });
         const pct=totalTarget>0?Math.min(1,totalCurrent/totalTarget):0;
 
         const radius = 60;
@@ -2083,8 +2612,10 @@
 
         const tags=document.getElementById('goalMiniTags');
         tags.innerHTML=goals.map(g=>{
-            const gp=g.target>0?Math.min(100,(g.current/g.target)*100):0;
-            return `<span>${g.name} <strong>${gp.toFixed(0)}%</strong></span>`;
+            const p = getGoalProgress(g);
+            const gp = p.target>0 ? Math.min(100, Math.max(0, (p.current/p.target)*100)) : 0;
+            const icon = p.isFinance ? '📈 ' : '';
+            return `<span>${icon}${g.name} <strong>${gp.toFixed(0)}%</strong></span>`;
         }).join('');
     }
 
@@ -2135,14 +2666,46 @@
         document.getElementById('goalName').value='梦想基金';
         document.getElementById('goalTarget').value='5000';
         document.getElementById('goalCurrent').value='0';
+        document.querySelector('input[name="goalType"][value="savings"]').checked = true;
+        document.querySelector('input[name="goalPeriod"][value="week"]').checked = true;
+        toggleGoalType();
         openModal('modalGoal');
+    }
+
+    function toggleGoalType(){
+        const checked = document.querySelector('input[name="goalType"]:checked');
+        if(!checked) return;
+        const isFinance = checked.value === 'finance';
+        document.getElementById('goalCurrentGroup').style.display = isFinance ? 'none' : 'block';
+        document.getElementById('goalAccountsGroup').style.display = isFinance ? 'block' : 'none';
+        document.getElementById('goalPeriodGroup').style.display = isFinance ? 'block' : 'none';
+        document.getElementById('goalTargetLabel').textContent = isFinance ? '收益目标 (¥)' : '目标金额 (¥)';
+        if(isFinance){
+            const wrap = document.getElementById('goalAccountChecks');
+            const finAccs = data.accounts.filter(a => isFinanceAccount(a));
+            if(finAccs.length === 0){
+                wrap.innerHTML = '<span style="color:var(--text-muted);font-size:12px;">暂无理财账户，请先添加分类为「理财」的账户</span>';
+            } else {
+                wrap.innerHTML = finAccs.map(a => `<label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;"><input type="checkbox" value="${a.id}" checked style="width:16px;height:16px;"> ${a.icon||'📈'} ${a.name}</label>`).join('');
+            }
+        }
     }
     function addGoal(){
         const name=document.getElementById('goalName').value.trim();
         const target=parseFloat(document.getElementById('goalTarget').value);
-        const curr=parseFloat(document.getElementById('goalCurrent').value);
+        const typeEl = document.querySelector('input[name="goalType"]:checked');
+        const type = typeEl ? typeEl.value : 'savings';
         if(!name||isNaN(target)||target<=0){showToast('请填写合法目标');return;}
-        data.goals.push({id:genId(),name:name,target:target,current:curr||0});
+        if(type === 'finance'){
+            const accs = Array.from(document.querySelectorAll('#goalAccountChecks input:checked')).map(el=>el.value);
+            if(accs.length === 0){ showToast('请至少选择一个理财账户'); return; }
+            const periodEl = document.querySelector('input[name="goalPeriod"]:checked');
+            const period = periodEl ? periodEl.value : 'week';
+            data.goals.push({id:genId(), name:name, type:'finance', target:target, accounts:accs, period:period});
+        } else {
+            const curr=parseFloat(document.getElementById('goalCurrent').value);
+            data.goals.push({id:genId(), name:name, type:'savings', target:target, current:curr||0});
+        }
         saveData();closeModal('modalGoal');renderAll();showToast('目标已添加');
     }
     function renderGoals(){
@@ -2152,18 +2715,32 @@
             return;
         }
         wrap.innerHTML=data.goals.map(g=>{
-            const pct=Math.min(100,Math.max(0,(g.current/g.target)*100));
+            const p = getGoalProgress(g);
+            const pct = p.target>0 ? Math.min(100, Math.max(0, (p.current/p.target)*100)) : 0;
+            const isFin = p.isFinance;
+            const achieved = p.current >= p.target;
+            const fillColor = isFin ? (achieved ? 'var(--green)' : 'linear-gradient(90deg,var(--blue),#7c5cfc)') : 'linear-gradient(90deg,var(--blue),#7c5cfc)';
+            const badge = isFin
+                ? `<span style="font-size:10px;background:var(--card-blue-bg);color:var(--blue);padding:1px 8px;border-radius:10px;margin-left:6px;">${p.periodLabel||''}</span>`
+                : '';
+            const progressText = isFin
+                ? `${p.current>=0?'+':''}${formatMoney(p.current)} / ${formatMoney(p.target)}`
+                : `${formatMoney(p.current)} / ${formatMoney(p.target)}`;
+            const actions = isFin
+                ? `<button onclick="deleteGoal('${g.id}')" style="background:var(--bg);border:none;border-radius:8px;padding:4px 12px;font-size:12px;cursor:pointer;color:var(--text-muted);transition:0.2s;border:1px solid var(--border);">删除</button>`
+                : `<button onclick="openGoalProgress('${g.id}')" style="background:var(--bg);border:none;border-radius:8px;padding:4px 12px;font-size:12px;cursor:pointer;color:var(--text-muted);transition:0.2s;border:1px solid var(--border);">增加存款</button>
+                   <button onclick="deleteGoal('${g.id}')" style="background:var(--bg);border:none;border-radius:8px;padding:4px 12px;font-size:12px;cursor:pointer;color:var(--text-muted);transition:0.2s;border:1px solid var(--border);">删除</button>`;
+            const icon = isFin ? '📈 ' : '';
             return `<div class="goal-item" style="background:var(--bg);border-radius:14px;padding:14px 16px;margin-bottom:10px;">
     <div class="goal-header" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;color:var(--text-primary);">
-        <div class="goal-name" style="font-weight:600;font-size:15px;">${g.name}</div>
-        <div class="goal-progress-text" style="font-size:13px;color:var(--text-muted);">${formatMoney(g.current)} / ${formatMoney(g.target)}</div>
+        <div class="goal-name" style="font-weight:600;font-size:15px;">${icon}${g.name}${badge}</div>
+        <div class="goal-progress-text" style="font-size:13px;color:${isFin && p.current<0 ? 'var(--red)' : (achieved ? 'var(--green)' : 'var(--text-muted)')};">${progressText}</div>
     </div>
     <div class="goal-track" style="height:6px;background:var(--border);border-radius:6px;overflow:hidden;margin:6px 0 8px 0;">
-        <div class="goal-fill" style="height:100%;border-radius:6px;background:linear-gradient(90deg,var(--blue),#7c5cfc);width:${pct}%;transition:width 0.5s ease;"></div>
+        <div class="goal-fill" style="height:100%;border-radius:6px;background:${fillColor};width:${pct}%;transition:width 0.5s ease;"></div>
     </div>
     <div class="goal-actions" style="display:flex;gap:8px;justify-content:flex-end;">
-        <button onclick="openGoalProgress('${g.id}')" style="background:var(--bg);border:none;border-radius:8px;padding:4px 12px;font-size:12px;cursor:pointer;color:var(--text-muted);transition:0.2s;border:1px solid var(--border);">增加存款</button>
-        <button onclick="deleteGoal('${g.id}')" style="background:var(--bg);border:none;border-radius:8px;padding:4px 12px;font-size:12px;cursor:pointer;color:var(--text-muted);transition:0.2s;border:1px solid var(--border);">删除</button>
+        ${actions}
     </div>
     </div>`;
         }).join('');
@@ -2175,6 +2752,10 @@
         document.getElementById('goalProgressAmount').value='100';
         document.getElementById('goalProgressCurrent').textContent=formatMoney(g.current);
         document.getElementById('goalProgressTarget').textContent=formatMoney(g.target);
+        const sel = document.getElementById('goalProgressAccount');
+        sel.innerHTML = '<option value="">不关联账户（仅更新目标进度）</option>' +
+            data.accounts.map(a => `<option value="${a.id}">${a.icon||'🏦'} ${a.name} (${formatMoney(getAccountBalance(a.id))})</option>`).join('');
+        sel.value = '';
         openModal('modalGoalProgress');
     }
     function updateGoalProgress(){
@@ -2182,8 +2763,27 @@
         if(!g)return;
         const add=parseFloat(document.getElementById('goalProgressAmount').value);
         if(isNaN(add)||add<=0){showToast('请输入有效金额');return;}
-        g.current+=add;
-        saveData();closeModal('modalGoalProgress');renderAll();showToast('已更新储蓄进度');
+        const accId = document.getElementById('goalProgressAccount').value;
+        const dt = getTodayStr();
+        g.current += add;
+        if(accId){
+            const acc = data.accounts.find(a=>a.id===accId);
+            if(acc){
+                data.transactions.push({
+                    id: genId(),
+                    accountId: accId,
+                    type: 'expense',
+                    category: '储蓄目标',
+                    amount: add,
+                    date: dt,
+                    note: `存入「${g.name}」`
+                });
+            }
+        }
+        saveData();
+        closeModal('modalGoalProgress');
+        renderAll();
+        showToast(accId ? `已存入目标，${data.accounts.find(a=>a.id===accId).name} 余额已扣减` : '已更新储蓄进度');
     }
     function deleteGoal(gid){
         if(!confirm('确定删除该储蓄目标？')) return;
@@ -2263,6 +2863,7 @@
                 data.goals.forEach(g=>{if(!g.id) g.id='goal_'+Date.now()+Math.random().toString(36).slice(2,6);});
                 if(!data.snapshots) data.snapshots=[];
                 if(!data.achievements) data.achievements=getDefaultData().achievements;
+                migrateTransferDirections();
                 saveData();
                 renderAll();
                 showToast('账本导入成功');
@@ -2295,10 +2896,8 @@
 
     // 页面加载完成后初始化轮播监听
     window.onload=function(){
-        // 限制所有日期输入框最大值为今天
         const _today = getTodayStr();
         document.querySelectorAll('input[type="date"]').forEach(el => { el.max = _today; });
-        // 动态生成的元素也限制
         const _observer = new MutationObserver(() => {
             document.querySelectorAll('input[type="date"]').forEach(el => {
                 if (!el.max) el.max = getTodayStr();
@@ -2307,6 +2906,7 @@
         _observer.observe(document.body, { childList: true, subtree: true });
 
         loadData();
+        applyPrivacyOnLoad();
         renderAll();
         initCarouselScrollListener();
         let resizeTimer;
